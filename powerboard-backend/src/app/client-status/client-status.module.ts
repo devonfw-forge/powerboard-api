@@ -8,5 +8,6 @@ import { ClientStatusCrudController } from './controllers/client-status.crud.con
   imports: [TypeOrmModule.forFeature([ClientStatus])],
   providers: [ClientStatusCrudService],
   controllers: [ClientStatusCrudController],
+  exports :[ClientStatusCrudService],
 })
 export class ClientStatusModule {}

@@ -7,10 +7,14 @@ import { BusinessUnit } from '../business-units/model/entities/business-unit.ent
 import { User } from '../core/user/model/entities/user.entity';
 import { CodeQualitySnapshotCrudService } from '../code-quality-snapshot/services/code-quality-snapshot.crud.service';
 import { CodeQualitySnapshot } from '../code-quality-snapshot/model/entities/code-quality-snapshot.entity';
+import { ClientStatusCrudService } from '../client-status/services/client-status.crud.service';
+import { ClientStatus } from '../client-status/model/entities/client-status.entity';
+import { TeamSpirit } from '../team-spirit/model/entities/team-spirit.entity';
+import { TeamSpiritCrudService } from '../team-spirit/services/team-spirit.crud.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Team, BusinessUnit, User, CodeQualitySnapshot])],
-  providers: [TeamCrudService, CodeQualitySnapshotCrudService],
+  imports: [TypeOrmModule.forFeature([Team, BusinessUnit, User, CodeQualitySnapshot,ClientStatus, TeamSpirit])],
+  providers: [TeamCrudService, CodeQualitySnapshotCrudService, ClientStatusCrudService , TeamSpiritCrudService],
   controllers: [TeamCrudController],
   exports:[TeamCrudService],
 })

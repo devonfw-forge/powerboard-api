@@ -5,6 +5,7 @@ import { DashBoardDTO } from "./DashBoardDTO";
 export class CompleteResponseDTO {
    user_breadCrumb!:BreadCrumbDTO[]
    dump_businessUnit!:BusinessUnit[]
-   dashboard!: DashBoardDTO[];
+   dashboard: DashBoardDTO={} as DashBoardDTO;
+  
   
 }

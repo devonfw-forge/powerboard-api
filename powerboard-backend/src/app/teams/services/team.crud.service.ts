@@ -2,9 +2,13 @@ import { Injectable, NotFoundException} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { TypeOrmCrudService } from '@nestjsx/crud-typeorm';
 import { BusinessUnit } from 'src/app/business-units/model/entities/business-unit.entity';
+import { ClientStatusDTO } from 'src/app/client-status/model/dto/ClientStatusDTO';
+import { ClientStatusCrudService } from 'src/app/client-status/services/client-status.crud.service';
 import { CodeQualityDTO } from 'src/app/code-quality-snapshot/model/dto/CodeQualityDTO';
 import { CodeQualitySnapshotCrudService } from 'src/app/code-quality-snapshot/services/code-quality-snapshot.crud.service';
 import { User } from 'src/app/core/user/model/entities/user.entity';
+import { TeamSpiritDTO } from 'src/app/team-spirit/model/dto/TeamSpiritDTO';
+import { TeamSpiritCrudService } from 'src/app/team-spirit/services/team-spirit.crud.service';
 import {  Repository } from 'typeorm';
 import { BreadCrumbDTO } from '../model/dto/BreadCrumbDTO';
 import { CompleteResponseDTO } from '../model/dto/CompleteResponseDTO';
@@ -17,7 +21,9 @@ export class TeamCrudService extends TypeOrmCrudService<Team> {
   constructor(@InjectRepository(Team) private readonly teamRepository: Repository<Team>,
             @InjectRepository(BusinessUnit) private readonly businessRepository: Repository<BusinessUnit>,
            @InjectRepository(User) private readonly userRepository: Repository<User>,
-           private readonly codequality:CodeQualitySnapshotCrudService) 
+           private readonly codequalityService:CodeQualitySnapshotCrudService ,
+           private readonly clientStatusService:ClientStatusCrudService ,
+           private readonly teamSpiritService:TeamSpiritCrudService) 
            {
                super(teamRepository);
            }
@@ -25,25 +31,24 @@ export class TeamCrudService extends TypeOrmCrudService<Team> {
    response :CompleteResponseDTO = new CompleteResponseDTO();
    chainBU: BreadCrumbDTO = new BreadCrumbDTO();
     dash: DashBoardDTO = new DashBoardDTO();
+    qualityDTO:CodeQualityDTO = new CodeQualityDTO();
   async getDashboardByUserId(id:number):Promise<any>{
 
       this.response.user_breadCrumb=[] ;
       this.response.dump_businessUnit=[];
     const users: User  = await this.userRepository.findOne({where:{id:id}}) as User;
     if(users?.id==id){
-    const teams :Team= await this.teamRepository.findOne({where :{id:users?.teamId.id}}) as Team
-    //this.dash.dashboard = teams
-        const result:CodeQualityDTO =await this.codequality.getCodeQualitySnapshot(teams.id) as CodeQualityDTO;
-        console.log('Hiii')
-        console.log(result)
-        console.log('bye')
-        this.dash.codeQualitydto = result;
-        console.log(this.dash.codeQualitydto)
-        //this.response.dashboard.codeQualitydto =this.dash.codeQualitydto;
-       // console.log(this.response.dashboard.codeQualitydto)
-       // console.log(result)
-     // this.chainBU.BU_id = teams.id
-      this.chainBU.BU_name = teams.name;
+    const teams :Team= await this.teamRepository.findOne({where :{id:users?.teamId.id}}) as Team 
+    
+    const codeQuality:CodeQualityDTO|any =await this.codequalityService.getCodeQualitySnapshot(teams.id) as CodeQualityDTO;
+    this.response.dashboard.codeQualityDTO  = codeQuality;
+    
+    const clientStatus:ClientStatusDTO|any = await this.clientStatusService.getClientFeedback(teams.id) as ClientStatusDTO
+    this.response.dashboard.clientStatusDTO  = clientStatus;
+
+    const teamSpirit:TeamSpiritDTO|any = await this.teamSpiritService.getTeamSpirit(teams.id) as TeamSpiritDTO
+    this.response.dashboard.teamSpiritDTO  = teamSpirit;
+    this.chainBU.BU_name = teams.name;
       this.response.user_breadCrumb.push(this.chainBU)
       this.chainBU ={} as BreadCrumbDTO;
    
@@ -95,5 +100,7 @@ export class TeamCrudService extends TypeOrmCrudService<Team> {
   else {
        throw new NotFoundException("userId not found")
   }
+     
+  
 }
 }

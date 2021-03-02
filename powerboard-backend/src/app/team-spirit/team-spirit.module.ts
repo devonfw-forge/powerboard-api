@@ -8,5 +8,6 @@ import { TeamSpiritCrudController } from './controllers/team-spirit.crud.control
   imports: [TypeOrmModule.forFeature([TeamSpirit])],
   providers: [TeamSpiritCrudService],
   controllers: [TeamSpiritCrudController],
+  exports:[TeamSpiritCrudService],
 })
 export class TeamSpiritModule {}
