@@ -5,10 +5,11 @@ import { Repository } from 'typeorm';
 import { CodeQualityDTO } from '../model/dto/CodeQualityDTO';
 import { CodeQualitySnapshot } from '../model/entities/code-quality-snapshot.entity';
 
-
 @Injectable()
 export class CodeQualitySnapshotCrudService extends TypeOrmCrudService<CodeQualitySnapshot> {
-  constructor(@InjectRepository(CodeQualitySnapshot) private readonly codeQualityRepository: Repository<CodeQualitySnapshot>) {
+  constructor(
+    @InjectRepository(CodeQualitySnapshot) private readonly codeQualityRepository: Repository<CodeQualitySnapshot>,
+  ) {
     super(codeQualityRepository);
   }
     qualityDTO :CodeQualityDTO = new CodeQualityDTO();

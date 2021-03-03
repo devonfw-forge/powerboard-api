@@ -7,7 +7,7 @@ import { ClientStatus } from '../model/entities/client-status.entity';
 
 @Injectable()
 export class ClientStatusCrudService extends TypeOrmCrudService<ClientStatus> {
-  constructor(@InjectRepository(ClientStatus)private readonly clientRepository: Repository<ClientStatus>) {
+  constructor(@InjectRepository(ClientStatus) private readonly clientRepository: Repository<ClientStatus>) {
     super(clientRepository);
   }
   clientDTO: ClientStatusDTO = new ClientStatusDTO();
@@ -17,5 +17,4 @@ export class ClientStatusCrudService extends TypeOrmCrudService<ClientStatus> {
     this.clientDTO.clientSatisfactionRating= result[0].clientRating;
     this.clientDTO.sprintNumber = result[0].sprintId.sprintNumber;
      return this.clientDTO;
-  }
-}
+  }}
