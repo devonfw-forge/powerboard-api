@@ -14,6 +14,7 @@ import { BreadCrumbDTO } from '../model/dto/BreadCrumbDTO';
 
 import { DashBoardDTO } from '../model/dto/DashBoardDTO';
 import { LoginResponseDTO } from '../model/dto/LoginResponseDTO';
+import { TeamDTO } from '../model/dto/TeamDTO';
 
 import { Team } from '../model/entities/team.entity';
 
@@ -38,9 +39,10 @@ export class TeamCrudService extends TypeOrmCrudService<Team> {
     this.loginResponse.user_breadCrumb = [];
     this.loginResponse.dump_businessUnit = [];
     const users: User = (await this.userRepository.findOne({ where: { id: userId } })) as User;
+
     if (users.id == userId) {
       const teams: Team = (await this.teamRepository.findOne({ where: { id: users?.teamId.id } })) as Team;
-        
+
       this.loginResponse.dashboard.teamId = teams.id;
       this.loginResponse.dashboard.teamName = teams.name;
       const codeQuality: CodeQualityDTO = (await this.codequalityService.getCodeQualitySnapshot(
@@ -109,21 +111,35 @@ export class TeamCrudService extends TypeOrmCrudService<Team> {
     }
   }
 
-  async getDashboardByTeamId(teamId:number):Promise<DashBoardDTO>{
-      this.dash.teamId = teamId;
-      const codeQuality: CodeQualityDTO = (await this.codequalityService.getCodeQualitySnapshot(
-        teamId,
-      )) as CodeQualityDTO;
-      this.dash.codeQualityDTO = codeQuality;
+  async getDashboardByTeamId(teamId: number): Promise<DashBoardDTO> {
+    this.dash.teamId = teamId;
+    const codeQuality: CodeQualityDTO = (await this.codequalityService.getCodeQualitySnapshot(
+      teamId,
+    )) as CodeQualityDTO;
+    this.dash.codeQualityDTO = codeQuality;
 
-      const clientStatus: ClientStatusDTO = (await this.clientStatusService.getClientFeedback(
-        teamId,
-      )) as ClientStatusDTO;
-      this.dash.clientStatusDTO = clientStatus;
+    const clientStatus: ClientStatusDTO = (await this.clientStatusService.getClientFeedback(teamId)) as ClientStatusDTO;
+    this.dash.clientStatusDTO = clientStatus;
 
-      const teamSpirit: TeamSpiritDTO = (await this.teamSpiritService.getTeamSpirit(teamId)) as TeamSpiritDTO;
-     this.dash.teamSpiritDTO= teamSpirit;
+    const teamSpirit: TeamSpiritDTO = (await this.teamSpiritService.getTeamSpirit(teamId)) as TeamSpiritDTO;
+    this.dash.teamSpiritDTO = teamSpirit;
 
-   return this.dash;
+    return this.dash;
+  }
+
+  async getTeamsByBUId(BU_id: number): Promise<TeamDTO[]> {
+    const teams: Team[] = await this.teamRepository.find({ where: { businessUnitId: BU_id } });
+    console.log(teams);
+    let teamsDTO = new TeamDTO();
+    let teamsDTOArray = [];
+    // let teamsDTOArray = new Array();
+    let i;
+    for (i = 0; i < teams.length; i++) {
+      teamsDTO.teamId = teams[i].id;
+      teamsDTO.teamName = teams[i].name;
+      teamsDTOArray.push(teamsDTO);
+      teamsDTO = {} as TeamDTO;
+    }
+    return teamsDTOArray;
   }
 }

@@ -5,7 +5,7 @@ import { Team } from '../model/entities/team.entity';
 import { TeamCrudService } from '../services/team.crud.service';
 import { LoginResponseDTO } from '../model/dto/LoginResponseDTO';
 import { DashBoardDTO } from '../model/dto/DashBoardDTO';
-
+import { TeamDTO } from '../model/dto/TeamDTO';
 
 @Crud({
   model: {
@@ -27,5 +27,10 @@ export class TeamCrudController {
   async getDashboardByTeamId(@Param('id') id: number): Promise<DashBoardDTO> {
     const teamResponse = await this.teamService.getDashboardByTeamId(id);
     return teamResponse;
+  }
+
+  @Get('BU/:id')
+  async getTeamsByBUId(@Param('id') BU_Id: number): Promise<TeamDTO[]> {
+    return this.teamService.getTeamsByBUId(BU_Id);
   }
 }
