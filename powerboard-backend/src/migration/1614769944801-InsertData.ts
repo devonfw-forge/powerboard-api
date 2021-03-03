@@ -42,7 +42,7 @@ export class InsertData1614769944801 implements MigrationInterface {
           );
     
           await queryRunner.query(
-            `INSERT INTO "code_quality_snapshot" ("id", "bugs", "debt", "codeCoverage" ,"status","teamId" ,"snapshotTime") VALUES (10 ,5, 21, 80,'PASSED',1,'2021-02-15 02:10:55');`,
+            `INSERT INTO "code_quality_snapshot" ("id", "bugs", "debt", "codeCoverage" ,"status","teamId" ,"snapshotTime") VALUES (10 ,5, 21, 80,'PASSED',2,'2021-02-15 02:10:55');`,
           );
           await queryRunner.query(
             `INSERT INTO "code_quality_snapshot" ("id", "bugs", "debt", "codeCoverage" , "status","teamId" ,"snapshotTime") VALUES (11 ,3, 4, 90 ,'PASSED',1, '2021-02-25 13:23:22');`,
@@ -58,12 +58,18 @@ export class InsertData1614769944801 implements MigrationInterface {
           await queryRunner.query(
             `INSERT INTO "sprint" ("id","sprintNumber","status" , "startDate","endDate","teamId") VALUES (3, 11, 1,'2021-02-26', '2021-03-10',1);`,
              );
+             await queryRunner.query(
+              `INSERT INTO "sprint" ("id","sprintNumber","status" , "startDate","endDate","teamId") VALUES (4, 21, 1,'2021-02-18', '2021-02-27',2);`,
+               );
 
           await queryRunner.query(
             `INSERT INTO "team_spirit" ("id","teamSpiritRating", "teamId", "sprintNumber","sprintId") VALUES (1, 4, 1, 10,2);`,
              );
              await queryRunner.query(
               `INSERT INTO "team_spirit" ("id","teamSpiritRating", "teamId", "sprintNumber","sprintId") VALUES (2, 9, 1, 11, 3);`,
+            );
+            await queryRunner.query(
+              `INSERT INTO "team_spirit" ("id","teamSpiritRating", "teamId", "sprintNumber","sprintId") VALUES (3, 7, 2, 12, 4);`,
             );
           
         
@@ -72,6 +78,9 @@ export class InsertData1614769944801 implements MigrationInterface {
              );
            await queryRunner.query(
               `INSERT INTO "client_status" ("id","clientRating", "teamId","sprintNumber", "sprintId") VALUES (2, 4, 1, 10 ,2);`,
+            );
+            await queryRunner.query(
+              `INSERT INTO "client_status" ("id","clientRating", "teamId","sprintNumber", "sprintId") VALUES (3, 5, 2, 12 ,4);`,
             );
         
           await queryRunner.query(

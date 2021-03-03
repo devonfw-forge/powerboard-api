@@ -17,6 +17,7 @@ export class ClientStatusCrudService extends TypeOrmCrudService<ClientStatus> {
                                               .where("client_status.teamId=:teamId" ,{teamId:id})
                                               .orderBy("client_status.sprintNumber","DESC") 
                                                .limit(1).getOne() as ClientStatus;
+    
    this.clientStatusDTO.clientSatisfactionRating = result.clientRating
    this.clientStatusDTO.sprintNumber = result.sprintNumber
    return this.clientStatusDTO;

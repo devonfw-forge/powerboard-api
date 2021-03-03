@@ -34,11 +34,11 @@ export class TeamCrudService extends TypeOrmCrudService<Team> {
   chainBU: BreadCrumbDTO = new BreadCrumbDTO();
   dash: DashBoardDTO = new DashBoardDTO();
   qualityDTO: CodeQualityDTO = new CodeQualityDTO();
-  async getDashboardByUserId(id: number): Promise<LoginResponseDTO> {
+  async getDashboardByUserId(userId: number): Promise<LoginResponseDTO> {
     this.loginResponse.user_breadCrumb = [];
     this.loginResponse.dump_businessUnit = [];
-    const users: User = (await this.userRepository.findOne({ where: { id: id } })) as User;
-    if (users.id == id) {
+    const users: User = (await this.userRepository.findOne({ where: { id: userId } })) as User;
+    if (users.id == userId) {
       const teams: Team = (await this.teamRepository.findOne({ where: { id: users?.teamId.id } })) as Team;
         
       this.loginResponse.dashboard.teamId = teams.id;
@@ -107,5 +107,23 @@ export class TeamCrudService extends TypeOrmCrudService<Team> {
     } else {
       throw new NotFoundException('userId not found');
     }
+  }
+
+  async getDashboardByTeamId(teamId:number):Promise<DashBoardDTO>{
+      this.dash.teamId = teamId;
+      const codeQuality: CodeQualityDTO = (await this.codequalityService.getCodeQualitySnapshot(
+        teamId,
+      )) as CodeQualityDTO;
+      this.dash.codeQualityDTO = codeQuality;
+
+      const clientStatus: ClientStatusDTO = (await this.clientStatusService.getClientFeedback(
+        teamId,
+      )) as ClientStatusDTO;
+      this.dash.clientStatusDTO = clientStatus;
+
+      const teamSpirit: TeamSpiritDTO = (await this.teamSpiritService.getTeamSpirit(teamId)) as TeamSpiritDTO;
+     this.dash.teamSpiritDTO= teamSpirit;
+
+   return this.dash;
   }
 }
