@@ -14,7 +14,8 @@ export class TeamSpiritCrudService extends TypeOrmCrudService<TeamSpirit> {
   async getTeamSpirit(id:number):Promise<TeamSpiritDTO>
   {
     const result = await this.teamSpiritRepository.find({where :{teamId:id}}) 
-     this.teamSpiritDTO.teamSpiritRating= result[0].teamSpiritRating;
+   // const result = await this.teamSpiritRepository.query('select * from team_spirit order by sprintId desc limit 1 where teamId='+id) 
+    this.teamSpiritDTO.teamSpiritRating= result[0].teamSpiritRating;
     this.teamSpiritDTO.sprintNumber = result[0].sprintId.sprintNumber;
      return this.teamSpiritDTO;
   }

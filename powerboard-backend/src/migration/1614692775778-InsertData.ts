@@ -42,10 +42,13 @@ export class InsertData1614692775778 implements MigrationInterface {
           );
     
           await queryRunner.query(
-            `INSERT INTO "code_quality_snapshot" ("id", "bugs", "debt", "codeCoverage" ,"status","teamId" ,"codeQualityTime") VALUES (10 ,5, 21, 80,'PASSED',1,'2021-02-15');`,
+            `INSERT INTO "code_quality_snapshot" ("id", "bugs", "debt", "codeCoverage" ,"status","teamId" ,"codeQualityTime") VALUES (10 ,5, 21, 80,'PASSED',1,'2021-02-15 02:10:55');`,
           );
           await queryRunner.query(
-            `INSERT INTO "code_quality_snapshot" ("id", "bugs", "debt", "codeCoverage" , "status","teamId" ,"codeQualityTime") VALUES (11 ,3, 4, 90 ,'FAILED',2, '2021-02-25');`,
+            `INSERT INTO "code_quality_snapshot" ("id", "bugs", "debt", "codeCoverage" , "status","teamId" ,"codeQualityTime") VALUES (11 ,3, 4, 90 ,'PASSED',1, '2021-02-25 13:23:22');`,
+          );
+          await queryRunner.query(
+            `INSERT INTO "code_quality_snapshot" ("id", "bugs", "debt", "codeCoverage" , "status","teamId" ,"codeQualityTime") VALUES (12 ,3, 13, 85 ,'PASSED',1, '2021-02-25 14:30:22');`,
           );
       
     

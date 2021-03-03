@@ -14,8 +14,8 @@ export class ClientStatusCrudService extends TypeOrmCrudService<ClientStatus> {
   async getClientFeedback(id:number):Promise<ClientStatusDTO>
   {
     const result = await this.clientRepository.find({where :{teamId:id}}) 
-     this.clientDTO.clientSatisfactionRating= result[0].clientRating;
-     this.clientDTO.sprintNumber = result[0].sprintId.sprintNumber;
+    this.clientDTO.clientSatisfactionRating= result[0].clientRating;
+    this.clientDTO.sprintNumber = result[0].sprintId.sprintNumber;
      return this.clientDTO;
   }
 }
