@@ -7,15 +7,14 @@ import { ClientStatus } from '../model/entities/client-status.entity';
 
 @Injectable()
 export class ClientStatusCrudService extends TypeOrmCrudService<ClientStatus> {
-  constructor(@InjectRepository(ClientStatus)private readonly clientRepository: Repository<ClientStatus>) {
+  constructor(@InjectRepository(ClientStatus) private readonly clientRepository: Repository<ClientStatus>) {
     super(clientRepository);
   }
-  clientDTO: ClientStatusDTO = new ClientStatusDTO();
-  async getClientFeedback(id:number):Promise<ClientStatusDTO>
-  {
-    const result = await this.clientRepository.find({where :{teamId:id}}) 
-     this.clientDTO.clientSatisfactionRating= result[0].clientRating;
-     this.clientDTO.sprintNumber = result[0].sprintId.sprintNumber;
-     return this.clientDTO;
+  clientStatusDTO: ClientStatusDTO = new ClientStatusDTO();
+  async getClientFeedback(id: number): Promise<ClientStatusDTO> {
+    const clientStatusResult = await this.clientRepository.find({ where: { teamId: id } });
+    this.clientStatusDTO.clientSatisfactionRating = clientStatusResult[0].clientRating;
+    this.clientStatusDTO.sprintNumber = clientStatusResult[0].sprintId.sprintNumber;
+    return this.clientStatusDTO;
   }
 }

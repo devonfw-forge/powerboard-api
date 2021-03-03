@@ -10,12 +10,11 @@ export class TeamSpiritCrudService extends TypeOrmCrudService<TeamSpirit> {
   constructor(@InjectRepository(TeamSpirit) private readonly teamSpiritRepository: Repository<TeamSpirit>) {
     super(teamSpiritRepository);
   }
-   teamSpiritDTO: TeamSpiritDTO = new TeamSpiritDTO();
-  async getTeamSpirit(id:number):Promise<TeamSpiritDTO>
-  {
-    const result = await this.teamSpiritRepository.find({where :{teamId:id}}) 
-     this.teamSpiritDTO.teamSpiritRating= result[0].teamSpiritRating;
-    this.teamSpiritDTO.sprintNumber = result[0].sprintId.sprintNumber;
-     return this.teamSpiritDTO;
+  teamSpiritDTO: TeamSpiritDTO = new TeamSpiritDTO();
+  async getTeamSpirit(id: number): Promise<TeamSpiritDTO> {
+    const teamSpiritResult = await this.teamSpiritRepository.find({ where: { teamId: id } });
+    this.teamSpiritDTO.teamSpiritRating = teamSpiritResult[0].teamSpiritRating;
+    this.teamSpiritDTO.sprintNumber = teamSpiritResult[0].sprintId.sprintNumber;
+    return this.teamSpiritDTO;
   }
 }
