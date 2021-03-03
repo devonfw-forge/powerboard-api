@@ -3,7 +3,8 @@ import { Crud } from '@nestjsx/crud';
 import { CrudType } from '@devon4node/common/serializer';
 import { Team } from '../model/entities/team.entity';
 import { TeamCrudService } from '../services/team.crud.service';
-import { CompleteResponseDTO } from '../model/dto/CompleteResponseDTO';
+import { LoginResponseDTO } from '../model/dto/LoginResponseDTO';
+
 
 @Crud({
   model: {
@@ -11,12 +12,12 @@ import { CompleteResponseDTO } from '../model/dto/CompleteResponseDTO';
   },
 })
 @CrudType(Team)
-@Controller('teams/user')
+@Controller('teams')
 export class TeamCrudController {
   constructor(public teamService: TeamCrudService) {}
 
-  @Get('breadcrumb/:id')
-  async getDashboardByUserId(@Param('id') id: number): Promise<CompleteResponseDTO> {
+  @Get('user/:id')
+  async getDashboardByUserId(@Param('id') id: number): Promise<LoginResponseDTO> {
     const response = await this.teamService.getDashboardByUserId(id);
     return response;
   }

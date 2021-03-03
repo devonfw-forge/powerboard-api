@@ -11,8 +11,9 @@ import { TeamSpiritDTO } from 'src/app/team-spirit/model/dto/TeamSpiritDTO';
 import { TeamSpiritCrudService } from 'src/app/team-spirit/services/team-spirit.crud.service';
 import { Repository } from 'typeorm';
 import { BreadCrumbDTO } from '../model/dto/BreadCrumbDTO';
-import { CompleteResponseDTO } from '../model/dto/CompleteResponseDTO';
+
 import { DashBoardDTO } from '../model/dto/DashBoardDTO';
+import { LoginResponseDTO } from '../model/dto/LoginResponseDTO';
 
 import { Team } from '../model/entities/team.entity';
 
@@ -29,31 +30,33 @@ export class TeamCrudService extends TypeOrmCrudService<Team> {
     super(teamRepository);
   }
 
-  completeResponse: CompleteResponseDTO = new CompleteResponseDTO();
+  loginResponse: LoginResponseDTO = new LoginResponseDTO();
   chainBU: BreadCrumbDTO = new BreadCrumbDTO();
   dash: DashBoardDTO = new DashBoardDTO();
   qualityDTO: CodeQualityDTO = new CodeQualityDTO();
-  async getDashboardByUserId(id: number): Promise<CompleteResponseDTO> {
-    this.completeResponse.user_breadCrumb = [];
-    this.completeResponse.dump_businessUnit = [];
+  async getDashboardByUserId(id: number): Promise<LoginResponseDTO> {
+    this.loginResponse.user_breadCrumb = [];
+    this.loginResponse.dump_businessUnit = [];
     const users: User = (await this.userRepository.findOne({ where: { id: id } })) as User;
     if (users.id == id) {
       const teams: Team = (await this.teamRepository.findOne({ where: { id: users?.teamId.id } })) as Team;
-
+        
+      this.loginResponse.dashboard.teamId = teams.id;
+      this.loginResponse.dashboard.teamName = teams.name;
       const codeQuality: CodeQualityDTO = (await this.codequalityService.getCodeQualitySnapshot(
         teams.id,
       )) as CodeQualityDTO;
-      this.completeResponse.dashboard.codeQualityDTO = codeQuality;
+      this.loginResponse.dashboard.codeQualityDTO = codeQuality;
 
       const clientStatus: ClientStatusDTO = (await this.clientStatusService.getClientFeedback(
         teams.id,
       )) as ClientStatusDTO;
-      this.completeResponse.dashboard.clientStatusDTO = clientStatus;
+      this.loginResponse.dashboard.clientStatusDTO = clientStatus;
 
       const teamSpirit: TeamSpiritDTO = (await this.teamSpiritService.getTeamSpirit(teams.id)) as TeamSpiritDTO;
-      this.completeResponse.dashboard.teamSpiritDTO = teamSpirit;
+      this.loginResponse.dashboard.teamSpiritDTO = teamSpirit;
       this.chainBU.BU_name = teams.name;
-      this.completeResponse.user_breadCrumb.push(this.chainBU);
+      this.loginResponse.user_breadCrumb.push(this.chainBU);
       this.chainBU = {} as BreadCrumbDTO;
 
       let businessUnitsId = teams.businessUnitId.id;
@@ -87,7 +90,7 @@ export class TeamCrudService extends TypeOrmCrudService<Team> {
           if (businessUnitsId == business[i].id) {
             this.chainBU.BU_id = business[i].id;
             this.chainBU.BU_name = business[i].name;
-            this.completeResponse.user_breadCrumb.push(this.chainBU);
+            this.loginResponse.user_breadCrumb.push(this.chainBU);
             this.chainBU = {} as BreadCrumbDTO;
             nextParentId = business[i].parent_id;
             if (business[i].parent_id == business[i].id) {
@@ -98,9 +101,9 @@ export class TeamCrudService extends TypeOrmCrudService<Team> {
         }
         businessUnitsId = nextParentId;
       }
-      this.completeResponse.user_breadCrumb.reverse();
-      this.completeResponse.dump_businessUnit = business;
-      return this.completeResponse;
+      this.loginResponse.user_breadCrumb.reverse();
+      this.loginResponse.dump_businessUnit = business;
+      return this.loginResponse;
     } else {
       throw new NotFoundException('userId not found');
     }

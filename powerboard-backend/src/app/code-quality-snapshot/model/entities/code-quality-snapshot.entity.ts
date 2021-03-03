@@ -21,5 +21,5 @@ export class CodeQualitySnapshot extends BaseEntity {
   teamId!: Team;
 
   @Column('timestamp', { nullable: false })
-  codeQualityTime!: string;
+  snapshotTime!: string;
 }

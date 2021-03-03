@@ -2,7 +2,7 @@ import { BusinessUnit } from "src/app/business-units/model/entities/business-uni
 import { BreadCrumbDTO } from "./BreadCrumbDTO";
 import { DashBoardDTO } from "./DashBoardDTO";
 
-export class CompleteResponseDTO {
+export class LoginResponseDTO {
    user_breadCrumb!:BreadCrumbDTO[]
    dump_businessUnit!:BusinessUnit[]
    dashboard: DashBoardDTO={} as DashBoardDTO;

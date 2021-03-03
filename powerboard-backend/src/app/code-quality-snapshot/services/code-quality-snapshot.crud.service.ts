@@ -18,7 +18,7 @@ export class CodeQualitySnapshotCrudService extends TypeOrmCrudService<CodeQuali
    //const result =await this.codeQualityRepository.query(" SELECT * FROM code_quality_snapshot ORDER BY codeQualityTime DESC LIMIT 1 where teamId:"+id);
      const result = await this.codeQualityRepository.createQueryBuilder("code_quality_snapshot")
                                                      .where("code_quality_snapshot.teamId=:teamId" ,{teamId:id})
-                                                     .orderBy("code_quality_snapshot.codeQualityTime","DESC")
+                                                     .orderBy("code_quality_snapshot.snapshotTime","DESC")
                                                      .limit(1).getOne();
               
        this.qualityDTO.bugs = result!.bugs

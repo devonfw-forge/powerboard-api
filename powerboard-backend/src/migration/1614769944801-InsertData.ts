@@ -1,7 +1,7 @@
 import {MigrationInterface, QueryRunner} from "typeorm";
 
-export class InsertData1614692775778 implements MigrationInterface {
-    name = 'InsertData1614692775778'
+export class InsertData1614769944801 implements MigrationInterface {
+    name = 'InsertData1614769944801'
 
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.query(
@@ -42,30 +42,37 @@ export class InsertData1614692775778 implements MigrationInterface {
           );
     
           await queryRunner.query(
-            `INSERT INTO "code_quality_snapshot" ("id", "bugs", "debt", "codeCoverage" ,"status","teamId" ,"codeQualityTime") VALUES (10 ,5, 21, 80,'PASSED',1,'2021-02-15 02:10:55');`,
+            `INSERT INTO "code_quality_snapshot" ("id", "bugs", "debt", "codeCoverage" ,"status","teamId" ,"snapshotTime") VALUES (10 ,5, 21, 80,'PASSED',1,'2021-02-15 02:10:55');`,
           );
           await queryRunner.query(
-            `INSERT INTO "code_quality_snapshot" ("id", "bugs", "debt", "codeCoverage" , "status","teamId" ,"codeQualityTime") VALUES (11 ,3, 4, 90 ,'PASSED',1, '2021-02-25 13:23:22');`,
+            `INSERT INTO "code_quality_snapshot" ("id", "bugs", "debt", "codeCoverage" , "status","teamId" ,"snapshotTime") VALUES (11 ,3, 4, 90 ,'PASSED',1, '2021-02-25 13:23:22');`,
           );
           await queryRunner.query(
-            `INSERT INTO "code_quality_snapshot" ("id", "bugs", "debt", "codeCoverage" , "status","teamId" ,"codeQualityTime") VALUES (12 ,3, 13, 85 ,'PASSED',1, '2021-02-25 14:30:22');`,
+            `INSERT INTO "code_quality_snapshot" ("id", "bugs", "debt", "codeCoverage" , "status","teamId" ,"snapshotTime") VALUES (12 ,3, 13, 85 ,'PASSED',1, '2021-02-25 14:30:22');`,
           );
       
     
           await queryRunner.query(
-            `INSERT INTO "sprint" ("id","sprintNumber","status" , "startDate","endDate","teamId") VALUES (1, 10, 1,'2021-02-15', '2021-02-26',1);`,
+            `INSERT INTO "sprint" ("id","sprintNumber","status" , "startDate","endDate","teamId") VALUES (2, 10, 1,'2021-02-15', '2021-02-26',1);`,
               );
           await queryRunner.query(
-            `INSERT INTO "sprint" ("id","sprintNumber","status" , "startDate","endDate","teamId") VALUES (2, 11, 1,'2021-02-26', '2021-03-10',1);`,
+            `INSERT INTO "sprint" ("id","sprintNumber","status" , "startDate","endDate","teamId") VALUES (3, 11, 1,'2021-02-26', '2021-03-10',1);`,
              );
 
           await queryRunner.query(
-            `INSERT INTO "team_spirit" ("id","teamSpiritRating", "teamId", "sprintId") VALUES (1, 8, 1, 1);`,
+            `INSERT INTO "team_spirit" ("id","teamSpiritRating", "teamId", "sprintNumber","sprintId") VALUES (1, 4, 1, 10,2);`,
              );
+             await queryRunner.query(
+              `INSERT INTO "team_spirit" ("id","teamSpiritRating", "teamId", "sprintNumber","sprintId") VALUES (2, 9, 1, 11, 3);`,
+            );
+          
         
           await queryRunner.query(
-            `INSERT INTO "client_status" ("id","clientRating", "teamId", "sprintId") VALUES (1, 4, 1, 1);`,
+            `INSERT INTO "client_status" ("id","clientRating", "teamId","sprintNumber", "sprintId") VALUES (1, 8, 1, 11 ,3);`,
              );
+           await queryRunner.query(
+              `INSERT INTO "client_status" ("id","clientRating", "teamId","sprintNumber", "sprintId") VALUES (2, 4, 1, 10 ,2);`,
+            );
         
           await queryRunner.query(
             `INSERT INTO "user" ("id", "name", "teamId") VALUES (10, 'john',1);`,
