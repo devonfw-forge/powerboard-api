@@ -35,12 +35,13 @@ export class TeamCrudService extends TypeOrmCrudService<Team> {
   chainBU: BreadCrumbDTO = new BreadCrumbDTO();
   dash: DashBoardDTO = new DashBoardDTO();
   qualityDTO: CodeQualityDTO = new CodeQualityDTO();
+
   async getDashboardByUserId(userId: number): Promise<LoginResponseDTO> {
     this.loginResponse.user_breadCrumb = [];
     this.loginResponse.dump_businessUnit = [];
     const users: User = (await this.userRepository.findOne({ where: { id: userId } })) as User;
 
-    if (users.id == userId) {
+    if (users != null) {
       const teams: Team = (await this.teamRepository.findOne({ where: { id: users?.teamId.id } })) as Team;
 
       this.loginResponse.dashboard.teamId = teams.id;
@@ -71,20 +72,6 @@ export class TeamCrudService extends TypeOrmCrudService<Team> {
         .getMany();
       let i,
         nextParentId = 0;
-
-      //     while(businessUnitsId!=businessUnitsRootParentId){
-      //      // iterate =false;
-      //     for(i=0 ; i<business.length; i++)   {
-      //    if(businessUnitsId==business[i].id){
-      //     this.chainBU.BU_id = business[i].id;
-      //     this.chainBU.BU_name = business[i].name;
-      //     this.dash.user_breadCrumb.push(this.chainBU);
-      //     this.chainBU ={} as BreadCrumbDTO;
-      //     nextParentId = business[i].parent_id;
-      //        }
-      //     }
-      //     businessUnitsId = nextParentId
-      //  }
 
       let iterate: Boolean = true;
       while (iterate) {
@@ -132,7 +119,6 @@ export class TeamCrudService extends TypeOrmCrudService<Team> {
     console.log(teams);
     let teamsDTO = new TeamDTO();
     let teamsDTOArray = [];
-    // let teamsDTOArray = new Array();
     let i;
     for (i = 0; i < teams.length; i++) {
       teamsDTO.teamId = teams[i].id;

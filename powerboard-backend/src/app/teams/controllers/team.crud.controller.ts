@@ -18,14 +18,14 @@ export class TeamCrudController {
   constructor(public teamService: TeamCrudService) {}
 
   @Get('user/:id')
-  async getDashboardByUserId(@Param('id') id: number): Promise<LoginResponseDTO> {
-    const loginResponse = await this.teamService.getDashboardByUserId(id);
+  async getDashboardByUserId(@Param('id') userId: number): Promise<LoginResponseDTO> {
+    const loginResponse = await this.teamService.getDashboardByUserId(userId);
     return loginResponse;
   }
 
   @Get('team/:id')
-  async getDashboardByTeamId(@Param('id') id: number): Promise<DashBoardDTO> {
-    const teamResponse = await this.teamService.getDashboardByTeamId(id);
+  async getDashboardByTeamId(@Param('id') teamId: number): Promise<DashBoardDTO> {
+    const teamResponse = await this.teamService.getDashboardByTeamId(teamId);
     return teamResponse;
   }
 
