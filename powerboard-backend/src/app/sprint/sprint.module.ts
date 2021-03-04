@@ -8,5 +8,6 @@ import { SprintCrudController } from './controllers/sprint.crud.controller';
   imports: [TypeOrmModule.forFeature([Sprint])],
   providers: [SprintCrudService],
   controllers: [SprintCrudController],
+  exports:[SprintCrudService]
 })
 export class SprintModule {}

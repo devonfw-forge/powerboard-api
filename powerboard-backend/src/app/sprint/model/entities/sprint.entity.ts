@@ -17,7 +17,7 @@ export class Sprint extends BaseEntity {
     @Column('varchar', { length: 255, nullable: false })
     endDate!: string;
     
-    @ManyToOne(()=>Team ,{ eager: true })
+    @ManyToOne(()=>Team ,{ eager: false })
     @JoinColumn({ name: 'teamId', referencedColumnName: 'id' })
-    teamId!: number;
+    teamId!:Team;
 }

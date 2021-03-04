@@ -1,6 +1,8 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { TypeOrmCrudService } from '@nestjsx/crud-typeorm';
+import { BurndownDTO } from 'src/app/burndown/model/dto/BurndownDTO';
+import { BurndownCrudService } from 'src/app/burndown/services/burndown.crud.services';
 import { BusinessUnit } from 'src/app/business-units/model/entities/business-unit.entity';
 import { ClientStatusDTO } from 'src/app/client-status/model/dto/ClientStatusDTO';
 import { ClientStatusCrudService } from 'src/app/client-status/services/client-status.crud.service';
@@ -27,6 +29,7 @@ export class TeamCrudService extends TypeOrmCrudService<Team> {
     private readonly codequalityService: CodeQualitySnapshotCrudService,
     private readonly clientStatusService: ClientStatusCrudService,
     private readonly teamSpiritService: TeamSpiritCrudService,
+    private readonly burndownService:BurndownCrudService
   ) {
     super(teamRepository);
   }
@@ -55,10 +58,16 @@ export class TeamCrudService extends TypeOrmCrudService<Team> {
         teams.id,
       )) as ClientStatusDTO;
       this.loginResponse.dashboard.clientStatusDTO = clientStatus;
+      
+      const burndownDTO: BurndownDTO = (await this.burndownService.getBurndown(
+        teams.id,
+      )) as BurndownDTO;
+      this.loginResponse.dashboard.burndownDTO = burndownDTO;
 
       const teamSpirit: TeamSpiritDTO = (await this.teamSpiritService.getTeamSpirit(teams.id)) as TeamSpiritDTO;
+      
       this.loginResponse.dashboard.teamSpiritDTO = teamSpirit;
-      this.chainBU.BU_name = teams.name;
+      this.chainBU.bu_name = teams.name;
       this.loginResponse.user_breadCrumb.push(this.chainBU);
       this.chainBU = {} as BreadCrumbDTO;
 
@@ -77,8 +86,8 @@ export class TeamCrudService extends TypeOrmCrudService<Team> {
       while (iterate) {
         for (i = 0; i < business.length; i++) {
           if (businessUnitsId == business[i].id) {
-            this.chainBU.BU_id = business[i].id;
-            this.chainBU.BU_name = business[i].name;
+            this.chainBU.bu_id = business[i].id;
+            this.chainBU.bu_name = business[i].name;
             this.loginResponse.user_breadCrumb.push(this.chainBU);
             this.chainBU = {} as BreadCrumbDTO;
             nextParentId = business[i].parent_id;

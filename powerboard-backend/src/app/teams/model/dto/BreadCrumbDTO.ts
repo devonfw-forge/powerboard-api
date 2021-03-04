@@ -1,5 +1,5 @@
 
 export class BreadCrumbDTO {
-   BU_id!:number;
-   BU_name!:string; 
+   bu_id!:number;
+   bu_name!:string; 
 }

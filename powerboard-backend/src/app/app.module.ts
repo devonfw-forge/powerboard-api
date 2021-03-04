@@ -9,11 +9,12 @@ import { ClientStatusModule } from './client-status/client-status.module';
 import { SprintModule } from './sprint/sprint.module';
 import { TeamSpiritModule } from './team-spirit/team-spirit.module';
 import { CodeQualitySnapshotModule } from './code-quality-snapshot/code-quality-snapshot.module';
+import { BurndownModule } from './burndown/burndown.module';
 
 
 @Module({
   imports: [CoreModule, TeamsModule, BusinessUnitsModule,ClientStatusModule,
-             CodeQualitySnapshotModule,SprintModule,TeamSpiritModule],
+             CodeQualitySnapshotModule,SprintModule,TeamSpiritModule, BurndownModule],
   controllers: [AppController],
   providers: [AppService],
 })

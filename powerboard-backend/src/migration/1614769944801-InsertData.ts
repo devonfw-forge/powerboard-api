@@ -54,6 +54,13 @@ export class InsertData1614769944801 implements MigrationInterface {
     );
 
     await queryRunner.query(
+      `INSERT INTO "burndown" ("id","estimatedWork" ,"actualWork" ,"SprintDays", "sprintId") VALUES (1, 60, 60, 1 , 3);`,
+    );
+    await queryRunner.query(
+      `INSERT INTO "burndown" ("id","estimatedWork" ,"actualWork" ,"SprintDays" ,"sprintId") VALUES (2, 56, 58, 2 , 3);`,
+    );
+
+    await queryRunner.query(
       `INSERT INTO "team_spirit" ("id","teamSpiritRating", "teamId", "sprintNumber","sprintId") VALUES (1, 4, 1, 10,2);`,
     );
     await queryRunner.query(
