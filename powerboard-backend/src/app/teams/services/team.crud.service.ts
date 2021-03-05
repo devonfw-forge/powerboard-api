@@ -67,6 +67,7 @@ export class TeamCrudService extends TypeOrmCrudService<Team> {
       const teamSpirit: TeamSpiritDTO = (await this.teamSpiritService.getTeamSpirit(teams.id)) as TeamSpiritDTO;
       
       this.loginResponse.dashboard.teamSpiritDTO = teamSpirit;
+      this.chainBU.bu_id = teams.id;
       this.chainBU.bu_name = teams.name;
       this.loginResponse.user_breadCrumb.push(this.chainBU);
       this.chainBU = {} as BreadCrumbDTO;
