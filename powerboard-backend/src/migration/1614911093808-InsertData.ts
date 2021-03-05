@@ -1,7 +1,7 @@
 import {MigrationInterface, QueryRunner} from "typeorm";
 
-export class InsertData1614852992435 implements MigrationInterface {
-    name = 'InsertData1614852992435'
+export class InsertData1614911093808 implements MigrationInterface {
+    name = 'InsertData1614911093808'
 
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.query(
@@ -52,6 +52,9 @@ export class InsertData1614852992435 implements MigrationInterface {
           await queryRunner.query(
             `INSERT INTO "sprint" ("id","sprintNumber","status" , "startDate","endDate","teamId") VALUES (4, 21, 1,'2021-02-18', '2021-02-27',2);`,
           );
+          await queryRunner.query(
+            `INSERT INTO "sprint" ("id","sprintNumber","status" , "startDate","endDate","teamId") VALUES (5, 22, 1,'2021-02-18', '2021-02-27',2);`,
+          );
       
           await queryRunner.query(
             `INSERT INTO "burndown" ("id","estimatedWork" ,"actualWork" ,"SprintDays", "sprintId") VALUES (1, 60, 60, 1 , 3);`,
@@ -59,39 +62,40 @@ export class InsertData1614852992435 implements MigrationInterface {
           await queryRunner.query(
             `INSERT INTO "burndown" ("id","estimatedWork" ,"actualWork" ,"SprintDays" ,"sprintId") VALUES (2, 56, 58, 2 , 3);`,
           );
-      
           await queryRunner.query(
-            `INSERT INTO "team_spirit" ("id","teamSpiritRating", "teamId", "sprintNumber","sprintId") VALUES (1, 4, 1, 10,2);`,
-          );
-          await queryRunner.query(
-            `INSERT INTO "team_spirit" ("id","teamSpiritRating", "teamId", "sprintNumber","sprintId") VALUES (2, 9, 1, 11, 3);`,
-          );
-          await queryRunner.query(
-            `INSERT INTO "team_spirit" ("id","teamSpiritRating", "teamId", "sprintNumber","sprintId") VALUES (3, 7, 2, 12, 4);`,
+            `INSERT INTO "burndown" ("id","estimatedWork" ,"actualWork" ,"SprintDays" ,"sprintId") VALUES (3, 50, 42, 7 , 5);`,
           );
       
           await queryRunner.query(
-            `INSERT INTO "client_status" ("id","clientRating", "teamId","sprintNumber", "sprintId") VALUES (1, 8, 1, 11 ,3);`,
+            `INSERT INTO "team_spirit" ("id","teamSpiritRating", "sprintId") VALUES (1, 8, 2);`,
           );
           await queryRunner.query(
-            `INSERT INTO "client_status" ("id","clientRating", "teamId","sprintNumber", "sprintId") VALUES (2, 4, 1, 10 ,2);`,
+            `INSERT INTO "team_spirit" ("id","teamSpiritRating","sprintId") VALUES (2, 9,  3);`,
           );
           await queryRunner.query(
-            `INSERT INTO "client_status" ("id","clientRating", "teamId","sprintNumber", "sprintId") VALUES (3, 5, 2, 12 ,4);`,
+            `INSERT INTO "team_spirit" ("id","teamSpiritRating", "sprintId") VALUES (3, 7, 4);`,
+          );
+      
+          await queryRunner.query(
+            `INSERT INTO "client_status" ("id","clientRating",  "sprintId") VALUES (1, 8,3);`,
+          );
+          await queryRunner.query(
+            `INSERT INTO "client_status" ("id","clientRating",  "sprintId") VALUES (2, 7,2);`,
+          );
+          await queryRunner.query(
+            `INSERT INTO "client_status" ("id","clientRating", "sprintId") VALUES (3, 5 ,4);`,
           );
       
           await queryRunner.query(`INSERT INTO "user" ("id", "name", "teamId") VALUES (10, 'john',1);`);
           await queryRunner.query(`INSERT INTO "user" ("id", "name", "teamId") VALUES (11, 'Azhar',2);`);
-        }
-    
+        
+    }
 
     public async down(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.query(`ALTER TABLE "team_spirit" DROP CONSTRAINT "FK_b9025695db2c4c5d36bbaf23120"`);
-        await queryRunner.query(`ALTER TABLE "team_spirit" DROP CONSTRAINT "FK_a2722987addc40a25d8fdaac871"`);
         await queryRunner.query(`ALTER TABLE "user" DROP CONSTRAINT "FK_1e89f1fd137dc7fea7242377e25"`);
         await queryRunner.query(`ALTER TABLE "code_quality_snapshot" DROP CONSTRAINT "FK_bc83bdeb0eab72e39887e7686a5"`);
         await queryRunner.query(`ALTER TABLE "client_status" DROP CONSTRAINT "FK_16a31ed3a3cc5249369bbd25c9a"`);
-        await queryRunner.query(`ALTER TABLE "client_status" DROP CONSTRAINT "FK_f432f469a6b18f640393bf2b149"`);
         await queryRunner.query(`ALTER TABLE "burndown" DROP CONSTRAINT "FK_160aa1fad73efa69bf736808847"`);
         await queryRunner.query(`ALTER TABLE "sprint" DROP CONSTRAINT "FK_a075246e2ee59a81a2e241c0f10"`);
         await queryRunner.query(`ALTER TABLE "team" DROP CONSTRAINT "FK_1a5fdd6e2d0ba30d0e6b61b27d8"`);

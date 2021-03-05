@@ -119,6 +119,11 @@ export class TeamCrudService extends TypeOrmCrudService<Team> {
 
     const teamSpirit: TeamSpiritDTO = (await this.teamSpiritService.getTeamSpirit(teamId)) as TeamSpiritDTO;
     this.dash.teamSpiritDTO = teamSpirit;
+    
+    const burndownDTO: BurndownDTO = (await this.burndownService.getBurndown(
+      teamId,
+    )) as BurndownDTO;
+    this.dash.burndownDTO = burndownDTO;
 
     return this.dash;
   }
