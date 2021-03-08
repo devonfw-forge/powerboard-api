@@ -75,36 +75,38 @@ export class SprintCrudService extends TypeOrmCrudService<Sprint> {
           burndownDTO.burndownStatus = 'Ahead Time';
         }
       }
-    }
-    else{
-      console.log('Work spillover')
+    } else {
+      console.log('Work spillover');
     }
     console.log(burndownDTO);
     return burndownDTO;
-    //return result;
   }
 
   async getVelocityComparison(teamId: number): Promise<any> {
     let velocityDTO = new VelocityComaprisonDTO();
-    const result = await this.sprintRepository.query(
+    const sprintMetrics = await this.sprintRepository.query(
       ' select s.id,st.status, ss.id, smt.name, ssd.value from sprint s INNER JOIN sprint_status st ON st.id = s.status INNER JOIN sprint_snapshot ss ON ss.sprint_id = s.id INNER JOIN sprint_snapshot_metric ssd ON ssd.snapshot_id = ss.id LEFT JOIN sprint_metric smt ON smt.id = ssd.metric_id where s.team_id =' +
         teamId +
         ' and s.status = 2 order by ss.date_time desc limit(2)',
     );
-    const previousSprintCompleted = await this.sprintRepository.query('select s.id ,st.status, ss.id, smt.name, ssd.value from sprint s INNER JOIN sprint_status st ON st.id = s.status INNER JOIN sprint_snapshot ss ON ss.sprint_id = s.id INNER JOIN sprint_snapshot_metric ssd ON ssd.snapshot_id = ss.id  LEFT JOIN sprint_metric smt ON smt.id = ssd.metric_id  where s.team_id ='+teamId+ ' and s.status=3 and ssd.metric_id=2 order by s.id')
-    console.log(previousSprintCompleted)
-    let sum =0;
-    for(let i=0; i<previousSprintCompleted.length; i++){
-      sum  = (sum + Number(previousSprintCompleted[i].value));
+    const previousSprintCompleted = await this.sprintRepository.query(
+      'select s.id ,st.status, ss.id, smt.name, ssd.value from sprint s INNER JOIN sprint_status st ON st.id = s.status INNER JOIN sprint_snapshot ss ON ss.sprint_id = s.id INNER JOIN sprint_snapshot_metric ssd ON ssd.snapshot_id = ss.id  LEFT JOIN sprint_metric smt ON smt.id = ssd.metric_id  where s.team_id =' +
+        teamId +
+        ' and s.status=3 and ssd.metric_id=2 order by s.id',
+    );
+    console.log(previousSprintCompleted);
+    let sum = 0;
+    for (let i = 0; i < previousSprintCompleted.length; i++) {
+      sum = sum + Number(previousSprintCompleted[i].value);
     }
-    let avg  = sum/previousSprintCompleted.length;
-     velocityDTO.Avg = avg;
-    if (result[0].name == 'Work Committed') {
-      velocityDTO.Committed = result[0].value;
-      velocityDTO.Completed = result[1].value;
-    } else if ((result[1].name = 'Work Committed')) {
-      velocityDTO.Committed = result[1].value;
-      velocityDTO.Committed = result[0].value;
+    let avg = sum / previousSprintCompleted.length;
+    velocityDTO.Avg = avg;
+    if (sprintMetrics[0].name == 'Work Committed') {
+      velocityDTO.Committed = sprintMetrics[0].value;
+      velocityDTO.Completed = sprintMetrics[1].value;
+    } else if ((sprintMetrics[1].name = 'Work Committed')) {
+      velocityDTO.Committed = sprintMetrics[1].value;
+      velocityDTO.Committed = sprintMetrics[0].value;
     }
     return velocityDTO;
   }
