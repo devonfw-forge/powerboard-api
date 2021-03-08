@@ -50,6 +50,10 @@ export class InsertData1615026834128 implements MigrationInterface {
     await queryRunner.query(`INSERT INTO "sprint_status" ("id","status" ) VALUES (2,'In Progress');`);
 
     await queryRunner.query(`INSERT INTO "sprint_status" ("id","status" ) VALUES (3,'Completed');`);
+
+    await queryRunner.query(
+      `INSERT INTO "sprint" ("id","sprint_number","status" , "start_date","end_date","team_id") VALUES (1, 9, 3,'2021-01-20', '2021-02-04',1);`,
+    );
     await queryRunner.query(
       `INSERT INTO "sprint" ("id","sprint_number","status" , "start_date","end_date","team_id") VALUES (2, 10, 3,'2021-02-10', '2021-02-25',1);`,
     );
@@ -70,7 +74,7 @@ export class InsertData1615026834128 implements MigrationInterface {
     await queryRunner.query(`INSERT INTO "client_status" ("id","client_rating", "sprintId") VALUES (1, 8,3);`);
     await queryRunner.query(`INSERT INTO "client_status" ("id","client_rating", "sprintId") VALUES (2, 7, 2);`);
     await queryRunner.query(`INSERT INTO "client_status" ("id","client_rating", "sprintId") VALUES (3, 5, 4);`);
-
+   
     await queryRunner.query(
       `INSERT INTO "sprint_snapshot" ("id","sprint_id","date_time") VALUES (1001, 3,'2021-02-26');`,
     );
@@ -82,16 +86,19 @@ export class InsertData1615026834128 implements MigrationInterface {
     await queryRunner.query(
       `INSERT INTO "sprint_snapshot" ("id","sprint_id","date_time") VALUES (1003, 5,'2021-03-01');`,
     );
-    // await queryRunner.query(
-    //     `INSERT INTO "sprint_snapshot" ("id","sprint_id","date_time") VALUES (1004, 2,'2021-02-24');`,
-    //   );
+    await queryRunner.query(
+        `INSERT INTO "sprint_snapshot" ("id","sprint_id","date_time") VALUES (1004, 2,'2021-02-24');`,
+      );
+      await queryRunner.query(
+        `INSERT INTO "sprint_snapshot" ("id","sprint_id","date_time") VALUES (1005, 1,'2021-02-03');`,
+      );
 
     await queryRunner.query(
-      `INSERT INTO "sprint_snapshot_metric" ("id","snapshot_id","metric_id","value" ) VALUES (1, 1001,1,100);`,
+      `INSERT INTO "sprint_snapshot_metric" ("id","snapshot_id","metric_id","value" ) VALUES (1, 1001,1,120);`,
     );
 
     await queryRunner.query(
-      `INSERT INTO "sprint_snapshot_metric" ("id","snapshot_id","metric_id","value" ) VALUES (2, 1001,2,50);`,
+      `INSERT INTO "sprint_snapshot_metric" ("id","snapshot_id","metric_id","value" ) VALUES (2, 1001,2,10);`,
     );
 
     await queryRunner.query(
@@ -107,6 +114,18 @@ export class InsertData1615026834128 implements MigrationInterface {
     );
     await queryRunner.query(
       `INSERT INTO "sprint_snapshot_metric" ("id","snapshot_id","metric_id","value" ) VALUES (6, 1003, 2, 60);`,
+    );
+    await queryRunner.query(
+      `INSERT INTO "sprint_snapshot_metric" ("id","snapshot_id","metric_id","value" ) VALUES (7, 1004, 1, 140);`,
+    );
+    await queryRunner.query(
+      `INSERT INTO "sprint_snapshot_metric" ("id","snapshot_id","metric_id","value" ) VALUES (8, 1004, 2, 120);`,
+    );
+    await queryRunner.query(
+      `INSERT INTO "sprint_snapshot_metric" ("id","snapshot_id","metric_id","value" ) VALUES (9, 1005, 1, 120);`,
+    );
+    await queryRunner.query(
+      `INSERT INTO "sprint_snapshot_metric" ("id","snapshot_id","metric_id","value" ) VALUES (10, 1005, 2, 110);`,
     );
 
     await queryRunner.query(`INSERT INTO "user" ("id", "name", "teamId") VALUES (10, 'john',1);`);
