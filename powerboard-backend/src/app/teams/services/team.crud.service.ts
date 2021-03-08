@@ -1,8 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { TypeOrmCrudService } from '@nestjsx/crud-typeorm';
-import { BurndownDTO } from 'src/app/burndown/model/dto/BurndownDTO';
-import { BurndownCrudService } from 'src/app/burndown/services/burndown.crud.services';
+
 import { BusinessUnit } from 'src/app/business-units/model/entities/business-unit.entity';
 import { ClientStatusDTO } from 'src/app/client-status/model/dto/ClientStatusDTO';
 import { ClientStatusCrudService } from 'src/app/client-status/services/client-status.crud.service';
@@ -12,6 +11,10 @@ import { User } from 'src/app/core/user/model/entities/user.entity';
 import { TeamSpiritDTO } from 'src/app/team-spirit/model/dto/TeamSpiritDTO';
 import { TeamSpiritCrudService } from 'src/app/team-spirit/services/team-spirit.crud.service';
 import { Repository } from 'typeorm';
+import { BurndownDTO } from '../../sprint/model/dto/BurndownDTO';
+import { VelocityComaprisonDTO } from '../../sprint/model/dto/VelocityComparisonDTO';
+import { SprintCrudService } from '../../sprint/services/sprint.crud.service';
+
 import { BreadCrumbDTO } from '../model/dto/BreadCrumbDTO';
 
 import { DashBoardDTO } from '../model/dto/DashBoardDTO';
@@ -29,7 +32,7 @@ export class TeamCrudService extends TypeOrmCrudService<Team> {
     private readonly codequalityService: CodeQualitySnapshotCrudService,
     private readonly clientStatusService: ClientStatusCrudService,
     private readonly teamSpiritService: TeamSpiritCrudService,
-    private readonly burndownService:BurndownCrudService
+    private readonly sprintService: SprintCrudService,
   ) {
     super(teamRepository);
   }
@@ -58,22 +61,24 @@ export class TeamCrudService extends TypeOrmCrudService<Team> {
         teams.id,
       )) as ClientStatusDTO;
       this.loginResponse.dashboard.clientStatusDTO = clientStatus;
-      
-      const burndownDTO: BurndownDTO = (await this.burndownService.getBurndown(
-        teams.id,
-      )) as BurndownDTO;
+
+      const burndownDTO: BurndownDTO = (await this.sprintService.getBurndown(teams.id)) as BurndownDTO;
       this.loginResponse.dashboard.burndownDTO = burndownDTO;
 
+      const velocityDTO: VelocityComaprisonDTO = (await this.sprintService.getVelocityComparison(
+        teams.id,
+      )) as VelocityComaprisonDTO;
+      this.loginResponse.dashboard.velocityDTO = velocityDTO;
+
       const teamSpirit: TeamSpiritDTO = (await this.teamSpiritService.getTeamSpirit(teams.id)) as TeamSpiritDTO;
-      
+
       this.loginResponse.dashboard.teamSpiritDTO = teamSpirit;
-      this.chainBU.bu_id = teams.id;
       this.chainBU.bu_name = teams.name;
       this.loginResponse.user_breadCrumb.push(this.chainBU);
       this.chainBU = {} as BreadCrumbDTO;
 
-      let businessUnitsId = teams.businessUnitId.id;
-      let businessUnitsRootParentId = teams.businessUnitId.root_parent_id;
+      let businessUnitsId = teams.business_unit.id;
+      let businessUnitsRootParentId = teams.business_unit.root_parent_id;
 
       // let business:BusinessUnit[]|any =await this.businessRepository.find(businessUnitsRootParentId)
       let business: BusinessUnit[] = await this.businessRepository
@@ -120,11 +125,14 @@ export class TeamCrudService extends TypeOrmCrudService<Team> {
 
     const teamSpirit: TeamSpiritDTO = (await this.teamSpiritService.getTeamSpirit(teamId)) as TeamSpiritDTO;
     this.dash.teamSpiritDTO = teamSpirit;
-    
-    const burndownDTO: BurndownDTO = (await this.burndownService.getBurndown(
-      teamId,
-    )) as BurndownDTO;
+
+    const burndownDTO: BurndownDTO = (await this.sprintService.getBurndown(teamId)) as BurndownDTO;
     this.dash.burndownDTO = burndownDTO;
+
+    const velocityDTO: VelocityComaprisonDTO = (await this.sprintService.getVelocityComparison(
+      teamId,
+    )) as VelocityComaprisonDTO;
+    this.dash.velocityDTO = velocityDTO;
 
     return this.dash;
   }

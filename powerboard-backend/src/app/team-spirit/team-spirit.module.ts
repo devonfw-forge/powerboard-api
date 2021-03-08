@@ -9,6 +9,6 @@ import { Sprint } from '../sprint/model/entities/sprint.entity';
   imports: [TypeOrmModule.forFeature([TeamSpirit, Sprint])],
   providers: [TeamSpiritCrudService],
   controllers: [TeamSpiritCrudController],
-  exports:[TeamSpiritCrudService],
+  exports: [TeamSpiritCrudService],
 })
 export class TeamSpiritModule {}

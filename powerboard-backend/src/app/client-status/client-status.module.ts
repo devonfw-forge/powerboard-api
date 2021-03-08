@@ -6,9 +6,9 @@ import { ClientStatusCrudController } from './controllers/client-status.crud.con
 import { Sprint } from '../sprint/model/entities/sprint.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([ClientStatus,Sprint])],
+  imports: [TypeOrmModule.forFeature([ClientStatus, Sprint])],
   providers: [ClientStatusCrudService],
   controllers: [ClientStatusCrudController],
-  exports :[ClientStatusCrudService],
+  exports: [ClientStatusCrudService],
 })
 export class ClientStatusModule {}

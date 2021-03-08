@@ -4,10 +4,10 @@ import { BaseEntity } from '../../../shared/model/entities/base-entity.entity';
 
 @Entity()
 export class ClientStatus extends BaseEntity {
-    @Column('int', { nullable: false })
-    clientRating!: number;
+  @Column('int', { nullable: false })
+  client_rating!: number;
 
-    @OneToOne(()=>Sprint ,{ eager: true })
-    @JoinColumn({ name: 'sprintId', referencedColumnName: 'id' })
-    sprintId!: Sprint;
+  @OneToOne(() => Sprint, { eager: true })
+  @JoinColumn({ name: 'sprintId', referencedColumnName: 'id' })
+  sprint!: Sprint;
 }

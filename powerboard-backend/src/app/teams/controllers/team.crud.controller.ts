@@ -15,7 +15,7 @@ import { TeamDTO } from '../model/dto/TeamDTO';
 @CrudType(Team)
 @Controller('teams')
 export class TeamCrudController {
-  constructor(public teamService: TeamCrudService) {}
+  constructor(public teamService: TeamCrudService) { }
 
   @Get('user/:id')
   async getDashboardByUserId(@Param('id') userId: number): Promise<LoginResponseDTO> {

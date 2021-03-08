@@ -11,15 +11,15 @@ export class CodeQualitySnapshot extends BaseEntity {
   debt!: number;
 
   @Column('int', { nullable: false })
-  codeCoverage!: number;
+  code_coverage!: number;
 
   @Column('varchar', { length: 255, nullable: false })
   status!: string;
 
   @ManyToOne(() => Team, { eager: false })
-  @JoinColumn({ name: 'teamId', referencedColumnName: 'id' })
-  teamId!: Team;
+  @JoinColumn({ name: 'team_id', referencedColumnName: 'id' })
+  team!: Team;
 
   @Column('timestamp', { nullable: false })
-  snapshotTime!: string;
+  snapshot_time!: string;
 }

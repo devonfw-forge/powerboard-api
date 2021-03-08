@@ -12,24 +12,21 @@ export class CodeQualitySnapshotCrudService extends TypeOrmCrudService<CodeQuali
   ) {
     super(codeQualityRepository);
   }
-    qualityDTO :CodeQualityDTO = new CodeQualityDTO();
-  async getCodeQualitySnapshot(id:number):Promise<CodeQualityDTO>{
-   // const result = await this.codeQualityRepository.find({where :{teamId:id}}) 
-   //const result =await this.codeQualityRepository.query(" SELECT * FROM code_quality_snapshot ORDER BY codeQualityTime DESC LIMIT 1 where teamId:"+id);
-     const result = await this.codeQualityRepository.createQueryBuilder("code_quality_snapshot")
-                                                     .where("code_quality_snapshot.teamId=:teamId" ,{teamId:id})
-                                                     .orderBy("code_quality_snapshot.snapshotTime","DESC")
-                                                     .limit(1).getOne();
-              
-       this.qualityDTO.bugs = result!.bugs
-     this.qualityDTO.debt= result!.debt;
-     this.qualityDTO.codeCoverage = result!.codeCoverage;
-     this.qualityDTO.status = result!.status;
-   
-     console.log(this.qualityDTO)
-     return this.qualityDTO;
+  qualityDTO: CodeQualityDTO = new CodeQualityDTO();
+  async getCodeQualitySnapshot(id: number): Promise<CodeQualityDTO> {
+    
+    const result = await this.codeQualityRepository
+      .createQueryBuilder('code_quality_snapshot')
+      .where('code_quality_snapshot.team_id=:team_id', { team_id: id })
+      .orderBy('code_quality_snapshot.snapshot_time', 'DESC')
+      .limit(1)
+      .getOne();
 
+    this.qualityDTO.bugs = result!.bugs;
+    this.qualityDTO.debt = result!.debt;
+    this.qualityDTO.codeCoverage = result!.code_coverage;
+    this.qualityDTO.status = result!.status;
 
-
+    return this.qualityDTO;
   }
 }
