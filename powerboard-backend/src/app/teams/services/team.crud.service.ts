@@ -143,12 +143,41 @@ export class TeamCrudService extends TypeOrmCrudService<Team> {
     let teamsDTO = new TeamDTO();
     let teamsDTOArray = [];
     let i;
+  
+    let result = new DashBoardDTO();
     for (i = 0; i < teams.length; i++) {
       teamsDTO.teamId = teams[i].id;
       teamsDTO.teamName = teams[i].name;
+       result = await this.getDashboardByTeamId(teams[i].id) as DashBoardDTO
+       teamsDTO.status = this.fetchStatus(result);
       teamsDTOArray.push(teamsDTO);
       teamsDTO = {} as TeamDTO;
     }
     return teamsDTOArray;
   }
+     
+     fetchStatus(result:DashBoardDTO):any{
+      let statusResult ='';
+    const codeQualityStatus  = result.codeQualityDTO.status;
+    const teamSpiritStatus = result.teamSpiritDTO.teamSpiritRating;
+    const clientStatus = result.clientStatusDTO.clientSatisfactionRating;
+    const burndownStatus = result.burndownDTO.burndownStatus;
+    console.log(burndownStatus)
+    console.log(teamSpiritStatus)
+    console.log(codeQualityStatus)
+    if(clientStatus>6)
+    {
+     statusResult ='On Track'
+    }
+    else if(clientStatus<6)
+    {
+      statusResult='Potential Risks'
+    }
+    else 
+    {
+      statusResult ='Off Track'
+    }
+    return statusResult;
+  }
+  
 }

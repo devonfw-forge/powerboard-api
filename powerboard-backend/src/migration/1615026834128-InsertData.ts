@@ -31,7 +31,7 @@ export class InsertData1615026834128 implements MigrationInterface {
 
     await queryRunner.query(`INSERT INTO "team" ("id", "name", "business_unit_id") VALUES (1 ,'Diamler Devops',4);`);
     await queryRunner.query(`INSERT INTO "team" ("id", "name", "business_unit_id") VALUES (3 ,'Devon',14);`);
-    await queryRunner.query(`INSERT INTO "team" ("id", "name", "business_unit_id" ) VALUES (2 ,'IKEA',14);`);
+    await queryRunner.query(`INSERT INTO "team" ("id", "name", "business_unit_id" ) VALUES (2 ,'IKEA',13);`);
 
     await queryRunner.query(
       `INSERT INTO "code_quality_snapshot" ("id", "bugs", "debt", "code_coverage" ,"status","team_id" ,"snapshot_time") VALUES (10 ,5, 21, 80,'PASSED',2,'2021-02-15 02:10:55');`,
