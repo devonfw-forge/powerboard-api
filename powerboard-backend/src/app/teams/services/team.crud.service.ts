@@ -138,7 +138,7 @@ export class TeamCrudService extends TypeOrmCrudService<Team> {
   }
 
   async getTeamsByBUId(BU_id: number): Promise<TeamDTO[]> {
-    const teams: Team[] = await this.teamRepository.find({ where: { businessUnitId: BU_id } });
+    const teams: Team[] = await this.teamRepository.find({ where: { business_unit: BU_id } });
     console.log(teams);
     let teamsDTO = new TeamDTO();
     let teamsDTOArray = [];
