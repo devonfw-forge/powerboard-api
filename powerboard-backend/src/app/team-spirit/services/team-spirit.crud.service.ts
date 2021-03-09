@@ -15,10 +15,10 @@ export class TeamSpiritCrudService extends TypeOrmCrudService<TeamSpirit> {
     super(teamSpiritRepository);
   }
   teamSpiritDTO: TeamSpiritDTO = new TeamSpiritDTO();
-  async getTeamSpirit(id: number): Promise<TeamSpiritDTO> {
+  async getTeamSpirit(team_Id: number): Promise<TeamSpiritDTO> {
     const result = await this.sprintRepository
       .createQueryBuilder('sprint')
-      .where('sprint.team_id=:team_id', { team_id: id })
+      .where('sprint.team_id=:team_id', { team_id: team_Id })
       .orderBy('sprint.sprint_number', 'DESC')
       .skip(1)
       .take(1)

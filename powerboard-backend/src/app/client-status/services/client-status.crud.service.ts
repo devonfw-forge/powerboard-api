@@ -15,10 +15,10 @@ export class ClientStatusCrudService extends TypeOrmCrudService<ClientStatus> {
     super(clientRepository);
   }
   clientStatusDTO: ClientStatusDTO = new ClientStatusDTO();
-  async getClientFeedback(id: number): Promise<ClientStatusDTO> {
+  async getClientFeedback(team_Id: number): Promise<ClientStatusDTO> {
     const result = await this.sprintRepository
       .createQueryBuilder('sprint')
-      .where('sprint.team_id=:team_id', { team_id: id })
+      .where('sprint.team_id=:team_id', { team_id: team_Id })
       .orderBy('sprint.sprint_number', 'DESC')
       .skip(1)
       .take(1)

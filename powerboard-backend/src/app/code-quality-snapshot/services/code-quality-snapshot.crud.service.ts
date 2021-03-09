@@ -13,11 +13,10 @@ export class CodeQualitySnapshotCrudService extends TypeOrmCrudService<CodeQuali
     super(codeQualityRepository);
   }
   qualityDTO: CodeQualityDTO = new CodeQualityDTO();
-  async getCodeQualitySnapshot(id: number): Promise<CodeQualityDTO> {
-    
+  async getCodeQualitySnapshot(team_Id: number): Promise<CodeQualityDTO> {
     const result = await this.codeQualityRepository
       .createQueryBuilder('code_quality_snapshot')
-      .where('code_quality_snapshot.team_id=:team_id', { team_id: id })
+      .where('code_quality_snapshot.team_id=:team_id', { team_id: team_Id })
       .orderBy('code_quality_snapshot.snapshot_time', 'DESC')
       .limit(1)
       .getOne();

@@ -12,7 +12,7 @@ import { TeamSpiritDTO } from 'src/app/team-spirit/model/dto/TeamSpiritDTO';
 import { TeamSpiritCrudService } from 'src/app/team-spirit/services/team-spirit.crud.service';
 import { Repository } from 'typeorm';
 import { BurndownDTO } from '../../sprint/model/dto/BurndownDTO';
-import { VelocityComaprisonDTO } from '../../sprint/model/dto/VelocityComparisonDTO';
+import { VelocityComparisonDTO } from '../../sprint/model/dto/VelocityComparisonDTO';
 import { SprintCrudService } from '../../sprint/services/sprint.crud.service';
 
 import { BreadCrumbDTO } from '../model/dto/BreadCrumbDTO';
@@ -65,10 +65,10 @@ export class TeamCrudService extends TypeOrmCrudService<Team> {
       const burndownDTO: BurndownDTO = (await this.sprintService.getBurndown(teams.id)) as BurndownDTO;
       this.loginResponse.dashboard.burndownDTO = burndownDTO;
 
-      const velocityDTO: VelocityComaprisonDTO = (await this.sprintService.getVelocityComparison(
+      const velocityComparisonDTO: VelocityComparisonDTO = (await this.sprintService.getVelocityComparison(
         teams.id,
-      )) as VelocityComaprisonDTO;
-      this.loginResponse.dashboard.velocityDTO = velocityDTO;
+      )) as VelocityComparisonDTO;
+      this.loginResponse.dashboard.velocityDTO = velocityComparisonDTO;
 
       const teamSpirit: TeamSpiritDTO = (await this.teamSpiritService.getTeamSpirit(teams.id)) as TeamSpiritDTO;
 
@@ -129,10 +129,10 @@ export class TeamCrudService extends TypeOrmCrudService<Team> {
     const burndownDTO: BurndownDTO = (await this.sprintService.getBurndown(teamId)) as BurndownDTO;
     this.dash.burndownDTO = burndownDTO;
 
-    const velocityDTO: VelocityComaprisonDTO = (await this.sprintService.getVelocityComparison(
+    const velocityComparisonDTO: VelocityComparisonDTO = (await this.sprintService.getVelocityComparison(
       teamId,
-    )) as VelocityComaprisonDTO;
-    this.dash.velocityDTO = velocityDTO;
+    )) as VelocityComparisonDTO;
+    this.dash.velocityDTO = velocityComparisonDTO;
 
     return this.dash;
   }
