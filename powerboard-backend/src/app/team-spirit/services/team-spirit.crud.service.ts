@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { TypeOrmCrudService } from '@nestjsx/crud-typeorm';
 import { Repository } from 'typeorm';
 import { Sprint } from '../../sprint/model/entities/sprint.entity';
-import { TeamSpiritDTO } from '../model/dto/TeamSpiritDTO';
+import { TeamSpiritResponse } from '../model/dto/TeamSpiritResponse';
 import { TeamSpirit } from '../model/entities/team-spirit.entity';
 
 @Injectable()
@@ -14,8 +14,8 @@ export class TeamSpiritCrudService extends TypeOrmCrudService<TeamSpirit> {
   ) {
     super(teamSpiritRepository);
   }
-  teamSpiritDTO: TeamSpiritDTO = new TeamSpiritDTO();
-  async getTeamSpirit(team_Id: number): Promise<TeamSpiritDTO> {
+  teamSpiritResponse: TeamSpiritResponse={} as TeamSpiritResponse
+  async getTeamSpirit(team_Id: number): Promise<TeamSpiritResponse> {
     const result = await this.sprintRepository
       .createQueryBuilder('sprint')
       .where('sprint.team_id=:team_id', { team_id: team_Id })
@@ -28,8 +28,8 @@ export class TeamSpiritCrudService extends TypeOrmCrudService<TeamSpirit> {
       .where('team_spirit.sprint_id=:sprint_id', { sprint_id: result!.id })
       .limit(1)
       .getOne()) as TeamSpirit;
-    this.teamSpiritDTO.teamSpiritRating = teamSpirit.team_spirit_rating;
-    this.teamSpiritDTO.sprintNumber = result!.sprint_number;
-    return this.teamSpiritDTO;
+    this.teamSpiritResponse.teamSpiritRating = teamSpirit.team_spirit_rating;
+    this.teamSpiritResponse.sprintNumber = result!.sprint_number;
+    return this.teamSpiritResponse;
   }
 }

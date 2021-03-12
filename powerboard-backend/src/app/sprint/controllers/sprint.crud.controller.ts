@@ -3,8 +3,8 @@ import { Crud } from '@nestjsx/crud';
 import { CrudType } from '@devon4node/common/serializer';
 import { Sprint } from '../model/entities/sprint.entity';
 import { SprintCrudService } from '../services/sprint.crud.service';
-import { BurndownDTO } from '../model/dto/BurndownDTO';
-import { VelocityComparisonDTO } from '../model/dto/VelocityComparisonDTO';
+import { BurndownResponse } from '../model/dto/BurndownResponse';
+import { VelocityComparisonResponse } from '../model/dto/VelocityComparisonResponse';
 
 @Crud({
   model: {
@@ -16,12 +16,12 @@ import { VelocityComparisonDTO } from '../model/dto/VelocityComparisonDTO';
 export class SprintCrudController {
   constructor(public service: SprintCrudService) {}
   @Get('burndown/demo/:id')
-  async getBurndown(@Param('id') teamId: number): Promise<BurndownDTO> {
+  async getBurndown(@Param('id') teamId: number): Promise<BurndownResponse> {
     return await this.service.getBurndown(teamId);
   }
 
   @Get('velocity/demo/:id')
-  async getVelocityComparison(@Param('id') teamId: number): Promise<VelocityComparisonDTO> {
+  async getVelocityComparison(@Param('id') teamId: number): Promise<VelocityComparisonResponse> {
     return await this.service.getVelocityComparison(teamId);
   }
 }

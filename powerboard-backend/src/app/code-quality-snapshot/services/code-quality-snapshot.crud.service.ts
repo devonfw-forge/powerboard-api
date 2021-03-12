@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { TypeOrmCrudService } from '@nestjsx/crud-typeorm';
 import { Repository } from 'typeorm';
-import { CodeQualityDTO } from '../model/dto/CodeQualityDTO';
+import { CodeQualityResponse } from '../model/dto/CodeQualityResponse';
 import { CodeQualitySnapshot } from '../model/entities/code-quality-snapshot.entity';
 
 @Injectable()
@@ -12,8 +12,8 @@ export class CodeQualitySnapshotCrudService extends TypeOrmCrudService<CodeQuali
   ) {
     super(codeQualityRepository);
   }
-  qualityDTO: CodeQualityDTO = new CodeQualityDTO();
-  async getCodeQualitySnapshot(team_Id: number): Promise<CodeQualityDTO> {
+  codeQualityResponse: CodeQualityResponse ={} as CodeQualityResponse
+  async getCodeQualitySnapshot(team_Id: number): Promise<CodeQualityResponse> {
     const result = await this.codeQualityRepository
       .createQueryBuilder('code_quality_snapshot')
       .where('code_quality_snapshot.team_id=:team_id', { team_id: team_Id })
@@ -21,11 +21,11 @@ export class CodeQualitySnapshotCrudService extends TypeOrmCrudService<CodeQuali
       .limit(1)
       .getOne();
 
-    this.qualityDTO.bugs = result!.bugs;
-    this.qualityDTO.debt = result!.debt;
-    this.qualityDTO.codeCoverage = result!.code_coverage;
-    this.qualityDTO.status = result!.status;
+    this.codeQualityResponse.bugs = result!.bugs;
+    this.codeQualityResponse.debt = result!.debt;
+    this.codeQualityResponse.codeCoverage = result!.code_coverage;
+    this.codeQualityResponse.status = result!.status;
 
-    return this.qualityDTO;
+    return this.codeQualityResponse;
   }
 }

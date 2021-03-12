@@ -2,6 +2,7 @@ import { Team } from 'src/app/teams/model/entities/team.entity';
 import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
 import { BaseEntity } from '../../../shared/model/entities/base-entity.entity';
 import { SprintStatus } from './sprint_status.entity';
+import { SprintWorkUnit } from './sprint_work_unit.entity';
 
 @Entity()
 export class Sprint extends BaseEntity {
@@ -22,7 +23,7 @@ export class Sprint extends BaseEntity {
   @JoinColumn({ name: 'team_id', referencedColumnName: 'id' })
   team!: Team;
 
-  // @OneToMany(() => SprintSnapshot, snapshot => snapshot.sprint)
-  // @JoinColumn({ name: 'id', referencedColumnName: 'sprintId' })
-  // sprintSnapshot!: SprintSnapshot[];
+  @ManyToOne(() => SprintWorkUnit, { eager: false})
+  @JoinColumn({ name: 'work_unit', referencedColumnName: 'id' })
+  work_unit!: number;
 }

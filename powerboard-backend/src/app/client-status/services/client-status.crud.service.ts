@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { TypeOrmCrudService } from '@nestjsx/crud-typeorm';
 import { Sprint } from 'src/app/sprint/model/entities/sprint.entity';
 import { Repository } from 'typeorm';
-import { ClientStatusDTO } from '../model/dto/ClientStatusDTO';
+import { ClientStatusResponse } from '../model/dto/ClientStatusResponse';
 import { ClientStatus } from '../model/entities/client-status.entity';
 
 @Injectable()
@@ -14,8 +14,8 @@ export class ClientStatusCrudService extends TypeOrmCrudService<ClientStatus> {
   ) {
     super(clientRepository);
   }
-  clientStatusDTO: ClientStatusDTO = new ClientStatusDTO();
-  async getClientFeedback(team_Id: number): Promise<ClientStatusDTO> {
+  clientStatus: ClientStatusResponse ={} as ClientStatusResponse ;
+  async getClientFeedback(team_Id: number): Promise<ClientStatusResponse> {
     const result = await this.sprintRepository
       .createQueryBuilder('sprint')
       .where('sprint.team_id=:team_id', { team_id: team_Id })
@@ -28,10 +28,8 @@ export class ClientStatusCrudService extends TypeOrmCrudService<ClientStatus> {
       .where('client_status.sprintId=:sprintId', { sprintId: result!.id })
       .limit(1)
       .getOne()) as ClientStatus;
-    console.log(clientStatus);
-
-    this.clientStatusDTO.clientSatisfactionRating = clientStatus.client_rating;
-    this.clientStatusDTO.sprintNumber = result!.sprint_number;
-    return this.clientStatusDTO;
+    this.clientStatus.clientSatisfactionRating = clientStatus.client_rating;
+    this.clientStatus.sprintNumber = result!.sprint_number;
+    return this.clientStatus!;
   }
 }
