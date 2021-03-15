@@ -74,8 +74,8 @@ export class InsertData1615556548916 implements MigrationInterface {
           await queryRunner.query(`INSERT INTO "team_spirit" ("id","team_spirit_rating", "sprint_id") VALUES (3, 7, 4);`);
       
           await queryRunner.query(`INSERT INTO "client_status" ("id","client_rating", "sprintId") VALUES (1, 8,3);`);
-          await queryRunner.query(`INSERT INTO "client_status" ("id","client_rating", "sprintId") VALUES (2, 7, 2);`);
-          await queryRunner.query(`INSERT INTO "client_status" ("id","client_rating", "sprintId") VALUES (3, 5, 4);`);
+          await queryRunner.query(`INSERT INTO "client_status" ("id","client_rating", "sprintId") VALUES (2, 5, 2);`);
+          await queryRunner.query(`INSERT INTO "client_status" ("id","client_rating", "sprintId") VALUES (3, 7, 4);`);
          
           await queryRunner.query(
             `INSERT INTO "sprint_snapshot" ("id","sprint_id","date_time") VALUES (1001, 3,'2021-03-11');`,
@@ -111,14 +111,14 @@ export class InsertData1615556548916 implements MigrationInterface {
           );
       
           await queryRunner.query(
-            `INSERT INTO "sprint_snapshot_metric" ("id","snapshot_id","metric_id","value" ) VALUES (4, 1002,2,13);`,
+            `INSERT INTO "sprint_snapshot_metric" ("id","snapshot_id","metric_id","value" ) VALUES (4, 1002,2,38);`,
           );
       
           await queryRunner.query(
-            `INSERT INTO "sprint_snapshot_metric" ("id","snapshot_id","metric_id","value" ) VALUES (5, 1003, 1, 100);`,
+            `INSERT INTO "sprint_snapshot_metric" ("id","snapshot_id","metric_id","value" ) VALUES (5, 1003, 1, 210);`,
           );
           await queryRunner.query(
-            `INSERT INTO "sprint_snapshot_metric" ("id","snapshot_id","metric_id","value" ) VALUES (6, 1003, 2, 60);`,
+            `INSERT INTO "sprint_snapshot_metric" ("id","snapshot_id","metric_id","value" ) VALUES (6, 1003, 2, 74);`,
           );
           await queryRunner.query(
             `INSERT INTO "sprint_snapshot_metric" ("id","snapshot_id","metric_id","value" ) VALUES (7, 1004, 1, 140);`,
