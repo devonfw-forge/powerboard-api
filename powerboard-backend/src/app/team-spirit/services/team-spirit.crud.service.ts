@@ -15,6 +15,11 @@ export class TeamSpiritCrudService extends TypeOrmCrudService<TeamSpirit> {
     super(teamSpiritRepository);
   }
   teamSpiritResponse: TeamSpiritResponse={} as TeamSpiritResponse
+   /**
+  * getTeamSpirit method will fetch the spirit of team
+  * @param {teamId} ,Takes teamId as input
+  * @return {TeamSpiritResponse} TeamSpirit as response for that team's previous sprint
+  */
   async getTeamSpirit(team_Id: number): Promise<TeamSpiritResponse> {
     const result = await this.sprintRepository
       .createQueryBuilder('sprint')

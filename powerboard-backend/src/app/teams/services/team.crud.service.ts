@@ -40,7 +40,7 @@ export class TeamCrudService extends TypeOrmCrudService<Team> {
 
   /**
   * getDashboardByUserId method will retrieve all KPI's +breadcrumb + dump_BU
-  * @param {userId} it takes userId as input
+  * @param {userId} .Takes userId as input
   * @return {LoginResponse} Dashboard as well as breadcrumb and dumb BU List
   */
   async getDashboardByUserId(userId: number): Promise<LoginResponse> {
@@ -143,8 +143,8 @@ export class TeamCrudService extends TypeOrmCrudService<Team> {
 
   /**
   * fetchstatus method will fetch the status of all respective KPI's of dashboard
-  * @param {dashboard} it takes dashboard object as input
-  * @return {number} as status value
+  * @param {dashboard} , takes dashboard object as input
+  * @return {number} number as status value
   */
   fetchStatus(dashboard: DashBoardResponse): number {
     let statusResult;

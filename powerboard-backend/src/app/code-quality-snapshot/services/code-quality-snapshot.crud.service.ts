@@ -12,6 +12,11 @@ export class CodeQualitySnapshotCrudService extends TypeOrmCrudService<CodeQuali
   ) {
     super(codeQualityRepository);
   }
+   /**
+  * getCodeQuality method will fetch the quality of code  
+  * @param {teamId} .Takes teamId as input
+  * @return {CodeQualityResponse} Code Quality as response for that team 
+  */
   codeQualityResponse: CodeQualityResponse ={} as CodeQualityResponse
   async getCodeQualitySnapshot(team_Id: number): Promise<CodeQualityResponse> {
     const result = await this.codeQualityRepository

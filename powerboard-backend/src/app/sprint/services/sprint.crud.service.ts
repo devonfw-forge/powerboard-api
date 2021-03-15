@@ -13,6 +13,11 @@ export class SprintCrudService extends TypeOrmCrudService<Sprint> {
     super(sprintRepository);
   }
 
+   /**
+  * getSprintDetailResponse method will fetch the current sprint details
+  * @param {teamId} ,Takes teamId as input
+  * @return {SprintDetailResponse} SprintDetail as response 
+  */
   async getSprintDetailResponse(teamId: number): Promise<SprintDetailResponse> {
     let sprintDetailResponse: SprintDetailResponse = {} as SprintDetailResponse;
     const result = await this.sprintRepository.query(
@@ -34,6 +39,11 @@ export class SprintCrudService extends TypeOrmCrudService<Sprint> {
   }
 
   burndownResponse: BurndownResponse = {} as BurndownResponse;
+   /**
+  * getBurndown method will retrieve the burndown report of current sprint
+  * @param {teamId} .Takes teamId as input
+  * @return {BurndownResponse} Burndown as response for that team's current sprint
+  */
   async getBurndown(teamId: number): Promise<BurndownResponse> {
     let output: BurndownResponse = {} as BurndownResponse;
     const result = await this.sprintRepository.query(
@@ -59,6 +69,11 @@ export class SprintCrudService extends TypeOrmCrudService<Sprint> {
     return output;
   }
 
+   /**
+  * calculateBurndownFirstCase method will retrieve the burndown report of current sprint if at 0 index , there is 'Work Committed'
+  * @param {result, totalDays, currentDay} .Takes these parameter as input
+  * @return {BurndownResponse} Burndown as response for that team's current sprint
+  */
   calculateBurnDownFirstCase(result: any, totalDays: number, currentDay: number): BurndownResponse {
     if (Number(result[0].value) > Number(result[1].value)) {
       this.burndownResponse.workUnit = result[0].work_unit;
@@ -79,6 +94,11 @@ export class SprintCrudService extends TypeOrmCrudService<Sprint> {
     return this.burndownResponse;
   }
 
+   /**
+  * calculateBurndownSecondCase method will retrieve the burndown report of current sprint if at 0 index , there is 'Work Completed'
+  * @param {result, totalDays, currentDay} .Takes these parameter as input
+  * @return {BurndownResponse} Burndown as response for that team's current sprint
+  */
   calculateBurnDownSecondCase(result: any, totalDays: number, currentDay: number): BurndownResponse {
     if (Number(result[0].value) < Number(result[1].value)) {
       this.burndownResponse.workUnit = result[0].work_unit;
@@ -99,6 +119,11 @@ export class SprintCrudService extends TypeOrmCrudService<Sprint> {
     return this.burndownResponse;
   }
 
+   /**
+  * getVelocityComparison method will retrieve the velocity report of current sprint
+  * @param {teamId} .Takes teamId as input
+  * @return {VelocityComparisonResponse} VelocityComparison as response for that team's current sprint
+  */
   async getVelocityComparison(teamId: number): Promise<VelocityComparisonResponse> {
     let velocityComparisonResponse = {} as VelocityComparisonResponse;
     const sprintMetricsResponse = await this.sprintRepository.query(
