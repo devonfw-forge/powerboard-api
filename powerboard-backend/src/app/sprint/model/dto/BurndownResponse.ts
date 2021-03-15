@@ -3,5 +3,5 @@ export interface BurndownResponse {
   remainingWork: number;
   remainingDays: number;
   count: number;
- 
+  workUnit: number;
 }
