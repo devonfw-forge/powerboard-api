@@ -62,24 +62,7 @@ export class TeamCrudService extends TypeOrmCrudService<Team> {
         .where('businessUnit.root_parent_id=:root_parent_id', { root_parent_id: businessUnitsRootParentId })
         .getMany();
          this.loginResponse.user_breadCrumb = this.getBUOrder(business , businessUnitsId);
-      // let i, nextParentId = 0;
-      // let iterate: Boolean = true;
-      // while (iterate) {
-      //   for (i = 0; i < business.length; i++) {
-      //     if (businessUnitsId == business[i].id) {
-      //       this.chainBU.bu_id = business[i].id;
-      //       this.chainBU.bu_name = business[i].name;
-      //       this.loginResponse.user_breadCrumb.push(this.chainBU);
-      //       this.chainBU = {} as BreadCrumbResponse;
-      //       nextParentId = business[i].parent_id;
-      //       if (business[i].parent_id == business[i].id) {
-      //         iterate = false;
-      //         break;
-      //       }
-      //     }
-      //   }
-      //   businessUnitsId = nextParentId;
-      // }
+      
       this.loginResponse.user_breadCrumb.reverse();
       this.loginResponse.dump_businessUnit = business;
       return this.loginResponse;
