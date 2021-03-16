@@ -41,9 +41,9 @@ export class SprintCrudService extends TypeOrmCrudService<Sprint> {
   burndownResponse: BurndownResponse = {} as BurndownResponse;
    /**
   * getBurndown method will retrieve the burndown report of current sprint
-  * @param {teamId} .Takes teamId as input
+  * @param {teamId} teamId Takes teamId as input
   * @return {BurndownResponse} Burndown as response for that team's current sprint
-  */
+  */ 
   async getBurndown(teamId: number): Promise<BurndownResponse> {
     let output: BurndownResponse = {} as BurndownResponse;
     const result = await this.sprintRepository.query(
@@ -51,7 +51,6 @@ export class SprintCrudService extends TypeOrmCrudService<Sprint> {
         teamId +
         ' and s.status = 2 order by ss.date_time desc limit(2)',
     );
-    console.log(result);
     const start_date = new Date(result[0].start_date);
     const end_date = new Date(result[0].end_date);
     const diff = Math.abs(new Date().getTime() - start_date.getTime());
@@ -59,10 +58,9 @@ export class SprintCrudService extends TypeOrmCrudService<Sprint> {
     const currentDay = Math.ceil(diff / (1000 * 60 * 60 * 24));
     const totalDays = Math.ceil(diff1 / (1000 * 60 * 60 * 24));
     if (result[0].name == 'Work Committed') {
-      output = this.calculateBurnDownFirstCase(result, totalDays, currentDay);
-      console.log(output);
+                   return this.calculateBurnDownFirstCase(result, totalDays, currentDay);
     } else if (result[0].name == 'Work Completed') {
-      output = this.calculateBurnDownSecondCase(result, totalDays, currentDay);
+                   return this.calculateBurnDownSecondCase(result, totalDays, currentDay);
     } else {
       console.log('work spillover');
     }
@@ -81,19 +79,12 @@ export class SprintCrudService extends TypeOrmCrudService<Sprint> {
       this.burndownResponse.remainingWork = result[0].value - result[1].value;
       const ideal = Math.round((result[0].value / totalDays) * currentDay);
       const actual = result[1].value;
-      if (ideal > actual) {
-        this.burndownResponse.count = ideal - actual;
-        this.burndownResponse.burndownStatus = 'Behind Time';
-      } else if (ideal == actual) {
-        this.burndownResponse.burndownStatus = 'On Time';
-      } else {
-        this.burndownResponse.count = actual - ideal;
-        this.burndownResponse.burndownStatus = 'Ahead Time';
-      }
+      this.burndownResponse = this.getBurndownStatus(ideal, actual);
     }
     return this.burndownResponse;
-  }
-
+  } 
+  
+   
    /**
   * calculateBurndownSecondCase method will retrieve the burndown report of current sprint if at 0 index , there is 'Work Completed'
   * @param {result, totalDays, currentDay} .Takes these parameter as input
@@ -106,50 +97,80 @@ export class SprintCrudService extends TypeOrmCrudService<Sprint> {
       this.burndownResponse.remainingWork = result[1].value - result[0].value;
       const ideal = Math.round((result[1].value / totalDays) * currentDay);
       const actual = result[0].value;
-      if (ideal > actual) {
-        this.burndownResponse.count = ideal - actual;
-        this.burndownResponse.burndownStatus = 'Behind Time';
-      } else if (ideal == actual) {
-        this.burndownResponse.burndownStatus = 'On Time';
-      } else {
-        this.burndownResponse.count = actual - ideal;
-        this.burndownResponse.burndownStatus = 'Ahead Time';
-      }
+      this.burndownResponse = this.getBurndownStatus(ideal, actual)
     }
     return this.burndownResponse;
   }
+  
+   /**
+  * getBurndownStatus method will fetch the status
+  * @param {ideal, actual} .Takes Ideal and actual rate as input
+  * @return {BurndownResponse} Burndown as response for that team's current sprint status
+  */
+ getBurndownStatus(ideal:number , actual:number):BurndownResponse{
+  if (ideal > actual) {
+    this.burndownResponse.count = ideal - actual;
+    this.burndownResponse.burndownStatus = 'Behind Time';
+  } else if (ideal == actual) {
+    this.burndownResponse.burndownStatus = 'On Time';
+  } else {
+    this.burndownResponse.count = actual - ideal;
+    this.burndownResponse.burndownStatus = 'Ahead Time';
+  }
+  return this.burndownResponse;
+}
 
+ velocityComparisonResponse = {} as VelocityComparisonResponse;
    /**
   * getVelocityComparison method will retrieve the velocity report of current sprint
-  * @param {teamId} .Takes teamId as input
+  * @param {teamId} teamId Takes teamId as input
   * @return {VelocityComparisonResponse} VelocityComparison as response for that team's current sprint
-  */
+  */   
   async getVelocityComparison(teamId: number): Promise<VelocityComparisonResponse> {
-    let velocityComparisonResponse = {} as VelocityComparisonResponse;
     const sprintMetricsResponse = await this.sprintRepository.query(
       ' select s.id,st.status, ss.id, smt.name, ssd.value from sprint s INNER JOIN sprint_status st ON st.id = s.status INNER JOIN sprint_snapshot ss ON ss.sprint_id = s.id INNER JOIN sprint_snapshot_metric ssd ON ssd.snapshot_id = ss.id LEFT JOIN sprint_metric smt ON smt.id = ssd.metric_id where s.team_id =' +
         teamId +
         ' and s.status = 2 order by ss.date_time desc limit(2)',
-    );
+    ) ;
     const previousSprintCompleted = await this.sprintRepository.query(
       'select s.id ,st.status, ss.id, smt.name, ssd.value from sprint s INNER JOIN sprint_status st ON st.id = s.status INNER JOIN sprint_snapshot ss ON ss.sprint_id = s.id INNER JOIN sprint_snapshot_metric ssd ON ssd.snapshot_id = ss.id  LEFT JOIN sprint_metric smt ON smt.id = ssd.metric_id  where s.team_id =' +
         teamId +
         ' and s.status=3 and ssd.metric_id=2 order by s.id',
-    );
-    console.log(previousSprintCompleted);
-    let sum = 0;
+    ) ;
+      this.velocityComparisonResponse.Avg = this.getAverageVelocity(previousSprintCompleted)
+      this.velocityComparisonResponse = this.getVelocityData(sprintMetricsResponse)
+      return this.velocityComparisonResponse;
+  }
+
+
+  /**
+  * getAverageVelocity method will calculate the average velocity 
+  * @param {previousSprintCompleted} previousSprintCompleted Takes these parameters as input
+  * @return {VelocityComparisonResponse} Average velocity as response 
+  */
+    getAverageVelocity(previousSprintCompleted:any):number{
+     let sum = 0;
     for (let i = 0; i < previousSprintCompleted.length; i++) {
       sum = sum + Number(previousSprintCompleted[i].value);
     }
     let avg = sum / previousSprintCompleted.length;
-    velocityComparisonResponse.Avg = avg;
-    if (sprintMetricsResponse[0].name == 'Work Committed') {
-      velocityComparisonResponse.Committed = sprintMetricsResponse[0].value;
-      velocityComparisonResponse.Completed = sprintMetricsResponse[1].value;
-    } else if ((sprintMetricsResponse[1].name = 'Work Committed')) {
-      velocityComparisonResponse.Committed = sprintMetricsResponse[1].value;
-      velocityComparisonResponse.Committed = sprintMetricsResponse[0].value;
+    return avg;
     }
-    return velocityComparisonResponse;
-  }
+ 
+     /**
+  * getVelocityData method will fetch current sprints data
+  * @param {sprintMetricResponse} sprintMetricsResponse Takes as input
+  * @return {VelocityComparisonResponse} current sprint committed and completed as response 
+  */
+    getVelocityData(sprintMetricsResponse:any):VelocityComparisonResponse{
+    if (sprintMetricsResponse[0].name == 'Work Committed') {
+      this.velocityComparisonResponse.Committed = sprintMetricsResponse[0].value;
+      this.velocityComparisonResponse.Completed = sprintMetricsResponse[1].value;
+    } else if ((sprintMetricsResponse[1].name = 'Work Committed')) {
+      this.velocityComparisonResponse.Committed = sprintMetricsResponse[1].value;
+      this.velocityComparisonResponse.Committed = sprintMetricsResponse[0].value;
+    }
+        return this.velocityComparisonResponse;
+      }
+
 }

@@ -40,7 +40,7 @@ export class TeamCrudService extends TypeOrmCrudService<Team> {
 
   /**
   * getDashboardByUserId method will retrieve all KPI's +breadcrumb + dump_BU
-  * @param {userId} .Takes userId as input
+  * @param {userId} userId Takes userId as input
   * @return {LoginResponse} Dashboard as well as breadcrumb and dumb BU List
   */
   async getDashboardByUserId(userId: number): Promise<LoginResponse> {
@@ -51,39 +51,35 @@ export class TeamCrudService extends TypeOrmCrudService<Team> {
       const teams: Team = (await this.teamRepository.findOne({ where: { id: users?.teamId.id } })) as Team;
       this.dash = await this.getDashboardByTeamId(teams.id);
       this.loginResponse.dashboard = this.dash;
-      
-      //this.loginResponse.dashboard.teamName = teams.name
-
       this.chainBU.bu_name = teams.name;
       this.loginResponse.user_breadCrumb.push(this.chainBU);
       this.chainBU = {} as BreadCrumbResponse;
-
+ 
       let businessUnitsId = teams.business_unit.id;
       let businessUnitsRootParentId = teams.business_unit.root_parent_id;
       let business: BusinessUnit[] = await this.businessRepository
         .createQueryBuilder('businessUnit')
         .where('businessUnit.root_parent_id=:root_parent_id', { root_parent_id: businessUnitsRootParentId })
         .getMany();
-      let i,
-        nextParentId = 0;
-
-      let iterate: Boolean = true;
-      while (iterate) {
-        for (i = 0; i < business.length; i++) {
-          if (businessUnitsId == business[i].id) {
-            this.chainBU.bu_id = business[i].id;
-            this.chainBU.bu_name = business[i].name;
-            this.loginResponse.user_breadCrumb.push(this.chainBU);
-            this.chainBU = {} as BreadCrumbResponse;
-            nextParentId = business[i].parent_id;
-            if (business[i].parent_id == business[i].id) {
-              iterate = false;
-              break;
-            }
-          }
-        }
-        businessUnitsId = nextParentId;
-      }
+         this.loginResponse.user_breadCrumb = this.getBUOrder(business , businessUnitsId);
+      // let i, nextParentId = 0;
+      // let iterate: Boolean = true;
+      // while (iterate) {
+      //   for (i = 0; i < business.length; i++) {
+      //     if (businessUnitsId == business[i].id) {
+      //       this.chainBU.bu_id = business[i].id;
+      //       this.chainBU.bu_name = business[i].name;
+      //       this.loginResponse.user_breadCrumb.push(this.chainBU);
+      //       this.chainBU = {} as BreadCrumbResponse;
+      //       nextParentId = business[i].parent_id;
+      //       if (business[i].parent_id == business[i].id) {
+      //         iterate = false;
+      //         break;
+      //       }
+      //     }
+      //   }
+      //   businessUnitsId = nextParentId;
+      // }
       this.loginResponse.user_breadCrumb.reverse();
       this.loginResponse.dump_businessUnit = business;
       return this.loginResponse;
@@ -91,11 +87,37 @@ export class TeamCrudService extends TypeOrmCrudService<Team> {
       throw new NotFoundException('userId not found');
     }
   }
+   /**
+  * getBUOrder method will arrange all BU hierarchy of login user
+  * @param {business ,businessUnitsId} ,it takes business[] and businessUnitsId as input
+  * @return {BreadCrumbResponse} BreadCrumb array will be returned as response
+  */
+      getBUOrder(business:BusinessUnit[], businessUnitsId:number):BreadCrumbResponse[]{
+        let i, nextParentId = 0;
+        let iterate: Boolean = true;
+        while (iterate) {
+          for (i = 0; i < business.length; i++) {
+            if (businessUnitsId == business[i].id) {
+              this.chainBU.bu_id = business[i].id;
+              this.chainBU.bu_name = business[i].name;
+              this.loginResponse.user_breadCrumb.push(this.chainBU);
+              this.chainBU = {} as BreadCrumbResponse;
+              nextParentId = business[i].parent_id;
+              if (business[i].parent_id == business[i].id) {
+                iterate = false;
+                break;
+              }
+            }
+          }
+          businessUnitsId = nextParentId;
+        }
+        return this.loginResponse.user_breadCrumb;
+      }
 
   /**
   * getDashboardByTeamId method will retrieve all KPI's of particular team
-  * @param {teamId} it takes teamId as input
-  * @return {DashBoardResponse} Dashboard with all KPI's
+  * @param {teamId} teamId Takes teamId as input
+  * @return {DashBoardResponse} . Dashboard with all KPI's
   */
   async getDashboardByTeamId(teamId: number): Promise<DashBoardResponse> {
     this.dash.teamId = teamId;
@@ -122,7 +144,7 @@ export class TeamCrudService extends TypeOrmCrudService<Team> {
 
    /**
   * getTeamsyBUId method will fetch the list of all teams belong to particular BU
-  * @param {Bu_id} it takes Business Unit as input
+  * @param {Bu_id} Bu_id it takes Business Unit as input
   * @return {TeamResponse[]} list of teams with their status
   */
   async getTeamsByBUId(BU_id: number): Promise<TeamResponse[]> {
@@ -143,7 +165,7 @@ export class TeamCrudService extends TypeOrmCrudService<Team> {
 
   /**
   * fetchstatus method will fetch the status of all respective KPI's of dashboard
-  * @param {dashboard} , takes dashboard object as input
+  * @param {dashboard} dashboard takes dashboard object as input
   * @return {number} number as status value
   */
   fetchStatus(dashboard: DashBoardResponse): number {
