@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { TypeOrmCrudService } from '@nestjsx/crud-typeorm';
-import { Sprint } from 'src/app/sprint/model/entities/sprint.entity';
+import { Sprint } from '../../sprint/model/entities/sprint.entity';
 import { Repository } from 'typeorm';
 import { ClientStatusResponse } from '../model/dto/ClientStatusResponse';
 import { ClientStatus } from '../model/entities/client-status.entity';
@@ -21,20 +21,25 @@ export class ClientStatusCrudService extends TypeOrmCrudService<ClientStatus> {
   */
  clientStatus: ClientStatusResponse ={} as ClientStatusResponse ;
   async getClientFeedback(team_Id: number): Promise<ClientStatusResponse> {
-    const result = await this.sprintRepository
-      .createQueryBuilder('sprint')
-      .where('sprint.team_id=:team_id', { team_id: team_Id })
-      .orderBy('sprint.sprint_number', 'DESC')
-      .skip(1)
-      .take(1)
-      .getOne();
+    // const result = await this.sprintRepository
+    //   .createQueryBuilder('sprint')
+    //   .where('sprint.team_id=:team_id', { team_id: team_Id })
+    //   .orderBy('sprint.sprint_number', 'DESC')
+    //   .skip(1)
+    //   .take(1)
+    //   .getOne() 
+    
+    const result = await this.sprintRepository.find({where:{team:team_Id},order:{sprint_number:'DESC'},skip:1, take:1})
+    console.log(result)
     const clientStatus = (await this.clientRepository
       .createQueryBuilder('client_status')
-      .where('client_status.sprintId=:sprintId', { sprintId: result!.id })
+      .where('client_status.sprintId=:sprintId', { sprintId: result[0]!.id })
       .limit(1)
       .getOne()) as ClientStatus;
+
+  
     this.clientStatus.clientSatisfactionRating = clientStatus.client_rating;
-    this.clientStatus.sprintNumber = result!.sprint_number;
+   this.clientStatus.sprintNumber = result[0]!.sprint_number;
     return this.clientStatus!;
   }
 }

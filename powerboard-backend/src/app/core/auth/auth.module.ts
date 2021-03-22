@@ -7,8 +7,6 @@ import { JwtStrategy } from './strategies/jwt.strategy';
 import { ConfigModule, ConfigService } from '@devon4node/config';
 import { Config } from '../../shared/model/config/config.model';
 
-
-
 @Module({
   imports: [
     PassportModule.register({ defaultStrategy: 'jwt' }),
@@ -17,7 +15,6 @@ import { Config } from '../../shared/model/config/config.model';
       useFactory: (config: ConfigService<Config>) => config.values.jwtConfig,
       inject: [ConfigService],
     }),
-    
   ],
   providers: [AuthService, JwtStrategy],
   exports: [AuthService, PassportModule],

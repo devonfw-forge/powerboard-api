@@ -25,6 +25,10 @@ export class CodeQualitySnapshotCrudService extends TypeOrmCrudService<CodeQuali
       .orderBy('code_quality_snapshot.snapshot_time', 'DESC')
       .limit(1)
       .getOne();
+      console.log(result)
+      console.log('kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk')
+      const result1 = await this.codeQualityRepository.find({ where: { team: team_Id }, order: { snapshot_time: 'DESC' }, take: 1 });
+      console.log(result1)
 
     this.codeQualityResponse.bugs = result!.bugs;
     this.codeQualityResponse.debt = result!.debt;

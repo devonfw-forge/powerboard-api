@@ -1,4 +1,4 @@
-import { Sprint } from 'src/app/sprint/model/entities/sprint.entity';
+import { Sprint } from '../../../sprint/model/entities/sprint.entity';
 import { Column, Entity, JoinColumn, OneToOne } from 'typeorm';
 import { BaseEntity } from '../../../shared/model/entities/base-entity.entity';
 

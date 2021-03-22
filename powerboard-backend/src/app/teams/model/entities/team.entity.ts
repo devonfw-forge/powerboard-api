@@ -1,4 +1,4 @@
-import { BusinessUnit } from 'src/app/business-units/model/entities/business-unit.entity';
+import { BusinessUnit } from '../../../business-units/model/entities/business-unit.entity';
 import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
 import { BaseEntity } from '../../../shared/model/entities/base-entity.entity';
 

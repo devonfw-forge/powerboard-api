@@ -1,15 +1,15 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { TypeOrmCrudService } from '@nestjsx/crud-typeorm';
-import { BusinessUnit } from 'src/app/business-units/model/entities/business-unit.entity';
-import { ClientStatusResponse } from 'src/app/client-status/model/dto/ClientStatusResponse';
-import { ClientStatusCrudService } from 'src/app/client-status/services/client-status.crud.service';
-import { CodeQualityResponse } from 'src/app/code-quality-snapshot/model/dto/CodeQualityResponse';
-import { CodeQualitySnapshotCrudService } from 'src/app/code-quality-snapshot/services/code-quality-snapshot.crud.service';
-import { User } from 'src/app/core/user/model/entities/user.entity';
-import { SprintDetailResponse } from 'src/app/sprint/model/dto/SprintDetailResponse';
-import { TeamSpiritResponse } from 'src/app/team-spirit/model/dto/TeamSpiritResponse';
-import { TeamSpiritCrudService } from 'src/app/team-spirit/services/team-spirit.crud.service';
+import { BusinessUnit } from '../../business-units/model/entities/business-unit.entity';
+import { ClientStatusResponse } from '../../client-status/model/dto/ClientStatusResponse';
+import { ClientStatusCrudService } from '../../client-status/services/client-status.crud.service';
+import { CodeQualityResponse } from '../../code-quality-snapshot/model/dto/CodeQualityResponse';
+import { CodeQualitySnapshotCrudService } from '../../code-quality-snapshot/services/code-quality-snapshot.crud.service';
+import { User } from '../../core/user/model/entities/user.entity';
+import { SprintDetailResponse } from '../../sprint/model/dto/SprintDetailResponse';
+import { TeamSpiritResponse } from '../../team-spirit/model/dto/TeamSpiritResponse';
+import { TeamSpiritCrudService } from '../../team-spirit/services/team-spirit.crud.service';
 import { Repository } from 'typeorm';
 import {BurndownResponse } from '../../sprint/model/dto/BurndownResponse';
 import { VelocityComparisonResponse } from '../../sprint/model/dto/VelocityComparisonResponse';
@@ -47,6 +47,7 @@ export class TeamCrudService extends TypeOrmCrudService<Team> {
     this.loginResponse.user_breadCrumb = [];
     this.loginResponse.dump_businessUnit = [];
     const users: User = (await this.userRepository.findOne({ where: { id: userId } })) as User;
+    console.log(users)
     if (users != null) {
       const teams: Team = (await this.teamRepository.findOne({ where: { id: users?.teamId.id } })) as Team;
       this.dash = await this.getDashboardByTeamId(teams.id);
