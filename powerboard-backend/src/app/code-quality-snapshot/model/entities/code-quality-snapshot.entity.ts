@@ -1,4 +1,4 @@
-import { Team } from '../../../teams/model/entities/team.entity'
+import { Team } from '../../../teams/model/entities/team.entity';
 import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
 import { BaseEntity } from '../../../shared/model/entities/base-entity.entity';
 
@@ -16,7 +16,7 @@ export class CodeQualitySnapshot extends BaseEntity {
   @Column('varchar', { length: 255, nullable: false })
   status!: string;
 
-  @ManyToOne(() => Team, { eager: false })
+  @ManyToOne(() => Team, { eager: true })
   @JoinColumn({ name: 'team_id', referencedColumnName: 'id' })
   team!: Team;
 

@@ -12,28 +12,32 @@ export class CodeQualitySnapshotCrudService extends TypeOrmCrudService<CodeQuali
   ) {
     super(codeQualityRepository);
   }
-   /**
-  * getCodeQuality method will fetch the quality of code  
-  * @param {teamId} .Takes teamId as input
-  * @return {CodeQualityResponse} Code Quality as response for that team 
-  */
-  codeQualityResponse: CodeQualityResponse ={} as CodeQualityResponse
+  /**
+   * getCodeQuality method will fetch the quality of code
+   * @param {teamId} .Takes teamId as input
+   * @return {CodeQualityResponse} Code Quality as response for that team
+   */
+  codeQualityResponse: CodeQualityResponse = {} as CodeQualityResponse;
   async getCodeQualitySnapshot(team_Id: number): Promise<CodeQualityResponse> {
-    const result = await this.codeQualityRepository
-      .createQueryBuilder('code_quality_snapshot')
-      .where('code_quality_snapshot.team_id=:team_id', { team_id: team_Id })
-      .orderBy('code_quality_snapshot.snapshot_time', 'DESC')
-      .limit(1)
-      .getOne();
-      console.log(result)
-      console.log('kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk')
-      const result1 = await this.codeQualityRepository.find({ where: { team: team_Id }, order: { snapshot_time: 'DESC' }, take: 1 });
-      console.log(result1)
+    // const result = await this.codeQualityRepository
+    //   .createQueryBuilder('code_quality_snapshot')
+    //   .where('code_quality_snapshot.team_id=:team_id', { team_id: team_Id })
+    //   .orderBy('code_quality_snapshot.snapshot_time', 'DESC')
+    //   .limit(1)
+    //   .getOne() as CodeQualitySnapshot;
+    // console.log(result)
 
-    this.codeQualityResponse.bugs = result!.bugs;
-    this.codeQualityResponse.debt = result!.debt;
-    this.codeQualityResponse.codeCoverage = result!.code_coverage;
-    this.codeQualityResponse.status = result!.status;
+    const result = await this.codeQualityRepository.find({
+      where: { team: team_Id },
+      order: { snapshot_time: 'DESC' },
+      take: 1,
+    });
+    console.log(result);
+
+    this.codeQualityResponse.bugs = result[0].bugs;
+    this.codeQualityResponse.debt = result[0].debt;
+    this.codeQualityResponse.codeCoverage = result[0].code_coverage;
+    this.codeQualityResponse.status = result[0].status;
 
     return this.codeQualityResponse;
   }

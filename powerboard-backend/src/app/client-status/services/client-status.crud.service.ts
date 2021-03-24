@@ -15,11 +15,11 @@ export class ClientStatusCrudService extends TypeOrmCrudService<ClientStatus> {
     super(clientRepository);
   }
   /**
-  * getClientFeedback method will fetch the client status
-  * @param {teamId} .Takes teamId as input
-  * @return {ClientStatusResponse} ClientStatus as response for that team's previous sprint
-  */
- clientStatus: ClientStatusResponse ={} as ClientStatusResponse ;
+   * getClientFeedback method will fetch the client status
+   * @param {teamId} .Takes teamId as input
+   * @return {ClientStatusResponse} ClientStatus as response for that team's previous sprint
+   */
+  clientStatus: ClientStatusResponse = {} as ClientStatusResponse;
   async getClientFeedback(team_Id: number): Promise<ClientStatusResponse> {
     // const result = await this.sprintRepository
     //   .createQueryBuilder('sprint')
@@ -27,19 +27,23 @@ export class ClientStatusCrudService extends TypeOrmCrudService<ClientStatus> {
     //   .orderBy('sprint.sprint_number', 'DESC')
     //   .skip(1)
     //   .take(1)
-    //   .getOne() 
-    
-    const result = await this.sprintRepository.find({where:{team:team_Id},order:{sprint_number:'DESC'},skip:1, take:1})
-    console.log(result)
+    //   .getOne()
+
+    const sprint = await this.sprintRepository.find({
+      where: { team: team_Id },
+      order: { sprint_number: 'DESC' },
+      skip: 1,
+      take: 1,
+    });
+    console.log(sprint);
     const clientStatus = (await this.clientRepository
       .createQueryBuilder('client_status')
-      .where('client_status.sprintId=:sprintId', { sprintId: result[0]!.id })
+      .where('client_status.sprintId=:sprintId', { sprintId: sprint[0]!.id })
       .limit(1)
       .getOne()) as ClientStatus;
 
-  
     this.clientStatus.clientSatisfactionRating = clientStatus.client_rating;
-   this.clientStatus.sprintNumber = result[0]!.sprint_number;
+    this.clientStatus.sprintNumber = sprint[0]!.sprint_number;
     return this.clientStatus!;
   }
 }

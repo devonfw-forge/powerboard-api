@@ -14,25 +14,33 @@ export class TeamSpiritCrudService extends TypeOrmCrudService<TeamSpirit> {
   ) {
     super(teamSpiritRepository);
   }
-  teamSpiritResponse: TeamSpiritResponse={} as TeamSpiritResponse
-   /**
-  * getTeamSpirit method will fetch the spirit of team
-  * @param {teamId} ,Takes teamId as input
-  * @return {TeamSpiritResponse} TeamSpirit as response for that team's previous sprint
-  */
+  teamSpiritResponse: TeamSpiritResponse = {} as TeamSpiritResponse;
+  /**
+   * getTeamSpirit method will fetch the spirit of team
+   * @param {teamId} ,Takes teamId as input
+   * @return {TeamSpiritResponse} TeamSpirit as response for that team's previous sprint
+   */
   async getTeamSpirit(team_Id: number): Promise<TeamSpiritResponse> {
-    const result = await this.sprintRepository
+    const result = (await this.sprintRepository
       .createQueryBuilder('sprint')
       .where('sprint.team_id=:team_id', { team_id: team_Id })
       .orderBy('sprint.sprint_number', 'DESC')
       .skip(1)
       .take(1)
-      .getOne();
+      .getOne()) as Sprint;
+
+    console.log('HIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII');
+    console.log(result);
     const teamSpirit = (await this.teamSpiritRepository
       .createQueryBuilder('team_spirit')
-      .where('team_spirit.sprint_id=:sprint_id', { sprint_id: result!.id })
+      .where('team_spirit.sprint_id=:sprint_id', { sprint_id: result.id })
       .limit(1)
       .getOne()) as TeamSpirit;
+
+    console.log(teamSpirit);
+    // const teamSpirit_1 = await this.teamSpiritRepository.find({ where: { sprint: result?.id }, take: 1 });
+    // console.log("Helllllllllllllllllllllooooooooooooooo")
+    // console.log(teamSpirit_1);
     this.teamSpiritResponse.teamSpiritRating = teamSpirit.team_spirit_rating;
     this.teamSpiritResponse.sprintNumber = result!.sprint_number;
     return this.teamSpiritResponse;
