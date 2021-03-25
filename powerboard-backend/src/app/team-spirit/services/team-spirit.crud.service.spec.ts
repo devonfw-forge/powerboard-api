@@ -1,7 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { SprintRepositoryMock } from '../../../../test/Sprint/sprint.repository.mock';
-import { TeamSpiritRepositoryMock } from '../../../../test/teamSpirit/team-spirit.repository.mock';
+import {
+  SprintRepositoryMock,
+  TeamSpiritRepositoryMock,
+} from '../../../../test/mockCrudRepository/crudRepository.mock';
+
 import { Sprint } from '../../sprint/model/entities/sprint.entity';
 
 import { TeamSpirit } from '../model/entities/team-spirit.entity';
