@@ -1,4 +1,7 @@
+//import { CodeQualitySnapshot } from '../../src/app/code-quality-snapshot/model/entities/code-quality-snapshot.entity';
+
 export class MockRepository {
+  constructor() {}
   public createQueryBuilder = jest.fn(() => this.queryBuilder);
 
   public manager = { transaction: (a: () => any) => Promise.resolve(a()) };

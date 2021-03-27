@@ -21,7 +21,7 @@ export class TeamSpiritCrudService extends TypeOrmCrudService<TeamSpirit> {
    * @return {TeamSpiritResponse} TeamSpirit as response for that team's previous sprint
    */
   async getTeamSpirit(team_Id: number): Promise<TeamSpiritResponse> {
-    const result = (await this.sprintRepository
+    const sprint = (await this.sprintRepository
       .createQueryBuilder('sprint')
       .where('sprint.team_id=:team_id', { team_id: team_Id })
       .orderBy('sprint.sprint_number', 'DESC')
@@ -30,10 +30,10 @@ export class TeamSpiritCrudService extends TypeOrmCrudService<TeamSpirit> {
       .getOne()) as Sprint;
 
     console.log('HIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII');
-    console.log(result);
+    console.log(sprint);
     const teamSpirit = (await this.teamSpiritRepository
       .createQueryBuilder('team_spirit')
-      .where('team_spirit.sprint_id=:sprint_id', { sprint_id: result.id })
+      .where('team_spirit.sprint_id=:sprint_id', { sprint_id: sprint.id })
       .limit(1)
       .getOne()) as TeamSpirit;
 
@@ -42,7 +42,7 @@ export class TeamSpiritCrudService extends TypeOrmCrudService<TeamSpirit> {
     // console.log("Helllllllllllllllllllllooooooooooooooo")
     // console.log(teamSpirit_1);
     this.teamSpiritResponse.teamSpiritRating = teamSpirit.team_spirit_rating;
-    this.teamSpiritResponse.sprintNumber = result!.sprint_number;
+    this.teamSpiritResponse.sprintNumber = sprint.sprint_number;
     return this.teamSpiritResponse;
   }
 }

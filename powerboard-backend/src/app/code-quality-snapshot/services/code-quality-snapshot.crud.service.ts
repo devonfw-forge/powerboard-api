@@ -19,28 +19,28 @@ export class CodeQualitySnapshotCrudService extends TypeOrmCrudService<CodeQuali
    */
   codeQualityResponse: CodeQualityResponse = {} as CodeQualityResponse;
   async getCodeQualitySnapshot(team_Id: number): Promise<CodeQualityResponse> {
-    //   const result = await this.codeQualityRepository
-    //     .createQueryBuilder('code_quality_snapshot')
-    //     .where('code_quality_snapshot.team_id=:team_id', { team_id: team_Id })
-    //     .orderBy('code_quality_snapshot.snapshot_time', 'DESC')
-    //     .limit(1)
-    //     .getOne() as CodeQualitySnapshot;
-    //   console.log(result)
-
-    const result = (await this.codeQualityRepository.find({
-      where: { team: team_Id },
-      order: { snapshot_time: 'DESC' },
-      take: 1,
-    })) as CodeQualitySnapshot[];
-
+    const result = (await this.codeQualityRepository
+      .createQueryBuilder('code_quality_snapshot')
+      .where('code_quality_snapshot.team_id=:team_id', { team_id: team_Id })
+      .orderBy('code_quality_snapshot.snapshot_time', 'DESC')
+      .limit(1)
+      .getOne()) as CodeQualitySnapshot;
     console.log(result);
 
-    this.codeQualityResponse.bugs = result[0].bugs;
-    this.codeQualityResponse.debt = result[0].debt;
-    this.codeQualityResponse.codeCoverage = result[0].code_coverage;
-    this.codeQualityResponse.status = result[0].status;
+    // const result = (await this.codeQualityRepository.find({
+    //   where: { team: team_Id },
+    //   order: { snapshot_time: 'DESC' },
+    //   take: 1,
+    // })) as CodeQualitySnapshot[];
+
+    //console.log(result);
+
+    this.codeQualityResponse.bugs = result.bugs;
+    this.codeQualityResponse.debt = result.debt;
+    this.codeQualityResponse.codeCoverage = result.code_coverage;
+    this.codeQualityResponse.status = result.status;
     console.log('hiiiiiiiiiiiiiiiiiiiiiiiiiiii');
-    console.log(result[0].bugs);
+    console.log(result.bugs);
     return this.codeQualityResponse;
   }
 }
