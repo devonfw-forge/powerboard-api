@@ -29,17 +29,13 @@ export class TeamSpiritCrudService extends TypeOrmCrudService<TeamSpirit> {
       .take(1)
       .getOne()) as Sprint;
 
-    console.log('HIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII');
-    console.log(sprint);
     const teamSpirit = (await this.teamSpiritRepository
       .createQueryBuilder('team_spirit')
       .where('team_spirit.sprint_id=:sprint_id', { sprint_id: sprint.id })
       .limit(1)
       .getOne()) as TeamSpirit;
 
-    console.log(teamSpirit);
     // const teamSpirit_1 = await this.teamSpiritRepository.find({ where: { sprint: result?.id }, take: 1 });
-    // console.log("Helllllllllllllllllllllooooooooooooooo")
     // console.log(teamSpirit_1);
     this.teamSpiritResponse.teamSpiritRating = teamSpirit.team_spirit_rating;
     this.teamSpiritResponse.sprintNumber = sprint.sprint_number;

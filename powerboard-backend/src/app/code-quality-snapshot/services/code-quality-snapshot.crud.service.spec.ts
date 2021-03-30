@@ -94,8 +94,7 @@ describe('CodeQualitySnapshotCrudService', () => {
         orderBy: () => createQueryBuilder,
         getOne: jest.fn().mockResolvedValue(codeQuality),
       };
-      console.log(codeQuality);
-      console.log(expectedCodeQualityResponse);
+
       jest.spyOn(repository, 'createQueryBuilder').mockImplementation(() => createQueryBuilder);
       const actualCodeQualityResponse = await service.getCodeQualitySnapshot(team1.id);
       expect(repository.createQueryBuilder).toBeCalledTimes(1);

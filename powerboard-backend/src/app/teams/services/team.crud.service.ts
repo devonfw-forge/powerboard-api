@@ -47,9 +47,13 @@ export class TeamCrudService extends TypeOrmCrudService<Team> {
     this.loginResponse.user_breadCrumb = [];
     this.loginResponse.dump_businessUnit = [];
     const users: User = (await this.userRepository.findOne({ where: { id: userId } })) as User;
-    console.log(users);
+
     if (users) {
-      const teams: Team = (await this.teamRepository.findOne({ where: { id: users?.teamId.id } })) as Team;
+      // const teams: Team = await this.teamRepository.createQueryBuilder("team")
+      //   .where("team.id = :id", { id: users.teamId.id })
+      //   .getOne() as Team;
+      // console.log(teams)
+      const teams: Team = (await this.teamRepository.findOne({ where: { id: users!.teamId.id } })) as Team;
       this.dash = await this.getDashboardByTeamId(teams.id);
       this.loginResponse.dashboard = this.dash;
       this.chainBU.bu_name = teams.name;
@@ -66,6 +70,7 @@ export class TeamCrudService extends TypeOrmCrudService<Team> {
 
       this.loginResponse.user_breadCrumb.reverse();
       this.loginResponse.dump_businessUnit = business;
+
       return this.loginResponse;
     } else {
       throw new NotFoundException('userId not found');

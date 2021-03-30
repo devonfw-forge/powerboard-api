@@ -25,7 +25,6 @@ export class CodeQualitySnapshotCrudService extends TypeOrmCrudService<CodeQuali
       .orderBy('code_quality_snapshot.snapshot_time', 'DESC')
       .limit(1)
       .getOne()) as CodeQualitySnapshot;
-    console.log(result);
 
     // const result = (await this.codeQualityRepository.find({
     //   where: { team: team_Id },
@@ -39,8 +38,7 @@ export class CodeQualitySnapshotCrudService extends TypeOrmCrudService<CodeQuali
     this.codeQualityResponse.debt = result.debt;
     this.codeQualityResponse.codeCoverage = result.code_coverage;
     this.codeQualityResponse.status = result.status;
-    console.log('hiiiiiiiiiiiiiiiiiiiiiiiiiiii');
-    console.log(result.bugs);
+
     return this.codeQualityResponse;
   }
 }

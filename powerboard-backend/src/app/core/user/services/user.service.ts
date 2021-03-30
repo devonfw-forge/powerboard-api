@@ -5,12 +5,15 @@ import { genSalt, hash } from 'bcrypt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { roles } from '../../auth/model/roles.enum';
 import { plainToClass } from 'class-transformer';
+import { TypeOrmCrudService } from '@nestjsx/crud-typeorm';
 
 @Injectable()
-export class UserService {
-  constructor(@InjectRepository(User) private readonly userRepository: Repository<User>) {}
+export class UserService extends TypeOrmCrudService<User> {
+  constructor(@InjectRepository(User) private readonly userRepository: Repository<User>) {
+    super(userRepository);
+  }
 
-  async findOne(username: string): Promise<User | undefined> {
+  async findUser(username: string): Promise<User | undefined> {
     return this.userRepository.findOne({
       where: {
         username,
@@ -19,7 +22,7 @@ export class UserService {
   }
 
   async registerUser(user: User): Promise<User> {
-    const actualUser = await this.findOne(user.username!);
+    const actualUser = await this.findUser(user.username!);
 
     if (actualUser) {
       throw new Error('User already exists');

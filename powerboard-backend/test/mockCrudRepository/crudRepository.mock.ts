@@ -41,3 +41,4 @@ export class SprintRepositoryMock extends MockRepository {}
 export class ClientStatusRepositoryMock extends MockRepository {}
 export class TeamRepositoryMock extends MockRepository {}
 export class BusinessUnitRepositoryMock extends MockRepository {}
+export class UserRepositoryMock extends MockRepository {}
