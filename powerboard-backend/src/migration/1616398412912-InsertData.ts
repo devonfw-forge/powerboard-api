@@ -55,19 +55,19 @@ export class InsertData1616398412912 implements MigrationInterface {
           await queryRunner.query(`INSERT INTO "sprint_work_unit" ("id","work_unit" ) VALUES (1,'hour');`);
           await queryRunner.query(`INSERT INTO "sprint_work_unit" ("id","work_unit" ) VALUES (2,'story point');`);
           await queryRunner.query(
-            `INSERT INTO "sprint" ("id","sprint_number","status" , "start_date","end_date","team_id","work_unit") VALUES (1, 9, 3,'2021-01-20', '2021-03-02',1 ,2);`,
+            `INSERT INTO "sprint" ("id","sprint_number","status" , "start_date","end_date","team_id","work_unit") VALUES (1, 9, 3,'2021-02-10', '2021-03-10',1 ,2);`,
           );
           await queryRunner.query(
-            `INSERT INTO "sprint" ("id","sprint_number","status" , "start_date","end_date","team_id","work_unit") VALUES (2, 10, 3,'2021-03-03', '2021-03-24',1 ,2);`,
+            `INSERT INTO "sprint" ("id","sprint_number","status" , "start_date","end_date","team_id","work_unit") VALUES (2, 10, 3,'2021-03-11', '2021-04-08',1 ,2);`,
           );
           await queryRunner.query(
-            `INSERT INTO "sprint" ("id","sprint_number","status" , "start_date","end_date","team_id", "work_unit") VALUES (3, 11, 2,'2021-03-25', '2021-04-22',1 ,2 );`,
+            `INSERT INTO "sprint" ("id","sprint_number","status" , "start_date","end_date","team_id", "work_unit") VALUES (3, 11, 2,'2021-04-08', '2021-05-06',1 ,2 );`,
           );
           await queryRunner.query(
-            `INSERT INTO "sprint" ("id","sprint_number","status" , "start_date","end_date","team_id", "work_unit") VALUES (4, 21, 3,'2021-02-26', '2021-03-19',2 ,1);`,
+            `INSERT INTO "sprint" ("id","sprint_number","status" , "start_date","end_date","team_id", "work_unit") VALUES (4, 21, 3,'2021-03-10', '2021-04-08',2 ,1);`,
           );
           await queryRunner.query(
-            `INSERT INTO "sprint" ("id","sprint_number","status" , "start_date","end_date","team_id","work_unit") VALUES (5, 22, 2,'2021-03-20', '2021-04-17',2 ,1);`,
+            `INSERT INTO "sprint" ("id","sprint_number","status" , "start_date","end_date","team_id","work_unit") VALUES (5, 22, 2,'2021-04-08', '2021-05-06',2 ,1);`,
           );
       
           await queryRunner.query(`INSERT INTO "team_spirit" ("id","team_spirit_rating", "sprint_id") VALUES (1, 8, 2);`);
@@ -79,32 +79,32 @@ export class InsertData1616398412912 implements MigrationInterface {
           await queryRunner.query(`INSERT INTO "client_status" ("id","client_rating", "sprintId") VALUES (3, 7, 4);`);
       
           await queryRunner.query(
-            `INSERT INTO "sprint_snapshot" ("id","sprint_id","date_time") VALUES (1001, 3,'2021-03-25');`,
+            `INSERT INTO "sprint_snapshot" ("id","sprint_id","date_time") VALUES (1001, 3,'2021-04-08');`,
           );
       
           await queryRunner.query(
-            `INSERT INTO "sprint_snapshot" ("id","sprint_id","date_time") VALUES (1002, 3,'2021-03-26');`,
+            `INSERT INTO "sprint_snapshot" ("id","sprint_id","date_time") VALUES (1002, 3,'2021-04-09');`,
           );
       
           await queryRunner.query(
-            `INSERT INTO "sprint_snapshot" ("id","sprint_id","date_time") VALUES (1003, 5,'2021-03-26');`,
+            `INSERT INTO "sprint_snapshot" ("id","sprint_id","date_time") VALUES (1003, 5,'2021-04-08');`,
           );
           await queryRunner.query(
-            `INSERT INTO "sprint_snapshot" ("id","sprint_id","date_time") VALUES (1004, 2,'2021-03-18');`,
+            `INSERT INTO "sprint_snapshot" ("id","sprint_id","date_time") VALUES (1004, 2,'2021-03-31');`,
           );
           await queryRunner.query(
-            `INSERT INTO "sprint_snapshot" ("id","sprint_id","date_time") VALUES (1005, 1,'2021-01-31');`,
+            `INSERT INTO "sprint_snapshot" ("id","sprint_id","date_time") VALUES (1005, 1,'2021-03-08');`,
           );
           await queryRunner.query(
             `INSERT INTO "sprint_snapshot" ("id","sprint_id","date_time") VALUES (1006, 4,'2021-03-18');`,
           );
       
           await queryRunner.query(
-            `INSERT INTO "sprint_snapshot_metric" ("id","snapshot_id","metric_id","value" ) VALUES (1, 1001,1,120);`,
+            `INSERT INTO "sprint_snapshot_metric" ("id","snapshot_id","metric_id","value" ) VALUES (1, 1001,1,140);`,
           );
       
           await queryRunner.query(
-            `INSERT INTO "sprint_snapshot_metric" ("id","snapshot_id","metric_id","value" ) VALUES (2, 1001,2,10);`,
+            `INSERT INTO "sprint_snapshot_metric" ("id","snapshot_id","metric_id","value" ) VALUES (2, 1001,2,7);`,
           );
       
           await queryRunner.query(
