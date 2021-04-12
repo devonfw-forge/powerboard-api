@@ -18,4 +18,4 @@ import { CodeQualitySnapshotModule } from './code-quality-snapshot/code-quality-
   controllers: [],
   providers: [],
 })
-export class WebAppModule {}
+export class DashboardModule {}

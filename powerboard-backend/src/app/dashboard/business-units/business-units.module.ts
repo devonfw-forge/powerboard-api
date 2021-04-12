@@ -8,6 +8,5 @@ import { BusinessUnitCrudController } from './controllers/business-unit.crud.con
   imports: [TypeOrmModule.forFeature([BusinessUnit])],
   providers: [BusinessUnitCrudService],
   controllers: [BusinessUnitCrudController],
-  //exports:[BusinessUnitsModule, BusinessUnitCrudService]
 })
 export class BusinessUnitsModule {}
