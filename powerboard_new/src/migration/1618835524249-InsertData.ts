@@ -34,7 +34,7 @@ export class InsertData1618835524249 implements MigrationInterface {
     await queryRunner.query(`INSERT INTO "team" ("id", "name", "business_unit_id" ) VALUES (2 ,'IKEA',13);`);
 
     await queryRunner.query(
-      `INSERT INTO "daily_meeting" ("id", "type", "daily_meeting_link" ,"daily_team_id") VALUES (1 ,'TEAMS','https://teams.microsoft.com/l/meetup-join/19%3ameeting_NjY3MzIyNmYtZTg1YS00MzBjLTk0NmUtMTk4MWE0OWJjNjhl%40thread.v2/0?context=%7b%22Tid%22%3a%2276a2ae5a-9f00-4f6b-95ed-5d33d77c4d61%22%2c%22Oid%22%3a%22d6dd7c98-546f-4dcb-9c39-39c8eeff8a24%22%7d',1);`,
+      `INSERT INTO "daily_meeting" ("id", "type", "daily_meeting_link" ,"daily_team_id") VALUES (3 ,'TEAMS','https://teams.microsoft.com/l/meetup-join/19%3ameeting_NjY3MzIyNmYtZTg1YS00MzBjLTk0NmUtMTk4MWE0OWJjNjhl%40thread.v2/0?context=%7b%22Tid%22%3a%2276a2ae5a-9f00-4f6b-95ed-5d33d77c4d61%22%2c%22Oid%22%3a%22d6dd7c98-546f-4dcb-9c39-39c8eeff8a24%22%7d',1);`,
     );
     await queryRunner.query(
       `INSERT INTO "team_links" ("id", "title", "link" ,"team_id") VALUES (1 ,'Jira Cloud','https://powerboard-capgemini.atlassian.net/jira/software/projects/DUM/boards/3',1);`,
