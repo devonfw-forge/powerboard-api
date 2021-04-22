@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { TypeOrmCrudService } from '@nestjsx/crud-typeorm';
 import { Repository } from 'typeorm';
+import { TeamLinkDTO } from '../model/dto/TeamLinkDTO';
 import { TeamLinkResponse } from '../model/dto/TeamLinkResponse';
 import { TeamLinks } from '../model/entities/team-links.entity';
 
@@ -37,5 +38,13 @@ export class TeamLinksCrudService extends TypeOrmCrudService<TeamLinks> {
 
   async deleteTeamLinkById(teamLinkId: number): Promise<any> {
     return await this.teamLinkRepository.delete(teamLinkId);
+  }
+
+  async createTeamLinks(teamLinkDTO: TeamLinkDTO): Promise<TeamLinks> {
+    let links = new TeamLinks();
+    links.title = teamLinkDTO.title;
+    links.link = teamLinkDTO.links;
+    links.team = teamLinkDTO.teamId;
+    return await this.teamLinkRepository.save(links);
   }
 }
