@@ -4,10 +4,10 @@ import { BaseEntity } from '../../../../shared/model/entities/base-entity.entity
 
 @Entity()
 export class Images extends BaseEntity {
-  @Column('varchar', { length: 255, nullable: false })
+  @Column('varchar', { length: 3000, nullable: false })
   image!: string;
 
   @ManyToOne(() => Team, { eager: true })
   @JoinColumn({ name: 'image_team_id', referencedColumnName: 'id' })
-  team!: Team;
+  team!: number;
 }

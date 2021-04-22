@@ -44,10 +44,10 @@ export class CreateTables1618835482392 implements MigrationInterface {
       `CREATE TABLE "team_spirit" ("id" SERIAL NOT NULL, "version" integer NOT NULL DEFAULT '1', "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "team_spirit_rating" integer NOT NULL, "sprint_id" integer, CONSTRAINT "REL_c258101a9e329fc1cf1ca46019" UNIQUE ("sprint_id"), CONSTRAINT "PK_f4f2b4281be72d5392d9efb8466" PRIMARY KEY ("id"))`,
     );
     await queryRunner.query(
-      `CREATE TABLE "images" ("id" SERIAL NOT NULL, "version" integer NOT NULL DEFAULT '1', "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "image" character varying(255) NOT NULL, "image_team_id" integer, CONSTRAINT "PK_1fe148074c6a1a91b63cb9ee3c9" PRIMARY KEY ("id"))`,
+      `CREATE TABLE "images" ("id" SERIAL NOT NULL, "version" integer NOT NULL DEFAULT '1', "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "image" character varying(3000) NOT NULL, "image_team_id" integer, CONSTRAINT "PK_1fe148074c6a1a91b63cb9ee3c9" PRIMARY KEY ("id"))`,
     );
     await queryRunner.query(
-      `CREATE TABLE "videos" ("id" SERIAL NOT NULL, "version" integer NOT NULL DEFAULT '1', "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "content" character varying(255) NOT NULL, "video_team_id" integer, CONSTRAINT "PK_e4c86c0cf95aff16e9fb8220f6b" PRIMARY KEY ("id"))`,
+      `CREATE TABLE "videos" ("id" SERIAL NOT NULL, "version" integer NOT NULL DEFAULT '1', "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "content" character varying(3000) NOT NULL, "video_team_id" integer, CONSTRAINT "PK_e4c86c0cf95aff16e9fb8220f6b" PRIMARY KEY ("id"))`,
     );
     await queryRunner.query(
       `CREATE TABLE "team_links" ("id" SERIAL NOT NULL, "version" integer NOT NULL DEFAULT '1', "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "title" character varying(255) NOT NULL, "link" character varying(5000) NOT NULL, "team_id" integer, CONSTRAINT "PK_259fb255d02d3404b08279f41fb" PRIMARY KEY ("id"))`,

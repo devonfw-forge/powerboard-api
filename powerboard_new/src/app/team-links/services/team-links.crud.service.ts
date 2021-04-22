@@ -36,10 +36,18 @@ export class TeamLinksCrudService extends TypeOrmCrudService<TeamLinks> {
     return teamsDTOArray;
   }
 
+  /**
+   * deleteteamLinkById method will delete the link of team
+   */
   async deleteTeamLinkById(teamLinkId: number): Promise<any> {
     return await this.teamLinkRepository.delete(teamLinkId);
   }
 
+  /**
+   * createTeamLink method will add the links of team
+   * @param {teamId} .Takes teamId as input
+   * @return {TeamLinks} Team Links as response for that team
+   */
   async createTeamLinks(teamLinkDTO: TeamLinkDTO): Promise<TeamLinks> {
     let links = new TeamLinks();
     links.title = teamLinkDTO.title;

@@ -1,4 +1,14 @@
-import { Controller, Get, Param, Post, Res, UploadedFile, UploadedFiles, UseInterceptors } from '@nestjs/common';
+import {
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Res,
+  UploadedFile,
+  UploadedFiles,
+  UseInterceptors,
+} from '@nestjs/common';
 import { Crud } from '@nestjsx/crud';
 import { CrudType } from '@devon4node/common/serializer';
 import { Images } from '../model/entities/image.entity';
@@ -8,6 +18,8 @@ import { diskStorage } from 'multer';
 import { v4 as uuidv4 } from 'uuid';
 import path = require('path');
 import { join } from 'path';
+//import { join } from 'path';
+//import { join } from 'path';
 
 export const storage = {
   storage: diskStorage({
@@ -42,20 +54,31 @@ export const storage = {
 @CrudType(Images)
 @Controller('images')
 export class ImagesCrudController {
-  constructor(public service: ImagesCrudService) {}
+  constructor(public imageService: ImagesCrudService) {}
 
-  @Post('upload')
+  @Post('uploadImage/:teamId')
   @UseInterceptors(FileInterceptor('file', storage))
-  async uploadImage(@UploadedFile() file: Express.Multer.File): Promise<Object> {
+  async uploadImage(@UploadedFile() file: Express.Multer.File, @Param('teamId') teamId: number): Promise<Object> {
     console.log(file);
-    return { imagePath: file.path };
+    const result = this.imageService.setImagePath(file.path, teamId);
+    return result;
+    //return { imagePath: file.path };
   }
-
-  @Get('image/:imagename')
+  @Get('imagename/:imagename')
   async findProfileImage(@Param('imagename') imagename: any, @Res() res: any): Promise<Object> {
     return res.sendFile(join(process.cwd(), 'uploads/profileimages/' + imagename));
   }
+  @Get('getImage/:teamId')
+  async findImage(@Param('teamId') teamId: any): Promise<Object> {
+    const path = await this.imageService.getPathOfImage(teamId);
+    console.log(path);
+    return path;
+  }
 
+  @Delete('delete/:id')
+  async deleteImageById(@Param('id') imageId: number): Promise<any> {
+    return await this.imageService.deleteImageById(imageId);
+  }
   @Post('multiple')
   @UseInterceptors(FilesInterceptor('file', 20, storage))
   async uploadMultipleFiles(@UploadedFiles() files: any) {
