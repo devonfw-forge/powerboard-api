@@ -8,5 +8,6 @@ import { VideosCrudService } from './services/videos.crud.service';
   imports: [TypeOrmModule.forFeature([Videos])],
   providers: [VideosCrudService],
   controllers: [VideosCrudController],
+  exports: [VideosCrudService],
 })
 export class VideosModule {}

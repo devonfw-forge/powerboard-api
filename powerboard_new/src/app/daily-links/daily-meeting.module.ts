@@ -8,5 +8,6 @@ import { DailyMeetingCrudService } from './services/daily-meeting.crud.service';
   imports: [TypeOrmModule.forFeature([DailyMeeting])],
   providers: [DailyMeetingCrudService],
   controllers: [DailyMeetingCrudController],
+  exports: [DailyMeetingCrudService],
 })
 export class DailyMeetingModule {}

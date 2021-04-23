@@ -1,11 +1,12 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import { Body, Controller, Get, Param } from '@nestjs/common';
 import { Crud } from '@nestjsx/crud';
 import { CrudType } from '@devon4node/common/serializer';
 import { Team } from '../model/entities/team.entity';
 import { TeamCrudService } from '../services/team.crud.service';
-import { LoginResponse} from '../model/dto/LoginResponse';
+import { LoginResponse } from '../model/dto/LoginResponse';
 import { DashBoardResponse } from '../model/dto/DashBoardResponse';
 import { TeamResponse } from '../model/dto/TeamResponse';
+import { ElectronBoardResponse } from '../model/dto/ElectronBoardResponse';
 
 @Crud({
   model: {
@@ -15,12 +16,21 @@ import { TeamResponse } from '../model/dto/TeamResponse';
 @CrudType(Team)
 @Controller('teams')
 export class TeamCrudController {
-  constructor(public teamService: TeamCrudService) { }
+  constructor(public teamService: TeamCrudService) {}
 
   @Get('user/:id')
-  async getDashboardByUserId(@Param('id') userId: number): Promise<LoginResponse> {
-    const loginResponse = await this.teamService.getDashboardByUserId(userId);
-    return loginResponse;
+  async getDashboardByUserId(
+    @Param('id') userId: number,
+    @Body() value: any,
+  ): Promise<LoginResponse | ElectronBoardResponse> {
+    console.log(value.flag);
+    if (value.flag) {
+      const loginResponse = await this.teamService.getDashboardByUserId(userId);
+      return loginResponse;
+    } else {
+      const electronResponse = await this.teamService.getElectronBoardByUserId(userId);
+      return electronResponse;
+    }
   }
 
   @Get('team/:id')

@@ -19,6 +19,17 @@ import { DashBoardResponse } from '../model/dto/DashBoardResponse';
 import { LoginResponse } from '../model/dto/LoginResponse';
 import { TeamResponse } from '../model/dto/TeamResponse';
 import { Team } from '../model/entities/team.entity';
+import { DailyMeetingResponse } from '../../../daily-links/model/dto/DailyMeetingResponse';
+import { DailyMeetingCrudService } from '../../../daily-links/services/daily-meeting.crud.service';
+import { TeamLinksCrudService } from '../../../team-links/services/team-links.crud.service';
+import { ImagesCrudService } from '../../../multimedia/images/services/images.crud.service';
+import { VideosCrudService } from '../../../multimedia/videos/services/videos.crud.service';
+import { ElectronBoardResponse } from '../model/dto/ElectronBoardResponse';
+import { TeamLinkResponse } from '../../../team-links/model/dto/TeamLinkResponse';
+import { ImageResponse } from '../../../multimedia/images/model/dto/ImageResponse';
+import { VideoResponse } from '../../../multimedia/videos/model/dto/VideoResponse';
+import { VisibilityCrudService } from '../../../visibility/services/visibility.crud.service';
+import { VisibilityResponse } from '../../../visibility/model/dto/VisibilityResponse';
 
 @Injectable()
 export class TeamCrudService extends TypeOrmCrudService<Team> {
@@ -30,6 +41,11 @@ export class TeamCrudService extends TypeOrmCrudService<Team> {
     private readonly clientStatusService: ClientStatusCrudService,
     private readonly teamSpiritService: TeamSpiritCrudService,
     private readonly sprintService: SprintCrudService,
+    private readonly dailyMeetingService: DailyMeetingCrudService,
+    private readonly teamLinkService: TeamLinksCrudService,
+    private readonly imageService: ImagesCrudService,
+    private readonly videoService: VideosCrudService,
+    private readonly visibleService: VisibilityCrudService,
   ) {
     super(teamRepository);
   }
@@ -177,5 +193,29 @@ export class TeamCrudService extends TypeOrmCrudService<Team> {
       statusResult = 1;
     }
     return statusResult;
+  }
+  board: ElectronBoardResponse = {} as ElectronBoardResponse;
+  async getElectronBoardByUserId(userId: number): Promise<ElectronBoardResponse> {
+    const users: User = (await this.userRepository.findOne({ where: { id: userId } })) as User;
+    if (users) {
+      const teamId = users.teamId.id;
+      const dailyMeeting: DailyMeetingResponse[] = await this.dailyMeetingService.getDailyLinks(teamId);
+      this.board.dailyMeetingResponse = dailyMeeting;
+
+      const teamLink: TeamLinkResponse[] = await this.teamLinkService.getTeamLinks(teamId);
+      this.board.teamLinkResponse = teamLink;
+
+      const images: ImageResponse[] = await this.imageService.getPathOfImage(teamId);
+      this.board.imageResponse = images;
+
+      const videos: VideoResponse[] = await this.videoService.getPathOfVideos(teamId);
+      this.board.videoResponse = videos;
+
+      const visible: VisibilityResponse = await this.visibleService.getVisiblilityForTeam(teamId);
+      this.board.visibleResponse = visible;
+      return this.board;
+    } else {
+      throw new NotFoundException('userId not found');
+    }
   }
 }

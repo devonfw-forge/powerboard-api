@@ -8,5 +8,6 @@ import { ImagesCrudService } from './services/images.crud.service';
   imports: [TypeOrmModule.forFeature([Images])],
   providers: [ImagesCrudService],
   controllers: [ImagesCrudController],
+  exports: [ImagesCrudService],
 })
 export class ImagessModule {}

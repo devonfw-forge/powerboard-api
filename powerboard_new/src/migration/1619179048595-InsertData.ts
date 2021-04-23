@@ -1,7 +1,7 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
-export class InsertData1618835524249 implements MigrationInterface {
-  name = 'InsertData1618835524249';
+export class InsertData1619179048595 implements MigrationInterface {
+  name = 'InsertData1619179048595';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(
@@ -41,16 +41,16 @@ export class InsertData1618835524249 implements MigrationInterface {
     );
 
     await queryRunner.query(
-      `INSERT INTO "images" ("id", "image", "image_team_id") VALUES (8 ,'uploads\profileimages\jirab05d9639-10f5-4ec5-85bf-087731ce4f8b.png',1);`,
+      `INSERT INTO "images" ("id", "image", "image_team_id") VALUES (8 ,'uploads\\profileimages\\jirab05d9639-10f5-4ec5-85bf-087731ce4f8b.png',1);`,
     );
     await queryRunner.query(
-      `INSERT INTO "images" ("id", "image", "image_team_id") VALUES (9 ,'uploads\profileimages\power46455bf7-ada7-495c-8019-8d7ab76d497e.png',1);`,
+      `INSERT INTO "images" ("id", "image", "image_team_id") VALUES (9 ,'uploads\\profileimages\\power46455bf7-ada7-495c-8019-8d7ab76d497e.png',1);`,
     );
     await queryRunner.query(
-      `INSERT INTO "videos" ("id", "content", "video_team_id") VALUES (5 ,'uploads\videos\coronab47da341-3258-4cf2-b19f-9f93de76241a.mp4',1);`,
+      `INSERT INTO "videos" ("id", "content", "video_team_id") VALUES (5 ,'uploads\\videos\\coronab47da341-3258-4cf2-b19f-9f93de76241a.mp4',1);`,
     );
     await queryRunner.query(
-      `INSERT INTO "videos" ("id", "content", "video_team_id") VALUES (6,'uploads\videos\aspirants95cf1dfd-43e9-4cc4-8257-a6ba5c70e3bd.mp4',1);`,
+      `INSERT INTO "videos" ("id", "content", "video_team_id") VALUES (6,'uploads\\videos\\aspirants95cf1dfd-43e9-4cc4-8257-a6ba5c70e3bd.mp4',1);`,
     );
     await queryRunner.query(
       `INSERT INTO "code_quality_snapshot" ("id", "bugs", "debt", "code_coverage" ,"status","team_id" ,"snapshot_time") VALUES (10 ,5, 21, 80,'PASSED',2,'2021-02-15 02:10:55');`,
@@ -163,7 +163,7 @@ export class InsertData1618835524249 implements MigrationInterface {
     );
 
     await queryRunner.query(
-      `INSERT INTO "user"("id", "username", "password", "role", "name", "teamId") Values(11, 'Azhar21' ,'password',0, 'Azhar', 2);`,
+      `INSERT INTO "user"("id", "username", "password", "role", "name", "teamId") Values(11, 'Azhar21' ,'password',0, 'Azhar', 1);`,
     );
     //   await queryRunner.query(`INSERT INTO USER(id, username, password, role, name, teamId) VALUES(?, ?, ?, ?, ?, ?);`, [
     //     11,
@@ -176,6 +176,7 @@ export class InsertData1618835524249 implements MigrationInterface {
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
+    await queryRunner.query(`ALTER TABLE "visibility" DROP CONSTRAINT "FK_396c9b89d74447b5dd2e60b9b24"`);
     await queryRunner.query(`ALTER TABLE "team_links" DROP CONSTRAINT "FK_e2facb7b8634882f8a0ee04979f"`);
     await queryRunner.query(`ALTER TABLE "videos" DROP CONSTRAINT "FK_d20b5471e94253b5c2f194016b7"`);
     await queryRunner.query(`ALTER TABLE "images" DROP CONSTRAINT "FK_ad3659fcd491b5a0bb65af47b5f"`);
@@ -191,6 +192,7 @@ export class InsertData1618835524249 implements MigrationInterface {
     await queryRunner.query(`ALTER TABLE "daily_meeting" DROP CONSTRAINT "FK_0654efb07db0f680ea953c810c6"`);
     await queryRunner.query(`ALTER TABLE "user" DROP CONSTRAINT "FK_1e89f1fd137dc7fea7242377e25"`);
     await queryRunner.query(`ALTER TABLE "team" DROP CONSTRAINT "FK_780f295d5c3ed479ac1358a9f01"`);
+    await queryRunner.query(`DROP TABLE "visibility"`);
     await queryRunner.query(`DROP TABLE "team_links"`);
     await queryRunner.query(`DROP TABLE "videos"`);
     await queryRunner.query(`DROP TABLE "images"`);

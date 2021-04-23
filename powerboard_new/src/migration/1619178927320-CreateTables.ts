@@ -1,7 +1,7 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
-export class CreateTables1618835482392 implements MigrationInterface {
-  name = 'CreateTables1618835482392';
+export class CreateTables1619178927320 implements MigrationInterface {
+  name = 'CreateTables1619178927320';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(
@@ -53,6 +53,9 @@ export class CreateTables1618835482392 implements MigrationInterface {
       `CREATE TABLE "team_links" ("id" SERIAL NOT NULL, "version" integer NOT NULL DEFAULT '1', "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "title" character varying(255) NOT NULL, "link" character varying(5000) NOT NULL, "team_id" integer, CONSTRAINT "PK_259fb255d02d3404b08279f41fb" PRIMARY KEY ("id"))`,
     );
     await queryRunner.query(
+      `CREATE TABLE "visibility" ("id" SERIAL NOT NULL, "version" integer NOT NULL DEFAULT '1', "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "daily_meeting" boolean , "team_link" boolean , "images" boolean , "videos" boolean , "visibility_team_id" integer, CONSTRAINT "REL_396c9b89d74447b5dd2e60b9b2" UNIQUE ("visibility_team_id"), CONSTRAINT "PK_8f15c8e8a76e82ac50fb9cbb110" PRIMARY KEY ("id"))`,
+    );
+    await queryRunner.query(
       `ALTER TABLE "team" ADD CONSTRAINT "FK_780f295d5c3ed479ac1358a9f01" FOREIGN KEY ("business_unit_id") REFERENCES "business_unit"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`,
     );
     await queryRunner.query(
@@ -97,9 +100,13 @@ export class CreateTables1618835482392 implements MigrationInterface {
     await queryRunner.query(
       `ALTER TABLE "team_links" ADD CONSTRAINT "FK_e2facb7b8634882f8a0ee04979f" FOREIGN KEY ("team_id") REFERENCES "team"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`,
     );
+    await queryRunner.query(
+      `ALTER TABLE "visibility" ADD CONSTRAINT "FK_396c9b89d74447b5dd2e60b9b24" FOREIGN KEY ("visibility_team_id") REFERENCES "team"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`,
+    );
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
+    await queryRunner.query(`ALTER TABLE "visibility" DROP CONSTRAINT "FK_396c9b89d74447b5dd2e60b9b24"`);
     await queryRunner.query(`ALTER TABLE "team_links" DROP CONSTRAINT "FK_e2facb7b8634882f8a0ee04979f"`);
     await queryRunner.query(`ALTER TABLE "videos" DROP CONSTRAINT "FK_d20b5471e94253b5c2f194016b7"`);
     await queryRunner.query(`ALTER TABLE "images" DROP CONSTRAINT "FK_ad3659fcd491b5a0bb65af47b5f"`);
@@ -115,6 +122,7 @@ export class CreateTables1618835482392 implements MigrationInterface {
     await queryRunner.query(`ALTER TABLE "daily_meeting" DROP CONSTRAINT "FK_0654efb07db0f680ea953c810c6"`);
     await queryRunner.query(`ALTER TABLE "user" DROP CONSTRAINT "FK_1e89f1fd137dc7fea7242377e25"`);
     await queryRunner.query(`ALTER TABLE "team" DROP CONSTRAINT "FK_780f295d5c3ed479ac1358a9f01"`);
+    await queryRunner.query(`DROP TABLE "visibility"`);
     await queryRunner.query(`DROP TABLE "team_links"`);
     await queryRunner.query(`DROP TABLE "videos"`);
     await queryRunner.query(`DROP TABLE "images"`);

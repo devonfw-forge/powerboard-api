@@ -8,5 +8,6 @@ import { TeamLinksCrudService } from './services/team-links.crud.service';
   imports: [TypeOrmModule.forFeature([TeamLinks])],
   providers: [TeamLinksCrudService],
   controllers: [TeamLinksCrudController],
+  exports: [TeamLinksCrudService],
 })
 export class TeamLinksModule {}

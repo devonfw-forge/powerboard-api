@@ -8,9 +8,18 @@ import { DashboardModule } from './dashboard/dashboard.module';
 import { ImagessModule } from './multimedia/images/images.module';
 import { VideosModule } from './multimedia/videos/videos.module';
 import { TeamLinksModule } from './team-links/team-links.module';
+import { VisibilityModule } from './visibility/visibility.module';
 
 @Module({
-  imports: [CoreModule, DashboardModule, DailyMeetingModule, TeamLinksModule, VideosModule, ImagessModule],
+  imports: [
+    CoreModule,
+    DashboardModule,
+    DailyMeetingModule,
+    TeamLinksModule,
+    VideosModule,
+    ImagessModule,
+    VisibilityModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })
