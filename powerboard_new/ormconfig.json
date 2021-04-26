@@ -4,19 +4,13 @@
   "port": 5432,
   "username": "postgres",
   "password": "raj",
-  "database": "Powerboard_New2",
+  "database": "Powerboard_dev",
   "synchronize": false,
   "migrationsRun": true,
   "logging": true,
-  "entities": [
-    "dist/**/*.entity.js"
-  ],
-  "migrations": [
-    "dist/migration/**/*.js"
-  ],
-  "subscribers": [
-    "dist/subscriber/**/*.js"
-  ],
+  "entities": ["dist/**/*.entity.js"],
+  "migrations": ["dist/migration/**/*.js"],
+  "subscribers": ["dist/subscriber/**/*.js"],
   "cli": {
     "entitiesDir": "src/entity",
     "migrationsDir": "src/migration",

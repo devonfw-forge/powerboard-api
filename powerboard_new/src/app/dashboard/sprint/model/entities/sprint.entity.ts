@@ -13,17 +13,17 @@ export class Sprint extends BaseEntity {
   @JoinColumn({ name: 'status', referencedColumnName: 'id' })
   status!: number;
 
-  @Column('varchar', { length: 255, nullable: false })
+  @Column('date', { nullable: false })
   start_date!: string;
 
-  @Column('varchar', { length: 255, nullable: false })
+  @Column('date', { nullable: false })
   end_date!: string;
 
   @ManyToOne(() => Team, { eager: true })
   @JoinColumn({ name: 'team_id', referencedColumnName: 'id' })
   team!: Team;
 
-  @ManyToOne(() => SprintWorkUnit, { eager: true})
+  @ManyToOne(() => SprintWorkUnit, { eager: true })
   @JoinColumn({ name: 'work_unit', referencedColumnName: 'id' })
   work_unit!: number;
 }

@@ -8,6 +8,6 @@ export class SprintSnapshot extends BaseEntity {
   @JoinColumn({ name: 'sprint_id', referencedColumnName: 'id' })
   sprint!: Sprint;
 
-  @Column('varchar', { nullable: false })
+  @Column('timestamp', { nullable: false })
   date_time!: string;
 }

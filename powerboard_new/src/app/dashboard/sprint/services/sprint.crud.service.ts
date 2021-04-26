@@ -50,7 +50,8 @@ export class SprintCrudService extends TypeOrmCrudService<Sprint> {
     //   ' and s.status = 2 order by ss.date_time desc limit(2)',
     // );
     // console.log('sprint detail with raw query');
-    // console.log(result);
+    console.log(sprintDetail);
+    console.log('hhhhhhhhhhhhhhhhhhhhhhhhhhhhhh');
     var end_date = new Date(sprintDetail[0].sprint_end_date);
     var start_date = new Date(sprintDetail[0].sprint_start_date);
     var currentDate = new Date();
