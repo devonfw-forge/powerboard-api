@@ -20,7 +20,7 @@ export class TeamSpiritCrudService extends TypeOrmCrudService<TeamSpirit> {
    * @param {teamId} ,Takes teamId as input
    * @return {TeamSpiritResponse} TeamSpirit as response for that team's previous sprint
    */
-  async getTeamSpirit(team_Id: number): Promise<TeamSpiritResponse> {
+  async getTeamSpirit(team_Id: string): Promise<TeamSpiritResponse> {
     const sprint = (await this.sprintRepository
       .createQueryBuilder('sprint')
       .where('sprint.team_id=:team_id', { team_id: team_Id })

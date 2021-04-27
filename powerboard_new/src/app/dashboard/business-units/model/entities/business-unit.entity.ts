@@ -1,16 +1,14 @@
-import { Column, Entity} from 'typeorm';
+import { Column, Entity } from 'typeorm';
 import { BaseEntity } from '../../../../shared/model/entities/base-entity.entity';
 
 @Entity()
 export class BusinessUnit extends BaseEntity {
-    @Column('varchar', { length: 255, nullable: false })
-    name!: string;
-    
-    @Column('int', { nullable: false })
-    parent_id!: number;
+  @Column('varchar', { length: 255, nullable: false })
+  name!: string;
 
-    @Column('int', { nullable: false })
-    root_parent_id!: number;
-    
-   
+  @Column('varchar', { nullable: false })
+  parent_id!: string;
+
+  @Column('varchar', { nullable: false })
+  root_parent_id!: string;
 }

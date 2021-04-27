@@ -23,7 +23,7 @@ export class SprintCrudService extends TypeOrmCrudService<Sprint> {
    * @param {teamId} ,Takes teamId as input
    * @return {SprintDetailResponse} SprintDetail as response
    */
-  async getSprintDetailResponse(teamId: number): Promise<SprintDetailResponse> {
+  async getSprintDetailResponse(teamId: string): Promise<SprintDetailResponse> {
     let sprintDetailResponse: SprintDetailResponse = {} as SprintDetailResponse;
 
     const sprintDetail = await this.sprintRepository
@@ -39,7 +39,7 @@ export class SprintCrudService extends TypeOrmCrudService<Sprint> {
       .innerJoin(SprintSnapshotMetric, 'ssm', 'ssm.snapshot_id=ss.id')
       .leftJoin(SprintMetric, 'smt', 'smt.id=ssm.metric_id')
       .where('sprint.team_id =:team_Id', { team_Id: teamId })
-      .andWhere('sprint.status=2')
+      .andWhere('sprint.status=:status', { status: '11155bf2-ada5-495c-8019-8d7ab76d488e' })
       .orderBy('ss.date_time', 'DESC')
       .limit(2)
       .getRawMany();
@@ -49,9 +49,8 @@ export class SprintCrudService extends TypeOrmCrudService<Sprint> {
     //   teamId +
     //   ' and s.status = 2 order by ss.date_time desc limit(2)',
     // );
-    // console.log('sprint detail with raw query');
+    console.log('sprint detail response ***************************************');
     console.log(sprintDetail);
-    console.log('hhhhhhhhhhhhhhhhhhhhhhhhhhhhhh');
     var end_date = new Date(sprintDetail[0].sprint_end_date);
     var start_date = new Date(sprintDetail[0].sprint_start_date);
     var currentDate = new Date();
@@ -72,7 +71,7 @@ export class SprintCrudService extends TypeOrmCrudService<Sprint> {
    * @param {teamId} teamId Takes teamId as input
    * @return {BurndownResponse} Burndown as response for that team's current sprint
    */
-  async getBurndown(teamId: number): Promise<BurndownResponse> {
+  async getBurndown(teamId: string): Promise<BurndownResponse> {
     let output: BurndownResponse = {} as BurndownResponse;
 
     const sprintForBurndown = await this.sprintRepository
@@ -90,7 +89,7 @@ export class SprintCrudService extends TypeOrmCrudService<Sprint> {
       .innerJoin(SprintWorkUnit, 'sw', 'sw.id=sprint.work_unit')
       .leftJoin(SprintMetric, 'smt', 'smt.id=ssm.metric_id')
       .where('sprint.team_id =:team_Id', { team_Id: teamId })
-      .andWhere('sprint.status=2')
+      .andWhere('sprint.status=:status', { status: '11155bf2-ada5-495c-8019-8d7ab76d488e' })
       .orderBy('ss.date_time', 'DESC')
       .limit(2)
       .getRawMany();
@@ -100,8 +99,8 @@ export class SprintCrudService extends TypeOrmCrudService<Sprint> {
     //   teamId +
     //   ' and s.status = 2 order by ss.date_time desc limit(2)',
     // );
-    // console.log('burndown with raw query')
-    // console.log(result);
+    console.log('Get Burndown ***************************');
+    console.log(sprintForBurndown);
     const start_date = new Date(sprintForBurndown[0].sprint_start_date);
     const end_date = new Date(sprintForBurndown[0].sprint_end_date);
     const diff = Math.abs(new Date().getTime() - start_date.getTime());
@@ -176,7 +175,7 @@ export class SprintCrudService extends TypeOrmCrudService<Sprint> {
    * @param {teamId} teamId Takes teamId as input
    * @return {VelocityComparisonResponse} VelocityComparison as response for that team's current sprint
    */
-  async getVelocityComparison(teamId: number): Promise<VelocityComparisonResponse> {
+  async getVelocityComparison(teamId: string): Promise<VelocityComparisonResponse> {
     const sprintMetricsResponse = await this.sprintRepository
       .createQueryBuilder('sprint')
       .addSelect('sprint.id', 'sprint_id')
@@ -189,7 +188,7 @@ export class SprintCrudService extends TypeOrmCrudService<Sprint> {
       .innerJoin(SprintSnapshotMetric, 'ssm', 'ssm.snapshot_id=ss.id')
       .leftJoin(SprintMetric, 'smt', 'smt.id=ssm.metric_id')
       .where('sprint.team_id =:team_Id', { team_Id: teamId })
-      .andWhere('sprint.status=2')
+      .andWhere('sprint.status=:status', { status: '11155bf2-ada5-495c-8019-8d7ab76d488e' })
       .orderBy('ss.date_time', 'DESC')
       .limit(2)
       .getRawMany();
@@ -200,8 +199,8 @@ export class SprintCrudService extends TypeOrmCrudService<Sprint> {
     //   ' and s.status = 2 order by ss.date_time desc limit(2)',
     // );
 
-    // console.log('Using Raw Query')
-    // console.log(sprintMetricsResponse);
+    console.log('Get Velocity Comparison');
+    console.log(sprintMetricsResponse);
 
     const previousSprintCompleted = await this.sprintRepository
       .createQueryBuilder('sprint')
@@ -215,11 +214,12 @@ export class SprintCrudService extends TypeOrmCrudService<Sprint> {
       .innerJoin(SprintSnapshotMetric, 'ssm', 'ssm.snapshot_id=ss.id')
       .leftJoin(SprintMetric, 'smt', 'smt.id=ssm.metric_id')
       .where('sprint.team_id =:team_Id', { team_Id: teamId })
-      .andWhere('sprint.status=3')
-      .andWhere('ssm.metric_id=2')
+      .andWhere('sprint.status=:status', { status: '11155bf3-ada5-495c-8019-8d7ab76d488e' })
+      .andWhere('ssm.metric_id=:metric_id', { metric_id: '11155bf2-ada5-495c-8019-8d7ab76d488e' })
       .orderBy('sprint.id')
       .getRawMany();
-
+    console.log('Previous sprint completed ***********************');
+    console.log(previousSprintCompleted);
     // const previousSprintCompleted = await this.sprintRepository.query(
     //   'select s.id ,st.status, ss.id, smt.name, ssd.value from sprint s INNER JOIN sprint_status st ON st.id = s.status INNER JOIN sprint_snapshot ss ON ss.sprint_id = s.id INNER JOIN sprint_snapshot_metric ssd ON ssd.snapshot_id = ss.id  LEFT JOIN sprint_metric smt ON smt.id = ssd.metric_id  where s.team_id =' +
     //   teamId +

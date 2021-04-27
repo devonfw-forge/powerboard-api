@@ -58,7 +58,7 @@ export class ImagesCrudController {
 
   @Post('uploadImage/:teamId')
   @UseInterceptors(FileInterceptor('file', storage))
-  async uploadImage(@UploadedFile() file: Express.Multer.File, @Param('teamId') teamId: number): Promise<Object> {
+  async uploadImage(@UploadedFile() file: Express.Multer.File, @Param('teamId') teamId: string): Promise<Object> {
     console.log(file);
     const result = this.imageService.setImagePath(file.path, teamId);
     return result;
@@ -76,7 +76,7 @@ export class ImagesCrudController {
   }
 
   @Delete('delete/:id')
-  async deleteImageById(@Param('id') imageId: number): Promise<any> {
+  async deleteImageById(@Param('id') imageId: string): Promise<any> {
     return await this.imageService.deleteImageById(imageId);
   }
   @Post('multiple')

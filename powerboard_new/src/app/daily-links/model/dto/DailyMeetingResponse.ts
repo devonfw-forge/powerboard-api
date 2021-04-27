@@ -1,5 +1,5 @@
 export interface DailyMeetingResponse {
-  dailyMeetingId: number;
+  dailyMeetingId: string;
   type: string;
   links: string;
 }

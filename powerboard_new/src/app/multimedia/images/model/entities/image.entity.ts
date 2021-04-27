@@ -9,5 +9,5 @@ export class Images extends BaseEntity {
 
   @ManyToOne(() => Team, { eager: true })
   @JoinColumn({ name: 'image_team_id', referencedColumnName: 'id' })
-  team!: number;
+  team!: string;
 }

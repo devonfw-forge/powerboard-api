@@ -1,5 +1,5 @@
 export interface VisibilityDTO {
-  teamId: number;
+  teamId: string;
   name: string;
   value: boolean;
 }

@@ -16,12 +16,12 @@ export class TeamLinksCrudController {
   constructor(public teamLinksService: TeamLinksCrudService) {}
 
   @Get('teamId/:id')
-  async getDailyMeeting(@Param('id') teamId: number): Promise<any> {
+  async getDailyMeeting(@Param('id') teamId: string): Promise<any> {
     return await this.teamLinksService.getTeamLinks(teamId);
   }
 
   @Delete('delete/:id')
-  async deleteTeamLinkById(@Param('id') teamLinkId: number): Promise<any> {
+  async deleteTeamLinkById(@Param('id') teamLinkId: string): Promise<any> {
     return await this.teamLinksService.deleteTeamLinkById(teamLinkId);
   }
 

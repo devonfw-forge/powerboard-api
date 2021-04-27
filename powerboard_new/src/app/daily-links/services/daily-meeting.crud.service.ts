@@ -18,7 +18,7 @@ export class DailyMeetingCrudService extends TypeOrmCrudService<DailyMeeting> {
    * @return {DailyMeetingResponse} Daily Link as response for that team
    */
   meetingResponse: DailyMeetingResponse = {} as DailyMeetingResponse;
-  async getDailyLinks(team_Id: number): Promise<DailyMeetingResponse[]> {
+  async getDailyLinks(team_Id: string): Promise<DailyMeetingResponse[]> {
     const result = (await this.dailyLinkRepository
       .createQueryBuilder('daily_link')
       .where('daily_link.daily_team_id=:team_id', { team_id: team_Id })

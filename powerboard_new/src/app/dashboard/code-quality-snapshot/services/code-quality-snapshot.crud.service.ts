@@ -18,7 +18,7 @@ export class CodeQualitySnapshotCrudService extends TypeOrmCrudService<CodeQuali
    * @return {CodeQualityResponse} Code Quality as response for that team
    */
   codeQualityResponse: CodeQualityResponse = {} as CodeQualityResponse;
-  async getCodeQualitySnapshot(team_Id: number): Promise<CodeQualityResponse> {
+  async getCodeQualitySnapshot(team_Id: string): Promise<CodeQualityResponse> {
     const result = (await this.codeQualityRepository
       .createQueryBuilder('code_quality_snapshot')
       .where('code_quality_snapshot.team_id=:team_id', { team_id: team_Id })

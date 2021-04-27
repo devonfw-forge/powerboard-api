@@ -20,7 +20,7 @@ export class ClientStatusCrudService extends TypeOrmCrudService<ClientStatus> {
    * @return {ClientStatusResponse} ClientStatus as response for that team's previous sprint
    */
   clientStatus: ClientStatusResponse = {} as ClientStatusResponse;
-  async getClientFeedback(team_Id: number): Promise<ClientStatusResponse> {
+  async getClientFeedback(team_Id: string): Promise<ClientStatusResponse> {
     const sprint = (await this.sprintRepository
       .createQueryBuilder('sprint')
       .where('sprint.team_id=:team_id', { team_id: team_Id })

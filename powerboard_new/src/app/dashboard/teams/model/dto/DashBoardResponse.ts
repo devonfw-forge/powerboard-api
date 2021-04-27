@@ -6,12 +6,12 @@ import { BurndownResponse } from '../../../sprint/model/dto/BurndownResponse';
 import { VelocityComparisonResponse } from '../../../sprint/model/dto/VelocityComparisonResponse';
 
 export interface DashBoardResponse {
-  teamId: number;
-  teamStatus:number;
+  teamId: string;
+  teamStatus: number;
   codeQualityResponse: CodeQualityResponse;
-  clientStatusResponse: ClientStatusResponse 
-  teamSpiritResponse:TeamSpiritResponse;
-  burndownResponse: BurndownResponse
-  sprintDetailResponse:SprintDetailResponse
+  clientStatusResponse: ClientStatusResponse;
+  teamSpiritResponse: TeamSpiritResponse;
+  burndownResponse: BurndownResponse;
+  sprintDetailResponse: SprintDetailResponse;
   velocityResponse: VelocityComparisonResponse;
 }

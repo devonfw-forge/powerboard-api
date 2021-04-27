@@ -20,7 +20,7 @@ export class TeamCrudController {
 
   @Get('user/:id')
   async getDashboardByUserId(
-    @Param('id') userId: number,
+    @Param('id') userId: string,
     @Body() value: any,
   ): Promise<LoginResponse | ElectronBoardResponse> {
     console.log(value.flag);
@@ -34,13 +34,13 @@ export class TeamCrudController {
   }
 
   @Get('team/:id')
-  async getDashboardByTeamId(@Param('id') teamId: number): Promise<DashBoardResponse> {
+  async getDashboardByTeamId(@Param('id') teamId: string): Promise<DashBoardResponse> {
     const teamResponse = await this.teamService.getDashboardByTeamId(teamId);
     return teamResponse;
   }
 
   @Get('BU/:id')
-  async getTeamsByBUId(@Param('id') BU_Id: number): Promise<TeamResponse[]> {
+  async getTeamsByBUId(@Param('id') BU_Id: string): Promise<TeamResponse[]> {
     return this.teamService.getTeamsByBUId(BU_Id);
   }
 }

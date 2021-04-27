@@ -1,4 +1,4 @@
 export interface VideoResponse {
-  videoId: number;
+  videoId: string;
   videoPath: string;
 }

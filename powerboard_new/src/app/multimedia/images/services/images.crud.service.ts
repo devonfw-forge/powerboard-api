@@ -17,7 +17,7 @@ export class ImagesCrudService extends TypeOrmCrudService<Images> {
    * @param {teamId, path} .Takes teamId and path as input
    * @return {Images} Images as response for that team
    */
-  async setImagePath(path: string, teamId: number): Promise<Images> {
+  async setImagePath(path: string, teamId: string): Promise<Images> {
     let image = new Images();
     image.image = path;
     image.team = teamId;
@@ -29,7 +29,7 @@ export class ImagesCrudService extends TypeOrmCrudService<Images> {
    * @param {teamId} .Takes teamId as input
    * @return {TeamLinks} ImageResponse[] as response for that team
    */
-  async getPathOfImage(teamId: number): Promise<ImageResponse[]> {
+  async getPathOfImage(teamId: string): Promise<ImageResponse[]> {
     const result = await this.imageRepository.find({ where: { team: teamId } });
     let i = 0;
     let dailyMeetingArray = [];
@@ -45,7 +45,7 @@ export class ImagesCrudService extends TypeOrmCrudService<Images> {
   /**
    * deleteImageById method will delete the images on basis of id
    */
-  async deleteImageById(imageId: number): Promise<any> {
+  async deleteImageById(imageId: string): Promise<any> {
     return await this.imageRepository.delete(imageId);
   }
 }
