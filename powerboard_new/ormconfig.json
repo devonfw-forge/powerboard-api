@@ -3,8 +3,13 @@
   "host": "localhost",
   "port": 5432,
   "username": "postgres",
+<<<<<<< HEAD
   "password": "raj",
   "database": "Powerboard_New2",
+=======
+  "password": "Syed@7545",
+  "database": "PowerBoard_New",
+>>>>>>> 706fcb62c562176d23ea4fd55587c8f2f888ac76
   "synchronize": false,
   "migrationsRun": true,
   "logging": true,

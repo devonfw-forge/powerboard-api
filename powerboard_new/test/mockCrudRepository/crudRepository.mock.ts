@@ -42,3 +42,8 @@ export class ClientStatusRepositoryMock extends MockRepository {}
 export class TeamRepositoryMock extends MockRepository {}
 export class BusinessUnitRepositoryMock extends MockRepository {}
 export class UserRepositoryMock extends MockRepository {}
+export class DailyMeetingLinkMock extends MockRepository {}
+export class TeamLinksMock extends MockRepository {}
+export class ImagesMock extends MockRepository {}
+export class VideosMock extends MockRepository {}
+export class VisibilityMock extends MockRepository {}
