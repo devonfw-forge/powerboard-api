@@ -18,8 +18,6 @@ import { diskStorage } from 'multer';
 import { v4 as uuidv4 } from 'uuid';
 import path = require('path');
 import { join } from 'path';
-//import { join } from 'path';
-//import { join } from 'path';
 
 export const storage = {
   storage: diskStorage({
@@ -32,20 +30,6 @@ export const storage = {
     },
   }),
 };
-
-// export const storage = {
-//   storage: diskStorage({
-//       destination: './uploads/profileimages',
-//       filename: (req, file, cb) => {
-//           const filename: string = path.parse(file.originalname).name.replace(/\s/g, '') + uuidv4();
-//           const extension: string = path.parse(file.originalname).ext;
-
-//           cb(null, `${filename}${extension}`)
-//       }
-//   })
-
-// }
-
 @Crud({
   model: {
     type: Images,
@@ -62,7 +46,6 @@ export class ImagesCrudController {
     console.log(file);
     const result = this.imageService.setImagePath(file.path, teamId);
     return result;
-    //return { imagePath: file.path };
   }
   @Get('imagename/:imagename')
   async findProfileImage(@Param('imagename') imagename: any, @Res() res: any): Promise<Object> {

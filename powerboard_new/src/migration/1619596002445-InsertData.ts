@@ -30,7 +30,7 @@ export class InsertData1619596002445 implements MigrationInterface {
     );
 
     await queryRunner.query(
-      `INSERT INTO "team" ("id","logo", "name", "business_unit_id") VALUES ('46455bf7-ada7-495c-8019-8d7ab76d488e' ,'','Diamler Devops','46655bf7-ada7-495c-8019-8d7ab62d488e');`,
+      `INSERT INTO "team" ("id","logo", "name", "business_unit_id") VALUES ('46455bf7-ada7-495c-8019-8d7ab76d488e' ,'uploads\\logo\\logo31ca9983-ae97-4bb0-9f22-4867d3cc16a0.png','Diamler Devops','46655bf7-ada7-495c-8019-8d7ab62d488e');`,
     );
     await queryRunner.query(
       `INSERT INTO "team" ("id","logo", "name", "business_unit_id") VALUES ('46455bf7-ada7-495c-8019-8d7ab76d489e' ,'' ,'Devon','46355bf7-ada7-495c-8019-8d7ab62d488e');`,

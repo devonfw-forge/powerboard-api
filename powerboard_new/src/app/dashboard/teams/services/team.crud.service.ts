@@ -170,6 +170,20 @@ export class TeamCrudService extends TypeOrmCrudService<Team> {
   }
 
   /**
+   * setLogoPath method will set logo for that team
+   * @param {teamId, path} .Takes teamId and path as input
+   * @return {Images} Images as response for that team
+   */
+  async setLogoPath(path: string, teamId: string): Promise<any> {
+    const output = (await this.teamRepository.findOne({ where: { id: teamId } })) as Team;
+    let team = new Team();
+    if (output) {
+      team.id = output.id;
+    }
+    team.logo = path;
+    return await this.teamRepository.save(team);
+  }
+  /**
    * fetchstatus method will fetch the status of all respective KPI's of dashboard
    * @param {dashboard} dashboard takes dashboard object as input
    * @return {number} number as status value
@@ -201,6 +215,7 @@ export class TeamCrudService extends TypeOrmCrudService<Team> {
       const teamId = users.teamId.id;
       this.board.teamId = teamId;
       this.board.center = users.teamId.business_unit.name;
+      this.board.teamLogo = users.teamId.logo;
       const dailyMeeting: DailyMeetingResponse[] = await this.dailyMeetingService.getDailyLinks(teamId);
       this.board.dailyMeetingResponse = dailyMeeting;
 
