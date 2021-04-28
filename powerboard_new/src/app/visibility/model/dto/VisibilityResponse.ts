@@ -1,5 +1,5 @@
 export interface VisibilityResponse {
-  teamId: number;
+  teamId: string;
   video: boolean;
   image: boolean;
   teamLinks: boolean;

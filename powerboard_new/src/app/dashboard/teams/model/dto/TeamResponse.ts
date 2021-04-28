@@ -1,5 +1,5 @@
 export interface TeamResponse {
-  teamId: number;
+  teamId: string;
   teamName: string;
-  status:number;
+  status: number;
 }

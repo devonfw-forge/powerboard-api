@@ -18,7 +18,7 @@ export class TeamLinksCrudService extends TypeOrmCrudService<TeamLinks> {
    * @return {TeamLinkResponse} Team Links as response for that team
    */
   teamLinkResponse: TeamLinkResponse = {} as TeamLinkResponse;
-  async getTeamLinks(team_Id: number): Promise<TeamLinkResponse[]> {
+  async getTeamLinks(team_Id: string): Promise<TeamLinkResponse[]> {
     const result = (await this.teamLinkRepository
       .createQueryBuilder('team_link')
       .where('team_link.team_id=:team_id', { team_id: team_Id })
@@ -39,7 +39,7 @@ export class TeamLinksCrudService extends TypeOrmCrudService<TeamLinks> {
   /**
    * deleteteamLinkById method will delete the link of team
    */
-  async deleteTeamLinkById(teamLinkId: number): Promise<any> {
+  async deleteTeamLinkById(teamLinkId: string): Promise<any> {
     return await this.teamLinkRepository.delete(teamLinkId);
   }
 

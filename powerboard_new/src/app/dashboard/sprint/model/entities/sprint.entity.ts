@@ -25,5 +25,5 @@ export class Sprint extends BaseEntity {
 
   @ManyToOne(() => SprintWorkUnit, { eager: true })
   @JoinColumn({ name: 'work_unit', referencedColumnName: 'id' })
-  work_unit!: number;
+  work_unit!: string;
 }

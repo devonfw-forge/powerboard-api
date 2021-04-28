@@ -9,5 +9,5 @@ export class Videos extends BaseEntity {
 
   @ManyToOne(() => Team, { eager: true })
   @JoinColumn({ name: 'video_team_id', referencedColumnName: 'id' })
-  team!: number;
+  team!: string;
 }

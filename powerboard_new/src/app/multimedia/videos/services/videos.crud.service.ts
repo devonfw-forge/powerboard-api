@@ -17,7 +17,7 @@ export class VideosCrudService extends TypeOrmCrudService<Videos> {
    * @param {teamId, videoPath} .Takes teamId and videoPath as input
    * @return {Videos} Videos as response for that team
    */
-  async setVideoPath(path: string, teamId: number): Promise<Videos> {
+  async setVideoPath(path: string, teamId: string): Promise<Videos> {
     let videos = new Videos();
     videos.content = path;
     videos.team = teamId;
@@ -29,7 +29,7 @@ export class VideosCrudService extends TypeOrmCrudService<Videos> {
    * @param {teamId} .Takes teamId as input
    * @return {VideoResponse[]} VideoResponse[] as response for that team
    */
-  async getPathOfVideos(teamId: number): Promise<VideoResponse[]> {
+  async getPathOfVideos(teamId: string): Promise<VideoResponse[]> {
     const result = await this.videoRepository.find({ where: { team: teamId } });
     let i = 0;
     let videoResponseArray = [];
@@ -45,7 +45,7 @@ export class VideosCrudService extends TypeOrmCrudService<Videos> {
   /**
    * deleteVideoById method will delete video on basis of id
    *   */
-  async deleteVideoById(videoId: number): Promise<any> {
+  async deleteVideoById(videoId: string): Promise<any> {
     return await this.videoRepository.delete(videoId);
   }
 }

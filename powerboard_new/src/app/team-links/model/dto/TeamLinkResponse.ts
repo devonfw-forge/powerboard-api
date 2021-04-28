@@ -1,5 +1,5 @@
 export interface TeamLinkResponse {
-  teamLinkId: number;
+  teamLinkId: string;
   title: string;
   links: string;
 }

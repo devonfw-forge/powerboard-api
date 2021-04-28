@@ -59,7 +59,7 @@ export class TeamCrudService extends TypeOrmCrudService<Team> {
    * @param {userId} userId Takes userId as input
    * @return {LoginResponse} Dashboard as well as breadcrumb and dumb BU List
    */
-  async getDashboardByUserId(userId: number): Promise<LoginResponse> {
+  async getDashboardByUserId(userId: string): Promise<LoginResponse> {
     this.loginResponse.user_breadCrumb = [];
     this.loginResponse.dump_businessUnit = [];
     const users: User = (await this.userRepository.findOne({ where: { id: userId } })) as User;
@@ -97,9 +97,9 @@ export class TeamCrudService extends TypeOrmCrudService<Team> {
    * @param {business ,businessUnitsId} ,it takes business[] and businessUnitsId as input
    * @return {BreadCrumbResponse} BreadCrumb array will be returned as response
    */
-  getBUOrder(business: BusinessUnit[], businessUnitsId: number): BreadCrumbResponse[] {
+  getBUOrder(business: BusinessUnit[], businessUnitsId: string): BreadCrumbResponse[] {
     let i,
-      nextParentId = 0;
+      nextParentId = '';
     let iterate: Boolean = true;
     while (iterate) {
       for (i = 0; i < business.length; i++) {
@@ -125,7 +125,7 @@ export class TeamCrudService extends TypeOrmCrudService<Team> {
    * @param {teamId} teamId Takes teamId as input
    * @return {DashBoardResponse} . Dashboard with all KPI's
    */
-  async getDashboardByTeamId(teamId: number): Promise<DashBoardResponse> {
+  async getDashboardByTeamId(teamId: string): Promise<DashBoardResponse> {
     this.dash.teamId = teamId;
 
     const codeQuality: CodeQualityResponse = await this.codequalityService.getCodeQualitySnapshot(teamId);
@@ -153,7 +153,7 @@ export class TeamCrudService extends TypeOrmCrudService<Team> {
    * @param {Bu_id} Bu_id it takes Business Unit as input
    * @return {TeamResponse[]} list of teams with their status
    */
-  async getTeamsByBUId(BU_id: number): Promise<TeamResponse[]> {
+  async getTeamsByBUId(BU_id: string): Promise<TeamResponse[]> {
     const teams: Team[] = await this.teamRepository.find({ where: { business_unit: BU_id } });
     let teamsResponse: TeamResponse = {} as TeamResponse;
     let teamsDTOArray = [],
@@ -195,10 +195,12 @@ export class TeamCrudService extends TypeOrmCrudService<Team> {
     return statusResult;
   }
   board: ElectronBoardResponse = {} as ElectronBoardResponse;
-  async getElectronBoardByUserId(userId: number): Promise<ElectronBoardResponse> {
+  async getElectronBoardByUserId(userId: string): Promise<ElectronBoardResponse> {
     const users: User = (await this.userRepository.findOne({ where: { id: userId } })) as User;
     if (users) {
       const teamId = users.teamId.id;
+      this.board.teamId = teamId;
+      this.board.center = users.teamId.business_unit.name;
       const dailyMeeting: DailyMeetingResponse[] = await this.dailyMeetingService.getDailyLinks(teamId);
       this.board.dailyMeetingResponse = dailyMeeting;
 

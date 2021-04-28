@@ -17,5 +17,5 @@ export class Visibility extends BaseEntity {
 
   @OneToOne(() => Team, { eager: true })
   @JoinColumn({ name: 'visibility_team_id', referencedColumnName: 'id' })
-  team!: number;
+  team!: string;
 }

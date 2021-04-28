@@ -43,7 +43,7 @@ export class VideosCrudController {
 
   @Post('uploadVideo/:teamId')
   @UseInterceptors(FileInterceptor('file', storage))
-  async uploadVideo(@UploadedFile() file: Express.Multer.File, @Param('teamId') teamId: number): Promise<Object> {
+  async uploadVideo(@UploadedFile() file: Express.Multer.File, @Param('teamId') teamId: string): Promise<Object> {
     console.log(file);
     const result = this.videoService.setVideoPath(file.path, teamId);
     return result;
@@ -57,7 +57,7 @@ export class VideosCrudController {
   }
 
   @Delete('delete/:id')
-  async deleteVideoById(@Param('id') videoId: number): Promise<any> {
+  async deleteVideoById(@Param('id') videoId: string): Promise<any> {
     return await this.videoService.deleteVideoById(videoId);
   }
   @Get('videoname/:videoname')

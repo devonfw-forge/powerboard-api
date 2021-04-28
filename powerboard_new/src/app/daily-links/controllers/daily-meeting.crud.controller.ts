@@ -16,7 +16,7 @@ export class DailyMeetingCrudController {
   constructor(public dailyMeetingService: DailyMeetingCrudService) {}
 
   @Get('teamId/:id')
-  async getDailyMeeting(@Param('id') teamId: number): Promise<any> {
+  async getDailyMeeting(@Param('id') teamId: string): Promise<any> {
     return await this.dailyMeetingService.getDailyLinks(teamId);
   }
 

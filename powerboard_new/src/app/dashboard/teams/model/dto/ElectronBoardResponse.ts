@@ -5,6 +5,8 @@ import { TeamLinkResponse } from '../../../../team-links/model/dto/TeamLinkRespo
 import { VisibilityResponse } from '../../../../visibility/model/dto/VisibilityResponse';
 
 export interface ElectronBoardResponse {
+  teamId: string;
+  center: string;
   dailyMeetingResponse: DailyMeetingResponse[];
   teamLinkResponse: TeamLinkResponse[];
   imageResponse: ImageResponse[];
