@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param } from '@nestjs/common';
+import { Controller, Get, Param } from '@nestjs/common';
 import { Crud } from '@nestjsx/crud';
 import { CrudType } from '@devon4node/common/serializer';
 import { Team } from '../model/entities/team.entity';
@@ -18,13 +18,12 @@ import { ElectronBoardResponse } from '../model/dto/ElectronBoardResponse';
 export class TeamCrudController {
   constructor(public teamService: TeamCrudService) {}
 
-  @Get('user/:id')
+  @Get('user/:id/:flag')
   async getDashboardByUserId(
     @Param('id') userId: string,
-    @Body() value: any,
+    @Param('flag') flag: boolean,
   ): Promise<LoginResponse | ElectronBoardResponse> {
-    console.log(value.flag);
-    if (value.flag) {
+    if (flag) {
       const loginResponse = await this.teamService.getDashboardByUserId(userId);
       return loginResponse;
     } else {
