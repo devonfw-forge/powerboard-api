@@ -37,6 +37,7 @@ describe('TeamLinksCrudService', () => {
       createdAt: '2021-03-12T17:36:31.141Z',
       updatedAt: '2021-03-12T17:36:31.141Z',
       name: 'Diamler Devops',
+      logo: 'uploads\\logo\\logo31ca9983-ae97-4bb0-9f22-4867d3cc16a0.png',
       business_unit: {
         id: '46655bf7-ada7-495c-8019-8d7ab62d488e',
         version: 1,
@@ -100,6 +101,7 @@ describe('TeamLinksCrudService', () => {
       createdAt: '2021-03-12T17:36:31.141Z',
       updatedAt: '2021-03-12T17:36:31.141Z',
       name: 'Diamler Devops',
+      logo: 'uploads\\logo\\logo31ca9983-ae97-4bb0-9f22-4867d3cc16a0.png',
       business_unit: {
         id: '46655bf7-ada7-495c-8019-8d7ab62d488e',
         version: 1,
@@ -122,6 +124,7 @@ describe('TeamLinksCrudService', () => {
       team: '46455bf7-ada7-495c-8019-8d7ab76d488e',
       id: '2299aacf-ba66-4815-b082-f02a68d96008',
     };
+
     jest.spyOn(teamLinkRepo, 'save').mockImplementation(() => expectedTeamLinkSaved);
     const actualSavedTeamLink = await teamLinkService.createTeamLinks(teamLinkDTO);
     expect(teamLinkRepo.save).toBeCalledTimes(1);

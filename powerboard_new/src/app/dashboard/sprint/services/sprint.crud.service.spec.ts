@@ -39,6 +39,7 @@ describe('SprintCrudService', () => {
     createdAt: '2021-03-12T17:36:31.141Z',
     updatedAt: '2021-03-12T17:36:31.141Z',
     name: 'Diamler Devops',
+    logo: 'uploads\\logo\\logo31ca9983-ae97-4bb0-9f22-4867d3cc16a0.png',
     business_unit: {
       id: '46655bf7-ada7-495c-8019-8d7ab62d488e',
       version: 1,

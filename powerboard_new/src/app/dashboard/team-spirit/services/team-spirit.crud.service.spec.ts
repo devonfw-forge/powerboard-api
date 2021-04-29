@@ -43,53 +43,38 @@ describe('TeamSpiritCrudService', () => {
   });
 
   it('getTeamSpirit() method should return teamSpiritResponse', async () => {
+    const team1: Team = {
+      id: '46455bf7-ada7-495c-8019-8d7ab76d488e',
+      version: 1,
+      createdAt: '2021-03-12T17:36:31.141Z',
+      updatedAt: '2021-03-12T17:36:31.141Z',
+      name: 'Diamler Devops',
+      logo: 'uploads\\logo\\logo31ca9983-ae97-4bb0-9f22-4867d3cc16a0.png',
+      business_unit: {
+        id: '46655bf7-ada7-495c-8019-8d7ab62d488e',
+        version: 1,
+        createdAt: '2021-03-12T17:36:31.141Z',
+        updatedAt: '2021-03-12T17:36:31.141Z',
+        name: 'ADC Bangalore',
+        parent_id: '46555bf7-ada7-495c-8019-8d7ab62d488e',
+        root_parent_id: '11111bf1-ada1-111c-1111-1d1ab11d111e',
+      },
+    };
     const sprint: Sprint = {
-      id: 2,
+      id: '20255bf8-ada5-495c-8019-8d7ab76d488e',
       version: 1,
       createdAt: '2021-03-22T08:39:31.870Z',
       updatedAt: '2021-03-22T08:39:31.870Z',
       sprint_number: 10,
       start_date: '2021-02-10',
       end_date: '2021-02-25',
-      status: 3,
-      team: {
-        id: 1,
-        version: 1,
-        createdAt: '2021-03-12T17:36:31.141Z',
-        updatedAt: '2021-03-12T17:36:31.141Z',
-        name: 'Diamler Devops',
-        business_unit: {
-          id: 4,
-          version: 1,
-          createdAt: '2021-03-12T17:36:31.141Z',
-          updatedAt: '2021-03-12T17:36:31.141Z',
-          name: 'ADC Bangalore',
-          parent_id: 3,
-          root_parent_id: 1,
-        },
-      },
-      work_unit: 2,
-    };
-
-    const team1: Team = {
-      id: 1,
-      version: 1,
-      createdAt: '2021-03-12T17:36:31.141Z',
-      updatedAt: '2021-03-12T17:36:31.141Z',
-      name: 'Diamler Devops',
-      business_unit: {
-        id: 4,
-        version: 1,
-        createdAt: '2021-03-12T17:36:31.141Z',
-        updatedAt: '2021-03-12T17:36:31.141Z',
-        name: 'ADC Bangalore',
-        parent_id: 3,
-        root_parent_id: 1,
-      },
+      status: '11155bf3-ada5-495c-8019-8d7ab76d488e',
+      team: team1,
+      work_unit: '11155bf2-ada5-495c-8019-8d7ab76d488e',
     };
 
     const teamSpirit: TeamSpirit = {
-      id: 1,
+      id: '20111bf8-ada5-495c-8019-8d7ab76d488e',
       version: 1,
       createdAt: '2021-03-22T08:39:31.870Z',
       updatedAt: '2021-03-22T08:39:31.870Z',

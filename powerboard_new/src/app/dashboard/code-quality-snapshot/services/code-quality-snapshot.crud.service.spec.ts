@@ -35,24 +35,25 @@ describe('CodeQualitySnapshotCrudService', () => {
 
   describe('getCodeQualitySnapshot', () => {
     const team1: Team = {
-      id: 1,
+      id: '46455bf7-ada7-495c-8019-8d7ab76d488e',
       version: 1,
       createdAt: '2021-03-12T17:36:31.141Z',
       updatedAt: '2021-03-12T17:36:31.141Z',
       name: 'Diamler Devops',
+      logo: 'uploads\\logo\\logo31ca9983-ae97-4bb0-9f22-4867d3cc16a0.png',
       business_unit: {
-        id: 4,
+        id: '46655bf7-ada7-495c-8019-8d7ab62d488e',
         version: 1,
         createdAt: '2021-03-12T17:36:31.141Z',
         updatedAt: '2021-03-12T17:36:31.141Z',
         name: 'ADC Bangalore',
-        parent_id: 3,
-        root_parent_id: 1,
+        parent_id: '46555bf7-ada7-495c-8019-8d7ab62d488e',
+        root_parent_id: '11111bf1-ada1-111c-1111-1d1ab11d111e',
       },
     };
 
     const codeQuality: CodeQualitySnapshot = {
-      id: 12,
+      id: '61155bf8-ada5-495c-8019-8d7ab76d488e',
       version: 1,
       createdAt: '2021-03-22T08:39:31.870Z',
       updatedAt: '2021-03-22T08:39:31.870Z',
@@ -61,22 +62,7 @@ describe('CodeQualitySnapshotCrudService', () => {
       code_coverage: 90,
       status: 'PASSED',
       snapshot_time: '2021-02-25T09:00:22.000Z',
-      team: {
-        id: 1,
-        version: 1,
-        createdAt: '2021-03-22T08:39:31.870Z',
-        updatedAt: '2021-03-22T08:39:31.870Z',
-        name: 'Diamler Devops',
-        business_unit: {
-          id: 4,
-          version: 1,
-          createdAt: '2021-03-12T17:36:31.141Z',
-          updatedAt: '2021-03-12T17:36:31.141Z',
-          name: 'ADC Bangalore',
-          parent_id: 3,
-          root_parent_id: 1,
-        },
-      },
+      team: team1,
     };
 
     it('should return code quality response of the existed team', async () => {

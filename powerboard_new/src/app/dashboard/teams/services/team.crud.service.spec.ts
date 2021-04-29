@@ -48,6 +48,7 @@ import { TeamLinks } from '../../../team-links/model/entities/team-links.entity'
 import { Images } from '../../../multimedia/images/model/entities/image.entity';
 import { Videos } from '../../../multimedia/videos/model/entities/videos.entity';
 import { Visibility } from '../../../visibility/model/entities/visibility.entity';
+import { UserInfo } from '../../../core/userinfo/model/entities/userinfo.entity';
 
 describe('TeamCrudService', () => {
   let teamService: TeamCrudService;
@@ -188,6 +189,7 @@ describe('TeamCrudService', () => {
       createdAt: '2021-03-12T17:36:31.141Z',
       updatedAt: '2021-03-12T17:36:31.141Z',
       name: 'Diamler Devops',
+      logo: 'uploads\\logo\\logo31ca9983-ae97-4bb0-9f22-4867d3cc16a0.png',
       business_unit: {
         id: '46655bf7-ada7-495c-8019-8d7ab62d488e',
         version: 1,
@@ -199,6 +201,18 @@ describe('TeamCrudService', () => {
       },
     };
 
+    const userInfo: UserInfo = {
+      id: '',
+      version: 1,
+      createdAt: '2021-03-12T17:36:31.141Z',
+      updatedAt: '2021-03-12T17:36:31.141Z',
+      firstName: 'Azhar',
+      lastName: 'Hussain',
+      center: 'ADCenter Bangalore',
+      email: 'azharhussain123@gmail.com',
+      teameSpiritName: '',
+    };
+
     const user: User = {
       id: '10cf1dfd-43e9-4cc4-8257-a6ba5c70e33d',
       version: 1,
@@ -207,7 +221,7 @@ describe('TeamCrudService', () => {
       username: 'John11',
       password: 'password',
       role: 0,
-      name: 'John',
+      user: userInfo,
       teamId: team,
     };
 
@@ -347,22 +361,7 @@ describe('TeamCrudService', () => {
       code_coverage: 90,
       status: 'PASSED',
       snapshot_time: '2021-02-25T09:00:22.000Z',
-      team: {
-        id: '46455bf7-ada7-495c-8019-8d7ab76d488e',
-        version: 1,
-        createdAt: '2021-03-22T08:39:31.870Z',
-        updatedAt: '2021-03-22T08:39:31.870Z',
-        name: 'Diamler Devops',
-        business_unit: {
-          id: '46655bf7-ada7-495c-8019-8d7ab62d488e',
-          version: 1,
-          createdAt: '2021-03-12T17:36:31.141Z',
-          updatedAt: '2021-03-12T17:36:31.141Z',
-          name: 'ADC Bangalore',
-          parent_id: '46555bf7-ada7-495c-8019-8d7ab62d488e',
-          root_parent_id: '11111bf1-ada1-111c-1111-1d1ab11d111e',
-        },
-      },
+      team: team,
     };
 
     const codeQualityResponse: CodeQualityResponse = {
