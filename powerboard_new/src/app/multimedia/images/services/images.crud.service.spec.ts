@@ -1,7 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { ImagesMock } from '../../../../../test/mockCrudRepository/crudRepository.mock';
-import { Team } from '../../../dashboard/teams/model/entities/team.entity';
 import { ImageResponse } from '../model/dto/ImageResponse';
 import { Images } from '../model/entities/image.entity';
 import { ImagesCrudService } from './images.crud.service';
@@ -30,23 +29,7 @@ describe('ImagesCrudService', () => {
     expect(imagesMockRepo).toBeDefined();
   });
 
-  const team: Team = {
-    id: '46455bf7-ada7-495c-8019-8d7ab76d488e',
-    version: 1,
-    createdAt: '2021-03-12T17:36:31.141Z',
-    updatedAt: '2021-03-12T17:36:31.141Z',
-    name: 'Diamler Devops',
-    logo: 'uploads\\logo\\logo31ca9983-ae97-4bb0-9f22-4867d3cc16a0.png',
-    business_unit: {
-      id: '46655bf7-ada7-495c-8019-8d7ab62d488e',
-      version: 1,
-      createdAt: '2021-03-12T17:36:31.141Z',
-      updatedAt: '2021-03-12T17:36:31.141Z',
-      name: 'ADC Bangalore',
-      parent_id: '46555bf7-ada7-495c-8019-8d7ab62d488e',
-      root_parent_id: '11111bf1-ada1-111c-1111-1d1ab11d111e',
-    },
-  };
+  const teamId: string = '46455bf7-ada7-495c-8019-8d7ab76d488e';
 
   it('getPathOfImage() should return all the images present in the database', async () => {
     const images: Images[] = [
@@ -79,7 +62,7 @@ describe('ImagesCrudService', () => {
     ];
 
     jest.spyOn(imagesMockRepo, 'find').mockImplementation(() => images);
-    const actualImageResponse = await imagesCrudService.getPathOfImage(team.id);
+    const actualImageResponse = await imagesCrudService.getPathOfImage(teamId);
     expect(imagesMockRepo.find).toBeCalledTimes(1);
     expect(actualImageResponse).toEqual(expectedImageResponses);
   });

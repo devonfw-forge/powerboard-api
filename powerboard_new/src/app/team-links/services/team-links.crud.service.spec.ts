@@ -1,7 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { TeamLinksMock } from '../../../../test/mockCrudRepository/crudRepository.mock';
-import { Team } from '../../dashboard/teams/model/entities/team.entity';
 import { TeamLinkDTO } from '../model/dto/TeamLinkDTO';
 import { TeamLinks } from '../model/entities/team-links.entity';
 import { TeamLinksCrudService } from './team-links.crud.service';
@@ -29,25 +28,8 @@ describe('TeamLinksCrudService', () => {
     expect(teamLinkService).toBeDefined();
     expect(teamLinkRepo).toBeDefined();
   });
-
+  const teamId: string = '46455bf7-ada7-495c-8019-8d7ab76d488e';
   it('getTeamLinks() method should return TeamLinkResponse', async () => {
-    const team: Team = {
-      id: '46455bf7-ada7-495c-8019-8d7ab76d488e',
-      version: 1,
-      createdAt: '2021-03-12T17:36:31.141Z',
-      updatedAt: '2021-03-12T17:36:31.141Z',
-      name: 'Diamler Devops',
-      logo: 'uploads\\logo\\logo31ca9983-ae97-4bb0-9f22-4867d3cc16a0.png',
-      business_unit: {
-        id: '46655bf7-ada7-495c-8019-8d7ab62d488e',
-        version: 1,
-        createdAt: '2021-03-12T17:36:31.141Z',
-        updatedAt: '2021-03-12T17:36:31.141Z',
-        name: 'ADC Bangalore',
-        parent_id: '46555bf7-ada7-495c-8019-8d7ab62d488e',
-        root_parent_id: '11111bf1-ada1-111c-1111-1d1ab11d111e',
-      },
-    };
     const teamLinks: TeamLinks[] = [
       {
         id: '51055bf7-ada6-495c-8019-8d7ab76d488e',
@@ -56,7 +38,7 @@ describe('TeamLinksCrudService', () => {
         updatedAt: '2021-04-28T05:57:33.080Z',
         title: 'Jira Cloud',
         link: 'https://powerboard-capgemini.atlassian.net/jira/software/projects/DUM/boards/3',
-        team: team,
+        team: teamId,
       },
       {
         id: '51055bf8-ada5-495c-8019-8d7ab76d488e',
@@ -65,7 +47,7 @@ describe('TeamLinksCrudService', () => {
         updatedAt: '2021-04-28T05:57:33.080Z',
         title: 'GitHub',
         link: 'https://github.com/devonfw-forge/powerboard-api/blob/develop-0.0.1/',
-        team: team,
+        team: teamId,
       },
     ];
 
@@ -89,31 +71,14 @@ describe('TeamLinksCrudService', () => {
     };
 
     jest.spyOn(teamLinkRepo, 'createQueryBuilder').mockImplementation(() => createQueryBuilder);
-    const actualTeamLinksResponse = await teamLinkService.getTeamLinks(team.id);
+    const actualTeamLinksResponse = await teamLinkService.getTeamLinks(teamId);
     expect(teamLinkRepo.createQueryBuilder).toBeCalledTimes(1);
     expect(actualTeamLinksResponse).toEqual(expectedTeamLinksResponse);
   });
 
   it('createTeamLinks() method should return saved TeamLinks', async () => {
-    const team: Team = {
-      id: '46455bf7-ada7-495c-8019-8d7ab76d488e',
-      version: 1,
-      createdAt: '2021-03-12T17:36:31.141Z',
-      updatedAt: '2021-03-12T17:36:31.141Z',
-      name: 'Diamler Devops',
-      logo: 'uploads\\logo\\logo31ca9983-ae97-4bb0-9f22-4867d3cc16a0.png',
-      business_unit: {
-        id: '46655bf7-ada7-495c-8019-8d7ab62d488e',
-        version: 1,
-        createdAt: '2021-03-12T17:36:31.141Z',
-        updatedAt: '2021-03-12T17:36:31.141Z',
-        name: 'ADC Bangalore',
-        parent_id: '46555bf7-ada7-495c-8019-8d7ab62d488e',
-        root_parent_id: '11111bf1-ada1-111c-1111-1d1ab11d111e',
-      },
-    };
     const teamLinkDTO: TeamLinkDTO = {
-      teamId: team,
+      teamId: teamId,
       title: 'facebook',
       links: 'https://facebook.com',
     };

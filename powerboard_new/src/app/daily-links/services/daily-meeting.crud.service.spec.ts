@@ -1,7 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { DailyMeetingLinkMock } from '../../../../test/mockCrudRepository/crudRepository.mock';
-import { Team } from '../../dashboard/teams/model/entities/team.entity';
 import { DailyMeetingDTO } from '../model/dto/DailyMeetingDTO';
 import { DailyMeetingResponse } from '../model/dto/DailyMeetingResponse';
 import { DailyMeeting } from '../model/entities/daily-meeting.entity';
@@ -31,25 +30,9 @@ describe('DailyMeetingCrudService', () => {
     expect(dailyMeetingLinkRepo).toBeDefined();
   });
 
-  it('getDailyLinks() method should return DailyMeetingResponse', async () => {
-    const team: Team = {
-      id: '46455bf7-ada7-495c-8019-8d7ab76d488e',
-      version: 1,
-      createdAt: '2021-03-12T17:36:31.141Z',
-      updatedAt: '2021-03-12T17:36:31.141Z',
-      name: 'Diamler Devops',
-      logo: 'uploads\\logo\\logo31ca9983-ae97-4bb0-9f22-4867d3cc16a0.png',
-      business_unit: {
-        id: '46655bf7-ada7-495c-8019-8d7ab62d488e',
-        version: 1,
-        createdAt: '2021-03-12T17:36:31.141Z',
-        updatedAt: '2021-03-12T17:36:31.141Z',
-        name: 'ADC Bangalore',
-        parent_id: '46555bf7-ada7-495c-8019-8d7ab62d488e',
-        root_parent_id: '11111bf1-ada1-111c-1111-1d1ab11d111e',
-      },
-    };
+  const teamId: string = '46455bf7-ada7-495c-8019-8d7ab76d488e';
 
+  it('getDailyLinks() method should return DailyMeetingResponse', async () => {
     const dailyMeetingLink: DailyMeeting[] = [
       {
         id: '43000bf7-ada7-495c-8019-8d7ab76d490e',
@@ -59,7 +42,7 @@ describe('DailyMeetingCrudService', () => {
         type: 'TEAMS',
         dailyMeetingLink:
           'https://teams.microsoft.com/l/meetup-join/19%3ameeting_NjY3MzIyNmYtZTg1YS00MzBjLTk0NmUtMTk4MWE0OWJjNjhl%40thread.v2/0?context=%7b%22Tid%22%3a%2276a2ae5a-9f00-4f6b-95ed-5d33d77c4d61%22%2c%22Oid%22%3a%22d6dd7c98-546f-4dcb-9c39-39c8eeff8a24%22%7d',
-        team: team,
+        team: teamId,
       },
     ];
 
@@ -77,33 +60,16 @@ describe('DailyMeetingCrudService', () => {
     };
 
     jest.spyOn(dailyMeetingLinkRepo, 'createQueryBuilder').mockImplementation(() => createQueryBuilder);
-    const actualDailyMeetingLinkResponse = await dailyMeetingLinkService.getDailyLinks(team.id);
+    const actualDailyMeetingLinkResponse = await dailyMeetingLinkService.getDailyLinks(teamId);
     expect(dailyMeetingLinkRepo.createQueryBuilder).toBeCalledTimes(1);
     expect(actualDailyMeetingLinkResponse).toEqual(expectedDailyMeetingLinkResponse);
   });
 
   it('createDailyMeetingLink() method should save a new Daily Meeting Link and return the saved meeting link', async () => {
-    const team: Team = {
-      id: '46455bf7-ada7-495c-8019-8d7ab76d488e',
-      version: 1,
-      createdAt: '2021-03-12T17:36:31.141Z',
-      updatedAt: '2021-03-12T17:36:31.141Z',
-      name: 'Diamler Devops',
-      logo: 'uploads\\logo\\logo31ca9983-ae97-4bb0-9f22-4867d3cc16a0.png',
-      business_unit: {
-        id: '46655bf7-ada7-495c-8019-8d7ab62d488e',
-        version: 1,
-        createdAt: '2021-03-12T17:36:31.141Z',
-        updatedAt: '2021-03-12T17:36:31.141Z',
-        name: 'ADC Bangalore',
-        parent_id: '46555bf7-ada7-495c-8019-8d7ab62d488e',
-        root_parent_id: '11111bf1-ada1-111c-1111-1d1ab11d111e',
-      },
-    };
     const dailyMeetingDTO: DailyMeetingDTO = {
       type: 'TEAMS',
       links: 'https://microsoft.com',
-      teamId: team,
+      teamId: teamId,
     };
 
     const expectedDailyMeetingLink = {

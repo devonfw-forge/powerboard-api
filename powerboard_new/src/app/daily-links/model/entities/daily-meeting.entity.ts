@@ -12,5 +12,5 @@ export class DailyMeeting extends BaseEntity {
 
   @ManyToOne(() => Team, { eager: true })
   @JoinColumn({ name: 'daily_team_id', referencedColumnName: 'id' })
-  team!: Team;
+  team!: string;
 }

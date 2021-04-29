@@ -12,5 +12,5 @@ export class TeamLinks extends BaseEntity {
 
   @ManyToOne(() => Team, { eager: true })
   @JoinColumn({ name: 'team_id', referencedColumnName: 'id' })
-  team!: Team;
+  team!: string;
 }
