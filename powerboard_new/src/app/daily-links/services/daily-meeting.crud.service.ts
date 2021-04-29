@@ -28,11 +28,13 @@ export class DailyMeetingCrudService extends TypeOrmCrudService<DailyMeeting> {
     let i = 0;
     let dailyMeetingArray = [];
     for (i = 0; i < result.length; i++) {
+      this.meetingResponse.dailyMeetingId = result[i].id;
       this.meetingResponse.type = result[i].type;
       this.meetingResponse.links = result[i].dailyMeetingLink;
       dailyMeetingArray.push(this.meetingResponse);
       this.meetingResponse = {} as DailyMeetingResponse;
     }
+
     return dailyMeetingArray;
   }
 

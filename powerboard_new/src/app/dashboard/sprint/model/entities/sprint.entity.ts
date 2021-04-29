@@ -11,7 +11,7 @@ export class Sprint extends BaseEntity {
 
   @ManyToOne(() => SprintStatus, { eager: true })
   @JoinColumn({ name: 'status', referencedColumnName: 'id' })
-  status!: number;
+  status!: string;
 
   @Column('date', { nullable: false })
   start_date!: string;

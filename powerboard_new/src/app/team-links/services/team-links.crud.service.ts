@@ -23,6 +23,7 @@ export class TeamLinksCrudService extends TypeOrmCrudService<TeamLinks> {
       .createQueryBuilder('team_link')
       .where('team_link.team_id=:team_id', { team_id: team_Id })
       .getMany()) as TeamLinks[];
+
     console.log(result);
     let i = 0;
     let teamsDTOArray = [];
@@ -53,6 +54,8 @@ export class TeamLinksCrudService extends TypeOrmCrudService<TeamLinks> {
     links.title = teamLinkDTO.title;
     links.link = teamLinkDTO.links;
     links.team = teamLinkDTO.teamId;
-    return await this.teamLinkRepository.save(links);
+    const teamLinkOutput = await this.teamLinkRepository.save(links);
+    console.log(teamLinkOutput);
+    return teamLinkOutput;
   }
 }

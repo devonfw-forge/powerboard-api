@@ -199,7 +199,7 @@ export class SprintCrudService extends TypeOrmCrudService<Sprint> {
     //   ' and s.status = 2 order by ss.date_time desc limit(2)',
     // );
 
-    console.log('Get Velocity Comparison');
+    console.log('Get Velocity Comparison ****************************************');
     console.log(sprintMetricsResponse);
 
     const previousSprintCompleted = await this.sprintRepository

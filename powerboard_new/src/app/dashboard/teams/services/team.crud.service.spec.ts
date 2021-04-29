@@ -4,10 +4,15 @@ import {
   BusinessUnitRepositoryMock,
   ClientStatusRepositoryMock,
   CodeQualityRepositoryMock,
+  DailyMeetingLinkMock,
+  ImagesMock,
   SprintRepositoryMock,
+  TeamLinksMock,
   TeamRepositoryMock,
   TeamSpiritRepositoryMock,
   UserRepositoryMock,
+  VideosMock,
+  VisibilityMock,
 } from '../../../../../test/mockCrudRepository/crudRepository.mock';
 
 import { BusinessUnit } from '../../business-units/model/entities/business-unit.entity';
@@ -33,6 +38,16 @@ import { Team } from '../../teams/model/entities/team.entity';
 import { DashBoardResponse } from '../model/dto/DashBoardResponse';
 import { LoginResponse } from '../model/dto/LoginResponse';
 import { TeamCrudService } from './team.crud.service';
+import { DailyMeetingCrudService } from '../../../daily-links/services/daily-meeting.crud.service';
+import { TeamLinksCrudService } from '../../../team-links/services/team-links.crud.service';
+import { ImagesCrudService } from '../../../multimedia/images/services/images.crud.service';
+import { VideosCrudService } from '../../../multimedia/videos/services/videos.crud.service';
+import { VisibilityCrudService } from '../../../visibility/services/visibility.crud.service';
+import { DailyMeeting } from '../../../daily-links/model/entities/daily-meeting.entity';
+import { TeamLinks } from '../../../team-links/model/entities/team-links.entity';
+import { Images } from '../../../multimedia/images/model/entities/image.entity';
+import { Videos } from '../../../multimedia/videos/model/entities/videos.entity';
+import { Visibility } from '../../../visibility/model/entities/visibility.entity';
 
 describe('TeamCrudService', () => {
   let teamService: TeamCrudService;
@@ -40,6 +55,11 @@ describe('TeamCrudService', () => {
   let codeQualityService: CodeQualitySnapshotCrudService;
   let sprintService: SprintCrudService;
   let teamSpiritService: TeamSpiritCrudService;
+  let dailyMeetingLinkService: DailyMeetingCrudService;
+  let teamLinkService: TeamLinksCrudService;
+  let imageService: ImagesCrudService;
+  let videoService: VideosCrudService;
+  let visibilityService: VisibilityCrudService;
   let userRepo: UserRepositoryMock;
   let teamRepo: TeamRepositoryMock;
   let businessUnitRepo: BusinessUnitRepositoryMock;
@@ -47,6 +67,11 @@ describe('TeamCrudService', () => {
   let clientStatusRepo: ClientStatusRepositoryMock;
   let teamSpiritRepo: TeamSpiritRepositoryMock;
   let sprintRepo: SprintRepositoryMock;
+  let dailyMeetingLinkRepo: DailyMeetingLinkMock;
+  let teamLinksRepo: TeamLinksMock;
+  let imageRepo: ImagesMock;
+  let videoRepo: VideosMock;
+  let visibilityRepo: VisibilityMock;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -57,6 +82,11 @@ describe('TeamCrudService', () => {
         TeamSpiritCrudService,
         SprintCrudService,
         UserService,
+        DailyMeetingCrudService,
+        TeamLinksCrudService,
+        ImagesCrudService,
+        VideosCrudService,
+        VisibilityCrudService,
         {
           provide: getRepositoryToken(User),
           useClass: UserRepositoryMock,
@@ -85,6 +115,26 @@ describe('TeamCrudService', () => {
           provide: getRepositoryToken(TeamSpirit),
           useClass: TeamSpiritRepositoryMock,
         },
+        {
+          provide: getRepositoryToken(DailyMeeting),
+          useClass: DailyMeetingLinkMock,
+        },
+        {
+          provide: getRepositoryToken(TeamLinks),
+          useClass: TeamLinksMock,
+        },
+        {
+          provide: getRepositoryToken(Images),
+          useClass: ImagesMock,
+        },
+        {
+          provide: getRepositoryToken(Videos),
+          useClass: VideosMock,
+        },
+        {
+          provide: getRepositoryToken(Visibility),
+          useClass: VisibilityMock,
+        },
       ],
     }).compile();
 
@@ -93,6 +143,11 @@ describe('TeamCrudService', () => {
     sprintService = module.get<SprintCrudService>(SprintCrudService);
     teamSpiritService = module.get<TeamSpiritCrudService>(TeamSpiritCrudService);
     codeQualityService = module.get<CodeQualitySnapshotCrudService>(CodeQualitySnapshotCrudService);
+    dailyMeetingLinkService = module.get<DailyMeetingCrudService>(DailyMeetingCrudService);
+    teamLinkService = module.get<TeamLinksCrudService>(TeamLinksCrudService);
+    imageService = module.get<ImagesCrudService>(ImagesCrudService);
+    videoService = module.get<VideosCrudService>(VideosCrudService);
+    visibilityService = module.get<VisibilityCrudService>(VisibilityCrudService);
     teamRepo = module.get<TeamRepositoryMock>(getRepositoryToken(Team));
     userRepo = module.get<UserRepositoryMock>(getRepositoryToken(User));
     businessUnitRepo = module.get<BusinessUnitRepositoryMock>(getRepositoryToken(BusinessUnit));
@@ -108,34 +163,44 @@ describe('TeamCrudService', () => {
     expect(codeQualityService).toBeDefined();
     expect(sprintService).toBeDefined();
     expect(teamSpiritService).toBeDefined();
+    expect(dailyMeetingLinkService).toBeDefined();
+    expect(teamLinkService).toBeDefined();
+    expect(imageService).toBeDefined();
+    expect(videoService).toBeDefined();
+    expect(visibilityService).toBeDefined();
     expect(teamRepo).toBeDefined();
     expect(userRepo).toBeDefined();
     expect(businessUnitRepo).toBeDefined();
     expect(codeQualityRepo).toBeDefined();
     expect(clientStatusRepo).toBeDefined();
     expect(teamSpiritRepo).toBeDefined();
+    expect(dailyMeetingLinkRepo).toBeDefined();
+    expect(teamLinksRepo).toBeDefined();
+    expect(imageRepo).toBeDefined();
+    expect(videoRepo).toBeDefined();
+    expect(visibilityRepo).toBeDefined();
   });
 
   it('getDashBoardByUserId() method should return login response and getDashBoardByTeamId() should return dashboard response', async () => {
     const team: Team = {
-      id: 1,
+      id: '46455bf7-ada7-495c-8019-8d7ab76d488e',
       version: 1,
       createdAt: '2021-03-12T17:36:31.141Z',
       updatedAt: '2021-03-12T17:36:31.141Z',
       name: 'Diamler Devops',
       business_unit: {
-        id: 4,
+        id: '46655bf7-ada7-495c-8019-8d7ab62d488e',
         version: 1,
         createdAt: '2021-03-12T17:36:31.141Z',
         updatedAt: '2021-03-12T17:36:31.141Z',
         name: 'ADC Bangalore',
-        parent_id: 3,
-        root_parent_id: 1,
+        parent_id: '46555bf7-ada7-495c-8019-8d7ab62d488e',
+        root_parent_id: '11111bf1-ada1-111c-1111-1d1ab11d111e',
       },
     };
 
     const user: User = {
-      id: 10,
+      id: '10cf1dfd-43e9-4cc4-8257-a6ba5c70e33d',
       version: 1,
       createdAt: '2021-03-12T17:36:31.141Z',
       updatedAt: '2021-03-12T17:36:31.141Z',
@@ -147,20 +212,20 @@ describe('TeamCrudService', () => {
     };
 
     const sprint: Sprint = {
-      id: 2,
+      id: '20255bf8-ada5-495c-8019-8d7ab76d488e',
       version: 1,
       createdAt: '2021-03-22T08:39:31.870Z',
       updatedAt: '2021-03-22T08:39:31.870Z',
       sprint_number: 10,
       start_date: '2021-02-10',
       end_date: '2021-02-25',
-      status: 3,
+      status: '11155bf3-ada5-495c-8019-8d7ab76d488e',
       team: team,
-      work_unit: 2,
+      work_unit: '11155bf2-ada5-495c-8019-8d7ab76d488e',
     };
 
     const clientStatus: ClientStatus = {
-      id: 2,
+      id: '20112bf8-ada5-495c-8019-8d7ab76d488e',
       version: 1,
       createdAt: '2021-03-27T16:07:27.741Z',
       updatedAt: '2021-03-27T16:07:27.741Z',
@@ -168,7 +233,7 @@ describe('TeamCrudService', () => {
       sprint: sprint,
     };
     const teamSpirit: TeamSpirit = {
-      id:1,
+      id: '20111bf8-ada5-495c-8019-8d7ab76d488e',
       version: 1,
       createdAt: '2021-03-22T08:39:31.870Z',
       updatedAt: '2021-03-22T08:39:31.870Z',
@@ -177,76 +242,76 @@ describe('TeamCrudService', () => {
     };
     const businessUnits: BusinessUnit[] = [
       {
-        id: 1,
+        id: '11111bf1-ada1-111c-1111-1d1ab11d111e',
         version: 1,
         createdAt: '2021-03-27T16:07:27.741Z',
         updatedAt: '2021-03-27T16:07:27.741Z',
         name: 'Capgemini India',
-        parent_id: 1,
-        root_parent_id: 1,
+        parent_id: '11111bf1-ada1-111c-1111-1d1ab11d111e',
+        root_parent_id: '11111bf1-ada1-111c-1111-1d1ab11d111e',
       },
       {
-        id: 11,
+        id: '46055bf7-ada7-495c-8019-8d7ab62d488e',
         version: 1,
         createdAt: '2021-03-27T16:07:27.741Z',
         updatedAt: '2021-03-27T16:07:27.741Z',
         name: 'NA BU',
-        parent_id: 1,
-        root_parent_id: 1,
+        parent_id: '11111bf1-ada1-111c-1111-1d1ab11d111e',
+        root_parent_id: '11111bf1-ada1-111c-1111-1d1ab11d111e',
       },
       {
-        id: 12,
+        id: '46155bf7-ada7-495c-8019-8d7ab62d488e',
         version: 1,
         createdAt: '2021-03-27T16:07:27.741Z',
         updatedAt: '2021-03-27T16:07:27.741Z',
         name: 'Sogeti',
-        parent_id: 1,
-        root_parent_id: 1,
+        parent_id: '11111bf1-ada1-111c-1111-1d1ab11d111e',
+        root_parent_id: '11111bf1-ada1-111c-1111-1d1ab11d111e',
       },
       {
-        id: 13,
+        id: '46255bf7-ada7-495c-8019-8d7ab62d488e',
         version: 1,
         createdAt: '2021-03-27T16:07:27.741Z',
         updatedAt: '2021-03-27T16:07:27.741Z',
         name: 'NA AS CSD',
-        parent_id: 11,
-        root_parent_id: 1,
+        parent_id: '46055bf7-ada7-495c-8019-8d7ab62d488e',
+        root_parent_id: '11111bf1-ada1-111c-1111-1d1ab11d111e',
       },
       {
-        id: 14,
+        id: '46355bf7-ada7-495c-8019-8d7ab62d488e',
         version: 1,
         createdAt: '2021-03-27T16:07:27.741Z',
         updatedAt: '2021-03-27T16:07:27.741Z',
         name: 'Europe CSD AS',
-        parent_id: 2,
-        root_parent_id: 1,
+        parent_id: '46455bf7-ada7-495c-8019-8d7ab62d488e',
+        root_parent_id: '11111bf1-ada1-111c-1111-1d1ab11d111e',
       },
       {
-        id: 2,
+        id: '46455bf7-ada7-495c-8019-8d7ab62d488e',
         version: 1,
         createdAt: '2021-03-27T16:07:27.741Z',
         updatedAt: '2021-03-27T16:07:27.741Z',
         name: 'Europe BU',
-        parent_id: 1,
-        root_parent_id: 1,
+        parent_id: '11111bf1-ada1-111c-1111-1d1ab11d111e',
+        root_parent_id: '11111bf1-ada1-111c-1111-1d1ab11d111e',
       },
       {
-        id: 3,
+        id: '46355bf7-ada7-495c-8019-8d7ab62d488e',
         version: 1,
         createdAt: '2021-03-27T16:07:27.741Z',
         updatedAt: '2021-03-27T16:07:27.741Z',
         name: 'Europe CSD AD',
-        parent_id: 2,
-        root_parent_id: 1,
+        parent_id: '46455bf7-ada7-495c-8019-8d7ab62d488e',
+        root_parent_id: '11111bf1-ada1-111c-1111-1d1ab11d111e',
       },
       {
-        id: 4,
+        id: '46655bf7-ada7-495c-8019-8d7ab62d488e',
         version: 1,
         createdAt: '2021-03-27T16:07:27.741Z',
         updatedAt: '2021-03-27T16:07:27.741Z',
         name: 'ADC Bangalore',
-        parent_id: 3,
-        root_parent_id: 1,
+        parent_id: '46555bf7-ada7-495c-8019-8d7ab62d488e',
+        root_parent_id: '11111bf1-ada1-111c-1111-1d1ab11d111e',
       },
     ];
 
@@ -273,7 +338,7 @@ describe('TeamCrudService', () => {
     ];
 
     const codeQuality: CodeQualitySnapshot = {
-      id: 12,
+      id: '61155bf8-ada5-495c-8019-8d7ab76d488e',
       version: 1,
       createdAt: '2021-03-22T08:39:31.870Z',
       updatedAt: '2021-03-22T08:39:31.870Z',
@@ -283,19 +348,19 @@ describe('TeamCrudService', () => {
       status: 'PASSED',
       snapshot_time: '2021-02-25T09:00:22.000Z',
       team: {
-        id: 1,
+        id: '46455bf7-ada7-495c-8019-8d7ab76d488e',
         version: 1,
         createdAt: '2021-03-22T08:39:31.870Z',
         updatedAt: '2021-03-22T08:39:31.870Z',
         name: 'Diamler Devops',
         business_unit: {
-          id: 4,
+          id: '46655bf7-ada7-495c-8019-8d7ab62d488e',
           version: 1,
           createdAt: '2021-03-12T17:36:31.141Z',
           updatedAt: '2021-03-12T17:36:31.141Z',
           name: 'ADC Bangalore',
-          parent_id: 3,
-          root_parent_id: 1,
+          parent_id: '46555bf7-ada7-495c-8019-8d7ab62d488e',
+          root_parent_id: '11111bf1-ada1-111c-1111-1d1ab11d111e',
         },
       },
     };
@@ -338,7 +403,7 @@ describe('TeamCrudService', () => {
     };
 
     const dashBoardResponse: DashBoardResponse = {
-      teamId: 1,
+      teamId: '46455bf7-ada7-495c-8019-8d7ab76d488e',
       teamStatus: 1,
       codeQualityResponse: codeQualityResponse,
       clientStatusResponse: clientStatusResponse,
