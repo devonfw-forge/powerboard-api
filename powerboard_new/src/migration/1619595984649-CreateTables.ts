@@ -1,17 +1,20 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
-export class CreateTables1619510243863 implements MigrationInterface {
-  name = 'CreateTables1619510243863';
+export class CreateTables1619595984649 implements MigrationInterface {
+  name = 'CreateTables1619595984649';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(
       `CREATE TABLE "business_unit" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "version" integer NOT NULL DEFAULT '1', "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "name" character varying(255) NOT NULL, "parent_id" character varying NOT NULL, "root_parent_id" character varying NOT NULL, CONSTRAINT "PK_842dd03ad7a179a295f55c01008" PRIMARY KEY ("id"))`,
     );
     await queryRunner.query(
-      `CREATE TABLE "team" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "version" integer NOT NULL DEFAULT '1', "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "name" character varying(255) NOT NULL, "business_unit_id" uuid, CONSTRAINT "PK_f57d8293406df4af348402e4b74" PRIMARY KEY ("id"))`,
+      `CREATE TABLE "team" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "version" integer NOT NULL DEFAULT '1', "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "name" character varying(255) NOT NULL, "logo" character varying(3000), "business_unit_id" uuid, CONSTRAINT "PK_f57d8293406df4af348402e4b74" PRIMARY KEY ("id"))`,
     );
     await queryRunner.query(
-      `CREATE TABLE "user" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "version" integer NOT NULL DEFAULT '1', "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "username" character varying(255) NOT NULL, "password" character varying(255) NOT NULL, "role" integer NOT NULL DEFAULT '0', "name" character varying(255) NOT NULL, "teamId" uuid, CONSTRAINT "PK_cace4a159ff9f2512dd42373760" PRIMARY KEY ("id"))`,
+      `CREATE TABLE "user_info" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "version" integer NOT NULL DEFAULT '1', "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "first_name" character varying(255) NOT NULL, "last_name" character varying(255), "center" character varying(255), "email" character varying(255) NOT NULL, "team_spirit_name" character varying(255), CONSTRAINT "PK_273a06d6cdc2085ee1ce7638b24" PRIMARY KEY ("id"))`,
+    );
+    await queryRunner.query(
+      `CREATE TABLE "user" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "version" integer NOT NULL DEFAULT '1', "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "username" character varying(255) NOT NULL, "password" character varying(255) NOT NULL, "role" integer NOT NULL DEFAULT '0', "user_info_id" uuid, "teamId" uuid, CONSTRAINT "REL_ee24a311e8099f9f44424df108" UNIQUE ("user_info_id"), CONSTRAINT "PK_cace4a159ff9f2512dd42373760" PRIMARY KEY ("id"))`,
     );
     await queryRunner.query(
       `CREATE TABLE "daily_meeting" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "version" integer NOT NULL DEFAULT '1', "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "type" character varying(255) NOT NULL, "daily_meeting_link" character varying(5000) NOT NULL, "daily_team_id" uuid, CONSTRAINT "PK_ce7d6a7e510e6c079f546b247bc" PRIMARY KEY ("id"))`,
@@ -57,6 +60,9 @@ export class CreateTables1619510243863 implements MigrationInterface {
     );
     await queryRunner.query(
       `ALTER TABLE "team" ADD CONSTRAINT "FK_780f295d5c3ed479ac1358a9f01" FOREIGN KEY ("business_unit_id") REFERENCES "business_unit"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "user" ADD CONSTRAINT "FK_ee24a311e8099f9f44424df108e" FOREIGN KEY ("user_info_id") REFERENCES "user_info"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`,
     );
     await queryRunner.query(
       `ALTER TABLE "user" ADD CONSTRAINT "FK_1e89f1fd137dc7fea7242377e25" FOREIGN KEY ("teamId") REFERENCES "team"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`,

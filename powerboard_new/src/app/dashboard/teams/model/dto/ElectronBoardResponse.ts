@@ -7,6 +7,7 @@ import { VisibilityResponse } from '../../../../visibility/model/dto/VisibilityR
 export interface ElectronBoardResponse {
   teamId: string;
   center: string;
+  teamLogo: string;
   dailyMeetingResponse: DailyMeetingResponse[];
   teamLinkResponse: TeamLinkResponse[];
   imageResponse: ImageResponse[];
