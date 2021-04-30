@@ -11,6 +11,7 @@ import { diskStorage } from 'multer';
 import path = require('path');
 import { v4 as uuidv4 } from 'uuid';
 import { FileInterceptor } from '@nestjs/platform-express';
+//import { AuthGuard } from '@nestjs/passport';
 export const storage = {
   storage: diskStorage({
     destination: './uploads/logo',
@@ -47,6 +48,7 @@ export class TeamCrudController {
   }
 
   @Get('team/:id')
+  //@UseGuards(AuthGuard('jwt'))
   async getDashboardByTeamId(@Param('id') teamId: string): Promise<DashBoardResponse> {
     const teamResponse = await this.teamService.getDashboardByTeamId(teamId);
     return teamResponse;

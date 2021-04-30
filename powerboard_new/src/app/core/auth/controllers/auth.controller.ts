@@ -1,20 +1,26 @@
-import { BadRequestException, Body, Controller, Get, HttpCode, Post, UseGuards, Response } from '@nestjs/common';
-import { Response as eResponse } from 'express';
+import { BadRequestException, Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { User } from '../../user/model/entities/user.entity';
 import { AuthService } from '../services/auth.service';
-import { LoginDTO } from '../model/login.dto';
+
 import { GetUser } from '../decorators/get-user.decorator';
+import { LoginDTO } from '../model/LoginDTO';
 
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
+  // @Post('login')
+  // @HttpCode(200)
+  // async login(@Body() login: LoginDTO, @Response() res: eResponse): Promise<void> {
+  //   const token = await this.authService.login(login);
+  //   res.setHeader('Authorization', 'Bearer ' + token);
+  //   res.status(200).send();
+  // }
+
   @Post('login')
-  @HttpCode(200)
-  async login(@Body() login: LoginDTO, @Response() res: eResponse): Promise<void> {
-    const token = await this.authService.login(login);
-    res.setHeader('Authorization', 'Bearer ' + token);
-    res.status(200).send();
+  async login(@Body() login: LoginDTO): Promise<any> {
+    console.log(login);
+    return await this.authService.login(login);
   }
 
   @Post('register')

@@ -1,9 +1,10 @@
-import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, UseGuards } from '@nestjs/common';
 import { Crud } from '@nestjsx/crud';
 import { CrudType } from '@devon4node/common/serializer';
 import { TeamLinksCrudService } from '../services/team-links.crud.service';
 import { TeamLinks } from '../model/entities/team-links.entity';
 import { TeamLinkDTO } from '../model/dto/TeamLinkDTO';
+import { AuthGuard } from '@nestjs/passport';
 
 @Crud({
   model: {
@@ -26,6 +27,7 @@ export class TeamLinksCrudController {
   }
 
   @Post('teamId/create')
+  @UseGuards(AuthGuard('jwt'))
   async createDailyMeeting(@Body() teamLinkDTO: TeamLinkDTO): Promise<any> {
     return await this.teamLinksService.createTeamLinks(teamLinkDTO);
   }
