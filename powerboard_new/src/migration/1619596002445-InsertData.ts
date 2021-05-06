@@ -50,10 +50,16 @@ export class InsertData1619596002445 implements MigrationInterface {
     );
 
     await queryRunner.query(
-      `INSERT INTO "images" ("id", "image", "image_team_id") VALUES ('52055bf8-ada5-495c-8019-8d7ab76d488e' ,'uploads\\profileimages\\jirab05d9639-10f5-4ec5-85bf-087731ce4f8b.png','46455bf7-ada7-495c-8019-8d7ab76d488e');`,
+      `INSERT INTO "images" ("id", "image", "image_team_id") VALUES ('cbb8fcc9-748f-4d85-b58c-e03fdcf59c8f' ,'uploads\\profileimages\\bangalore96fa8214-4d64-4b2a-916a-8dc504d86f0c.jpg','46455bf7-ada7-495c-8019-8d7ab76d488e');`,
     );
     await queryRunner.query(
-      `INSERT INTO "images" ("id", "image", "image_team_id") VALUES ('52155bf8-ada5-495c-8019-8d7ab76d488e' ,'uploads\\profileimages\\power46455bf7-ada7-495c-8019-8d7ab76d497e.png','46455bf7-ada7-495c-8019-8d7ab76d488e');`,
+      `INSERT INTO "images" ("id", "image", "image_team_id") VALUES ('5527a4b6-a64a-4743-886c-104072a0d8fd' ,'uploads\\profileimages\\capgemini_bangaloref8b84128-5750-4c80-bd87-bd5be9cdbd3a.jpg','46455bf7-ada7-495c-8019-8d7ab76d488e');`,
+    );
+    await queryRunner.query(
+      `INSERT INTO "images" ("id", "image", "image_team_id") VALUES ('66cd7fdf-73f1-4350-8e9a-c1985ebab62d' ,'uploads\\profileimages\\capgemini_pune1e6ba269-1847-474e-b5fd-2480f8c75392.jpg','46455bf7-ada7-495c-8019-8d7ab76d488e');`,
+    );
+    await queryRunner.query(
+      `INSERT INTO "images" ("id", "image", "image_team_id") VALUES ('baa3c8a8-eec7-486e-9ae9-cab96c7f3ba4' ,'uploads\\profileimages\\capgemini_mumbai3e61a9e1-3fd5-465a-b071-054f6429c464.jpg','46455bf7-ada7-495c-8019-8d7ab76d488e');`,
     );
     await queryRunner.query(
       `INSERT INTO "videos" ("id", "content", "video_team_id") VALUES ('52255bf8-ada5-495c-8019-8d7ab76d488e' ,'uploads\\videos\\coronab47da341-3258-4cf2-b19f-9f93de76241a.mp4','46455bf7-ada7-495c-8019-8d7ab76d488e');`,
