@@ -24,6 +24,8 @@ export class DailyMeetingCrudService extends TypeOrmCrudService<DailyMeeting> {
       .where('daily_link.daily_team_id=:team_id', { team_id: team_Id })
       .getMany()) as DailyMeeting[];
 
+    console.log('Daily Meeting Links************************');
+    console.log(result);
     let i = 0;
     let dailyMeetingArray = [];
     for (i = 0; i < result.length; i++) {

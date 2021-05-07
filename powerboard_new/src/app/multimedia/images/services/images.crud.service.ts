@@ -32,6 +32,8 @@ export class ImagesCrudService extends TypeOrmCrudService<Images> {
   async getPathOfImage(teamId: string): Promise<ImageResponse[]> {
     const result = await this.imageRepository.find({ where: { team: teamId } });
 
+    console.log('Images*******************');
+    console.log(result);
     let i = 0;
     let dailyMeetingArray = [];
     for (i = 0; i < result.length; i++) {

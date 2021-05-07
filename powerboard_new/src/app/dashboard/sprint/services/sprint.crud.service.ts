@@ -61,7 +61,6 @@ export class SprintCrudService extends TypeOrmCrudService<Sprint> {
     sprintDetailResponse.Sprint_current_day = Sprint_current_day;
     sprintDetailResponse.sprint_number = sprintDetail[0].sprint_sprint_number;
     sprintDetailResponse.Sprint_days = Sprint_days;
-
     return sprintDetailResponse;
   }
 
@@ -126,6 +125,7 @@ export class SprintCrudService extends TypeOrmCrudService<Sprint> {
     if (Number(sprintForBurndown[0].ssm_value) > Number(sprintForBurndown[1].ssm_value)) {
       this.burndownResponse.workUnit = sprintForBurndown[0].sw_work_unit;
       this.burndownResponse.remainingDays = totalDays - currentDay;
+      console.log(this.burndownResponse.remainingDays);
       this.burndownResponse.remainingWork = sprintForBurndown[0].ssm_value - sprintForBurndown[1].ssm_value;
       const ideal = Math.round((sprintForBurndown[0].ssm_value / totalDays) * currentDay);
       const actual = sprintForBurndown[1].ssm_value;
@@ -143,11 +143,13 @@ export class SprintCrudService extends TypeOrmCrudService<Sprint> {
     if (Number(sprintForBurndown[0].ssm_value) < Number(sprintForBurndown[1].ssm_value)) {
       this.burndownResponse.workUnit = sprintForBurndown[0].sw_work_unit;
       this.burndownResponse.remainingDays = totalDays - currentDay;
+      console.log(this.burndownResponse.remainingDays);
       this.burndownResponse.remainingWork = sprintForBurndown[1].ssm_value - sprintForBurndown[0].ssm_value;
       const ideal = Math.round((sprintForBurndown[1].ssm_value / totalDays) * currentDay);
       const actual = sprintForBurndown[0].ssm_value;
       this.burndownResponse = this.getBurndownStatus(ideal, actual);
     }
+
     return this.burndownResponse;
   }
 

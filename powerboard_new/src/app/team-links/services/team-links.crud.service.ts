@@ -24,6 +24,7 @@ export class TeamLinksCrudService extends TypeOrmCrudService<TeamLinks> {
       .where('team_link.team_id=:team_id', { team_id: team_Id })
       .getMany()) as TeamLinks[];
 
+    console.log('Team Links***************************');
     console.log(result);
     let i = 0;
     let teamsDTOArray = [];
