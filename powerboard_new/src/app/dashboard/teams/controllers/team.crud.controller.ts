@@ -6,7 +6,6 @@ import { TeamCrudService } from '../services/team.crud.service';
 import { LoginResponse } from '../model/dto/LoginResponse';
 import { DashBoardResponse } from '../model/dto/DashBoardResponse';
 import { TeamResponse } from '../model/dto/TeamResponse';
-import { ElectronBoardResponse } from '../model/dto/ElectronBoardResponse';
 import { diskStorage } from 'multer';
 import path = require('path');
 import { v4 as uuidv4 } from 'uuid';
@@ -33,18 +32,24 @@ export const storage = {
 export class TeamCrudController {
   constructor(public teamService: TeamCrudService) {}
 
-  @Get('user/:id/:flag')
-  async getDashboardByUserId(
-    @Param('id') userId: string,
-    @Param('flag') flag: boolean,
-  ): Promise<LoginResponse | ElectronBoardResponse> {
-    if (flag) {
-      const loginResponse = await this.teamService.getDashboardByUserId(userId);
-      return loginResponse;
-    } else {
-      const electronResponse = await this.teamService.getElectronBoardByUserId(userId);
-      return electronResponse;
-    }
+  // @Get('user/:id/:flag')
+  // async getDashboardByUserId(
+  //   @Param('id') userId: string,
+  //   @Param('flag') flag: boolean,
+  // ): Promise<LoginResponse | ElectronBoardResponse> {
+  //   if (flag) {
+  //     const loginResponse = await this.teamService.getDashboardByUserId(userId);
+  //     return loginResponse;
+  //   } else {
+  //     const electronResponse = await this.teamService.getElectronBoardByUserId(userId);
+  //     return electronResponse;
+  //   }
+  // }
+
+  @Get('powerboard/team/:teamId')
+  async getPowerboardByTeamId(@Param('teamId') teamId: string): Promise<LoginResponse> {
+    const loginResponse = await this.teamService.getPowerboardByTeamId(teamId);
+    return loginResponse;
   }
 
   @Get('team/:id')

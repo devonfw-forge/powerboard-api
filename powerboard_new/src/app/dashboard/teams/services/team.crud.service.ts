@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { TypeOrmCrudService } from '@nestjsx/crud-typeorm';
 import { BusinessUnit } from '../../business-units/model/entities/business-unit.entity';
@@ -6,7 +6,7 @@ import { ClientStatusResponse } from '../../client-status/model/dto/ClientStatus
 import { ClientStatusCrudService } from '../../client-status/services/client-status.crud.service';
 import { CodeQualityResponse } from '../../code-quality-snapshot/model/dto/CodeQualityResponse';
 import { CodeQualitySnapshotCrudService } from '../../code-quality-snapshot/services/code-quality-snapshot.crud.service';
-import { User } from '../../../core/user/model/entities/user.entity';
+// import { User } from '../../../core/user/model/entities/user.entity';
 import { SprintDetailResponse } from '../../sprint/model/dto/SprintDetailResponse';
 import { TeamSpiritResponse } from '../../team-spirit/model/dto/TeamSpiritResponse';
 import { TeamSpiritCrudService } from '../../team-spirit/services/team-spirit.crud.service';
@@ -36,7 +36,7 @@ export class TeamCrudService extends TypeOrmCrudService<Team> {
   constructor(
     @InjectRepository(Team) private readonly teamRepository: Repository<Team>,
     @InjectRepository(BusinessUnit) private readonly businessRepository: Repository<BusinessUnit>,
-    @InjectRepository(User) private readonly userRepository: Repository<User>,
+    // @InjectRepository(User) private readonly userRepository: Repository<User>,
     private readonly codequalityService: CodeQualitySnapshotCrudService,
     private readonly clientStatusService: ClientStatusCrudService,
     private readonly teamSpiritService: TeamSpiritCrudService,
@@ -53,44 +53,45 @@ export class TeamCrudService extends TypeOrmCrudService<Team> {
   loginResponse: LoginResponse = {} as LoginResponse;
   chainBU: BreadCrumbResponse = {} as BreadCrumbResponse;
   dash: DashBoardResponse = {} as DashBoardResponse;
-
+  electron_response: ElectronBoardResponse = {} as ElectronBoardResponse;
   /**
-   * getDashboardByUserId method will retrieve all KPI's +breadcrumb + dump_BU
+   * getPowerboardByUserId method will retrieve all KPI's +breadcrumb + dump_BU
    * @param {userId} userId Takes userId as input
-   * @return {LoginResponse} Dashboard as well as breadcrumb and dumb BU List
+   * @return {LoginResponse} Dashboard + Electron board as well as breadcrumb and dumb BU List
    */
-  async getDashboardByUserId(userId: string): Promise<LoginResponse> {
+  async getPowerboardByTeamId(teamId: string): Promise<LoginResponse> {
     this.loginResponse.user_breadCrumb = [];
     this.loginResponse.dump_businessUnit = [];
-    const users: User = (await this.userRepository.findOne({ where: { id: userId } })) as User;
+    // const users: User = (await this.userRepository.findOne({ where: { id: userId } })) as User;
 
-    if (users) {
-      // const teams: Team = await this.teamRepository.createQueryBuilder("team")
-      //   .where("team.id = :id", { id: users.teamId.id })
-      //   .getOne() as Team;
-      // console.log(teams)
-      const teams: Team = (await this.teamRepository.findOne({ where: { id: users!.teamId.id } })) as Team;
-      this.dash = await this.getDashboardByTeamId(teams.id);
-      this.loginResponse.dashboard = this.dash;
-      this.chainBU.bu_name = teams.name;
-      this.loginResponse.user_breadCrumb.push(this.chainBU);
-      this.chainBU = {} as BreadCrumbResponse;
+    // if (users) {
+    const teams: Team = (await this.teamRepository.findOne({ where: { id: teamId } })) as Team;
+    this.loginResponse.team_id = teams.id;
+    this.loginResponse.center = teams.business_unit.name;
+    this.loginResponse.logo = teams.logo;
+    this.dash = await this.getDashboardByTeamId(teams.id);
+    this.loginResponse.dashboard = this.dash;
+    this.chainBU.bu_name = teams.name;
+    this.loginResponse.user_breadCrumb.push(this.chainBU);
+    this.chainBU = {} as BreadCrumbResponse;
 
-      let businessUnitsId = teams.business_unit.id;
-      let businessUnitsRootParentId = teams.business_unit.root_parent_id;
-      let business: BusinessUnit[] = await this.businessRepository
-        .createQueryBuilder('businessUnit')
-        .where('businessUnit.root_parent_id=:root_parent_id', { root_parent_id: businessUnitsRootParentId })
-        .getMany();
-      this.loginResponse.user_breadCrumb = this.getBUOrder(business, businessUnitsId);
+    this.electron_response = await this.getElectronBoardByTeamId(teams.id);
+    this.loginResponse.electron_response = this.electron_response;
+    let businessUnitsId = teams.business_unit.id;
+    let businessUnitsRootParentId = teams.business_unit.root_parent_id;
+    let business: BusinessUnit[] = await this.businessRepository
+      .createQueryBuilder('businessUnit')
+      .where('businessUnit.root_parent_id=:root_parent_id', { root_parent_id: businessUnitsRootParentId })
+      .getMany();
+    this.loginResponse.user_breadCrumb = this.getBUOrder(business, businessUnitsId);
 
-      this.loginResponse.user_breadCrumb.reverse();
-      this.loginResponse.dump_businessUnit = business;
+    this.loginResponse.user_breadCrumb.reverse();
+    this.loginResponse.dump_businessUnit = business;
 
-      return this.loginResponse;
-    } else {
-      throw new NotFoundException('userId not found');
-    }
+    return this.loginResponse;
+    // } else {
+    //   throw new NotFoundException('userId not found');
+    // }
   }
   /**
    * getBUOrder method will arrange all BU hierarchy of login user
@@ -208,31 +209,49 @@ export class TeamCrudService extends TypeOrmCrudService<Team> {
     }
     return statusResult;
   }
+  // board: ElectronBoardResponse = {} as ElectronBoardResponse;
+  // async getElectronBoardByUserId(userId: string): Promise<ElectronBoardResponse> {
+  //   const users: User = (await this.userRepository.findOne({ where: { id: userId } })) as User;
+  //   if (users) {
+  //     const teamId = users.teamId.id;
+  //     this.board.teamId = teamId;
+  //     this.board.center = users.teamId.business_unit.name;
+  //     this.board.teamLogo = users.teamId.logo;
+  //     const dailyMeeting: DailyMeetingResponse[] = await this.dailyMeetingService.getDailyLinks(teamId);
+  //     this.board.dailyMeetingResponse = dailyMeeting;
+
+  //     const teamLink: TeamLinkResponse[] = await this.teamLinkService.getTeamLinks(teamId);
+  //     this.board.teamLinkResponse = teamLink;
+
+  //     const images: ImageResponse[] = await this.imageService.getPathOfImage(teamId);
+  //     this.board.imageResponse = images;
+
+  //     const videos: VideoResponse[] = await this.videoService.getPathOfVideos(teamId);
+  //     this.board.videoResponse = videos;
+
+  //     const visible: VisibilityResponse = await this.visibleService.getVisiblilityForTeam(teamId);
+  //     this.board.visibleResponse = visible;
+  //     return this.board;
+  //   } else {
+  //     throw new NotFoundException('userId not found');
+  //   }
+  // }
   board: ElectronBoardResponse = {} as ElectronBoardResponse;
-  async getElectronBoardByUserId(userId: string): Promise<ElectronBoardResponse> {
-    const users: User = (await this.userRepository.findOne({ where: { id: userId } })) as User;
-    if (users) {
-      const teamId = users.teamId.id;
-      this.board.teamId = teamId;
-      this.board.center = users.teamId.business_unit.name;
-      this.board.teamLogo = users.teamId.logo;
-      const dailyMeeting: DailyMeetingResponse[] = await this.dailyMeetingService.getDailyLinks(teamId);
-      this.board.dailyMeetingResponse = dailyMeeting;
+  async getElectronBoardByTeamId(teamId: string): Promise<ElectronBoardResponse> {
+    const dailyMeeting: DailyMeetingResponse[] = await this.dailyMeetingService.getDailyLinks(teamId);
+    this.board.dailyMeetingResponse = dailyMeeting;
 
-      const teamLink: TeamLinkResponse[] = await this.teamLinkService.getTeamLinks(teamId);
-      this.board.teamLinkResponse = teamLink;
+    const teamLink: TeamLinkResponse[] = await this.teamLinkService.getTeamLinks(teamId);
+    this.board.teamLinkResponse = teamLink;
 
-      const images: ImageResponse[] = await this.imageService.getPathOfImage(teamId);
-      this.board.imageResponse = images;
+    const images: ImageResponse[] = await this.imageService.getPathOfImage(teamId);
+    this.board.imageResponse = images;
 
-      const videos: VideoResponse[] = await this.videoService.getPathOfVideos(teamId);
-      this.board.videoResponse = videos;
+    const videos: VideoResponse[] = await this.videoService.getPathOfVideos(teamId);
+    this.board.videoResponse = videos;
 
-      const visible: VisibilityResponse = await this.visibleService.getVisiblilityForTeam(teamId);
-      this.board.visibleResponse = visible;
-      return this.board;
-    } else {
-      throw new NotFoundException('userId not found');
-    }
+    const visible: VisibilityResponse = await this.visibleService.getVisiblilityForTeam(teamId);
+    this.board.visibleResponse = visible;
+    return this.board;
   }
 }
