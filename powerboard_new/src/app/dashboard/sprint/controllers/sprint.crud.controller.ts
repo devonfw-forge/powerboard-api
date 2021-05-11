@@ -16,7 +16,7 @@ import { VelocityComparisonResponse } from '../model/dto/VelocityComparisonRespo
 export class SprintCrudController {
   constructor(public service: SprintCrudService) {}
   @Get('burndown/demo/:id')
-  async getBurndown(@Param('id') teamId: string): Promise<BurndownResponse> {
+  async getBurndown(@Param('id') teamId: string): Promise<BurndownResponse | undefined> {
     return await this.service.getBurndown(teamId);
   }
 

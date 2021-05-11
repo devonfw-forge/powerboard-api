@@ -32,15 +32,19 @@ export class VisibilityCrudService extends TypeOrmCrudService<Visibility> {
   }
 
   visibility: VisibilityResponse = {} as VisibilityResponse;
-  async getVisiblilityForTeam(teamId: string): Promise<VisibilityResponse> {
+  async getVisiblilityForTeam(teamId: string): Promise<VisibilityResponse | undefined> {
     const result = (await this.visibilityRepository.findOne({ where: { team: teamId } })) as Visibility;
-    console.log('Visibility*******************');
-    console.log(result);
-    this.visibility.teamId = teamId;
-    this.visibility.image = result.images;
-    this.visibility.video = result.videos;
-    this.visibility.dailyMeeting = result.dailyMeeting;
-    this.visibility.teamLinks = result.teamLink;
-    return this.visibility;
+    if (result == null) {
+      return undefined;
+    } else {
+      console.log('Visibility*******************');
+      console.log(result);
+      this.visibility.teamId = teamId;
+      this.visibility.image = result.images;
+      this.visibility.video = result.videos;
+      this.visibility.dailyMeeting = result.dailyMeeting;
+      this.visibility.teamLinks = result.teamLink;
+      return this.visibility;
+    }
   }
 }

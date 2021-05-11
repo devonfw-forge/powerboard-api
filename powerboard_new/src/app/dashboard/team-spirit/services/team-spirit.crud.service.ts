@@ -20,7 +20,7 @@ export class TeamSpiritCrudService extends TypeOrmCrudService<TeamSpirit> {
    * @param {teamId} ,Takes teamId as input
    * @return {TeamSpiritResponse} TeamSpirit as response for that team's previous sprint
    */
-  async getTeamSpirit(team_Id: string): Promise<TeamSpiritResponse> {
+  async getTeamSpirit(team_Id: string): Promise<TeamSpiritResponse | undefined> {
     const sprint = (await this.sprintRepository
       .createQueryBuilder('sprint')
       .where('sprint.team_id=:team_id', { team_id: team_Id })
@@ -34,11 +34,14 @@ export class TeamSpiritCrudService extends TypeOrmCrudService<TeamSpirit> {
       .where('team_spirit.sprint_id=:sprint_id', { sprint_id: sprint.id })
       .limit(1)
       .getOne()) as TeamSpirit;
-
-    // const teamSpirit_1 = await this.teamSpiritRepository.find({ where: { sprint: result?.id }, take: 1 });
-    // console.log(teamSpirit_1);
-    this.teamSpiritResponse.teamSpiritRating = teamSpirit.team_spirit_rating;
-    this.teamSpiritResponse.sprintNumber = sprint.sprint_number;
-    return this.teamSpiritResponse;
+    if (teamSpirit == null) {
+      return undefined;
+    } else {
+      // const teamSpirit_1 = await this.teamSpiritRepository.find({ where: { sprint: result?.id }, take: 1 });
+      // console.log(teamSpirit_1);
+      this.teamSpiritResponse.teamSpiritRating = teamSpirit.team_spirit_rating;
+      this.teamSpiritResponse.sprintNumber = sprint.sprint_number;
+      return this.teamSpiritResponse;
+    }
   }
 }

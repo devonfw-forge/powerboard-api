@@ -51,12 +51,12 @@ export class ImagesCrudController {
   async findProfileImage(@Param('imagename') imagename: any, @Res() res: any): Promise<Object> {
     return res.sendFile(join(process.cwd(), 'uploads/profileimages/' + imagename));
   }
-  @Get('getImage/:teamId')
-  async findImage(@Param('teamId') teamId: any): Promise<Object> {
-    const path = await this.imageService.getPathOfImage(teamId);
-    console.log(path);
-    return path;
-  }
+  // @Get('getImage/:teamId')
+  // async findImage(@Param('teamId') teamId: any): Promise<Object> {
+  //   const path = await this.imageService.getPathOfImage(teamId);
+  //   console.log(path);
+  //   return path;
+  // }
 
   @Delete('delete/:id')
   async deleteImageById(@Param('id') imageId: string): Promise<any> {

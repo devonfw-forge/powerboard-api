@@ -67,6 +67,7 @@ export class TeamCrudService extends TypeOrmCrudService<Team> {
     // if (users) {
     const teams: Team = (await this.teamRepository.findOne({ where: { id: teamId } })) as Team;
     this.loginResponse.team_id = teams.id;
+    this.loginResponse.team_name = teams.name;
     this.loginResponse.center = teams.business_unit.name;
     this.loginResponse.logo = teams.logo;
     this.dash = await this.getDashboardByTeamId(teams.id);
@@ -129,21 +130,23 @@ export class TeamCrudService extends TypeOrmCrudService<Team> {
   async getDashboardByTeamId(teamId: string): Promise<DashBoardResponse> {
     this.dash.teamId = teamId;
 
-    const codeQuality: CodeQualityResponse = await this.codequalityService.getCodeQualitySnapshot(teamId);
+    const codeQuality: CodeQualityResponse | undefined = await this.codequalityService.getCodeQualitySnapshot(teamId);
     this.dash.codeQualityResponse = codeQuality;
 
-    const clientStatus: ClientStatusResponse = await this.clientStatusService.getClientFeedback(teamId);
+    const clientStatus: ClientStatusResponse | undefined = await this.clientStatusService.getClientFeedback(teamId);
     this.dash.clientStatusResponse = clientStatus;
 
-    const teamSpirit: TeamSpiritResponse = await this.teamSpiritService.getTeamSpirit(teamId);
+    const teamSpirit: TeamSpiritResponse | undefined = await this.teamSpiritService.getTeamSpirit(teamId);
     this.dash.teamSpiritResponse = teamSpirit;
 
-    const burndown: BurndownResponse = await this.sprintService.getBurndown(teamId);
+    const burndown: BurndownResponse | undefined = await this.sprintService.getBurndown(teamId);
     this.dash.burndownResponse = burndown;
 
-    const sprintDetail: SprintDetailResponse = await this.sprintService.getSprintDetailResponse(teamId);
+    const sprintDetail: SprintDetailResponse | undefined = await this.sprintService.getSprintDetailResponse(teamId);
     this.dash.sprintDetailResponse = sprintDetail;
-    const velocityComparisonDTO: VelocityComparisonResponse = await this.sprintService.getVelocityComparison(teamId);
+    const velocityComparisonDTO:
+      | VelocityComparisonResponse
+      | undefined = await this.sprintService.getVelocityComparison(teamId);
     this.dash.velocityResponse = velocityComparisonDTO;
     this.dash.teamStatus = this.fetchStatus(this.dash);
     return this.dash;
@@ -189,7 +192,7 @@ export class TeamCrudService extends TypeOrmCrudService<Team> {
    * @param {dashboard} dashboard takes dashboard object as input
    * @return {number} number as status value
    */
-  fetchStatus(dashboard: DashBoardResponse): number {
+  fetchStatus(dashboard: DashBoardResponse | any): number {
     let statusResult;
     const codeQualityStatus = dashboard.codeQualityResponse.status;
     const teamSpiritStatus = dashboard.teamSpiritResponse.teamSpiritRating;
@@ -241,16 +244,16 @@ export class TeamCrudService extends TypeOrmCrudService<Team> {
     const dailyMeeting: DailyMeetingResponse[] = await this.dailyMeetingService.getDailyLinks(teamId);
     this.board.dailyMeetingResponse = dailyMeeting;
 
-    const teamLink: TeamLinkResponse[] = await this.teamLinkService.getTeamLinks(teamId);
+    const teamLink: TeamLinkResponse[] | undefined = await this.teamLinkService.getTeamLinks(teamId);
     this.board.teamLinkResponse = teamLink;
 
-    const images: ImageResponse[] = await this.imageService.getPathOfImage(teamId);
+    const images: ImageResponse[] | undefined = await this.imageService.getPathOfImage(teamId);
     this.board.imageResponse = images;
 
-    const videos: VideoResponse[] = await this.videoService.getPathOfVideos(teamId);
+    const videos: VideoResponse[] | undefined = await this.videoService.getPathOfVideos(teamId);
     this.board.videoResponse = videos;
 
-    const visible: VisibilityResponse = await this.visibleService.getVisiblilityForTeam(teamId);
+    const visible: VisibilityResponse | undefined = await this.visibleService.getVisiblilityForTeam(teamId);
     this.board.visibleResponse = visible;
     return this.board;
   }

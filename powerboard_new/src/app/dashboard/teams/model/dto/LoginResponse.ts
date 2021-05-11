@@ -5,6 +5,7 @@ import { ElectronBoardResponse } from './ElectronBoardResponse';
 
 export interface LoginResponse {
   team_id: string;
+  team_name: string;
   center: string;
   logo: string;
   dashboard: DashBoardResponse;

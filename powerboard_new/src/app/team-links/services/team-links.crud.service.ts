@@ -18,24 +18,28 @@ export class TeamLinksCrudService extends TypeOrmCrudService<TeamLinks> {
    * @return {TeamLinkResponse} Team Links as response for that team
    */
   teamLinkResponse: TeamLinkResponse = {} as TeamLinkResponse;
-  async getTeamLinks(team_Id: string): Promise<TeamLinkResponse[]> {
+  async getTeamLinks(team_Id: string): Promise<TeamLinkResponse[] | undefined> {
     const result = (await this.teamLinkRepository
       .createQueryBuilder('team_link')
       .where('team_link.team_id=:team_id', { team_id: team_Id })
       .getMany()) as TeamLinks[];
+    if (result == null) {
+      return undefined;
+    } else {
+      console.log('Team Links***************************');
+      console.log(result);
+      let i = 0;
+      let teamsDTOArray = [];
+      for (i = 0; i < result.length; i++) {
+        this.teamLinkResponse.teamLinkId = result[i].id;
+        this.teamLinkResponse.title = result[i].title;
+        this.teamLinkResponse.links = result[i].link;
+        teamsDTOArray.push(this.teamLinkResponse);
+        this.teamLinkResponse = {} as TeamLinkResponse;
+      }
 
-    console.log('Team Links***************************');
-    console.log(result);
-    let i = 0;
-    let teamsDTOArray = [];
-    for (i = 0; i < result.length; i++) {
-      this.teamLinkResponse.teamLinkId = result[i].id;
-      this.teamLinkResponse.title = result[i].title;
-      this.teamLinkResponse.links = result[i].link;
-      teamsDTOArray.push(this.teamLinkResponse);
-      this.teamLinkResponse = {} as TeamLinkResponse;
+      return teamsDTOArray;
     }
-    return teamsDTOArray;
   }
 
   /**

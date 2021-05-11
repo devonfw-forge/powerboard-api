@@ -1,7 +1,7 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
-export class InsertData1619596002445 implements MigrationInterface {
-  name = 'InsertData1619596002445';
+export class InsertData1620719566255 implements MigrationInterface {
+  name = 'InsertData1620719566255';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(
@@ -33,10 +33,10 @@ export class InsertData1619596002445 implements MigrationInterface {
       `INSERT INTO "team" ("id","logo", "name", "business_unit_id") VALUES ('46455bf7-ada7-495c-8019-8d7ab76d488e' ,'uploads\\logo\\logo31ca9983-ae97-4bb0-9f22-4867d3cc16a0.png','Diamler Devops','46655bf7-ada7-495c-8019-8d7ab62d488e');`,
     );
     await queryRunner.query(
-      `INSERT INTO "team" ("id","logo", "name", "business_unit_id") VALUES ('46455bf7-ada7-495c-8019-8d7ab76d489e' ,'' ,'Devon','46355bf7-ada7-495c-8019-8d7ab62d488e');`,
+      `INSERT INTO "team" ("id","logo", "name", "business_unit_id") VALUES ('46455bf7-ada7-495c-8019-8d7ab76d489e' ,'' ,'Devon Offshore','46655bf7-ada7-495c-8019-8d7ab62d488e');`,
     );
     await queryRunner.query(
-      `INSERT INTO "team" ("id", "logo","name", "business_unit_id" ) VALUES ('46455bf7-ada7-495c-8019-8d7ab76d490e' ,'', 'IKEA','46255bf7-ada7-495c-8019-8d7ab62d488e');`,
+      `INSERT INTO "team" ("id", "logo","name", "business_unit_id" ) VALUES ('46455bf7-ada7-495c-8019-8d7ab76d490e' ,'', 'K&N','46655bf7-ada7-495c-8019-8d7ab62d488e');`,
     );
 
     await queryRunner.query(
@@ -208,11 +208,24 @@ export class InsertData1619596002445 implements MigrationInterface {
       `INSERT INTO "user_info"("id", "first_name", "last_name" ,"center" ,"email","team_spirit_name") Values('56cf1dfd-43e9-5dd4-8257-a6ba5c70e33d', 'Azhar' ,'Hussain' ,'ADCenter Bangalore','azharhusaain123@gmail.com', '');`,
     );
     await queryRunner.query(
-      `INSERT INTO "user"("id", "username", "password", "role", "user_info_id", "teamId") Values('10cf1dfd-43e9-4cc4-8257-a6ba5c70e33d', 'raj11' ,'password',0, '55cf1dfd-43e9-5dd4-8257-a6ba5c70e33d', '46455bf7-ada7-495c-8019-8d7ab76d488e');`,
+      `INSERT INTO "user"("id", "username", "password", "role", "user_info_id") Values('10cf1dfd-43e9-4cc4-8257-a6ba5c70e33d', 'raj11' ,'password',0, '55cf1dfd-43e9-5dd4-8257-a6ba5c70e33d');`,
     );
 
     await queryRunner.query(
-      `INSERT INTO "user"("id", "username", "password", "role", "user_info_id", "teamId") Values('11cf1dfd-43e9-4cc4-8257-a6ba5c70e34d', 'Azhar21' ,'password',0, '56cf1dfd-43e9-5dd4-8257-a6ba5c70e33d', '46455bf7-ada7-495c-8019-8d7ab76d488e');`,
+      `INSERT INTO "user"("id", "username", "password", "role", "user_info_id") Values('11cf1dfd-43e9-4cc4-8257-a6ba5c70e34d', 'siva11' ,'password',0, '56cf1dfd-43e9-5dd4-8257-a6ba5c70e33d');`,
+    );
+    //Here userId and corresponding teamId  has been given
+    await queryRunner.query(
+      `INSERT INTO "user_team_id_team"("userId", "teamId") Values('10cf1dfd-43e9-4cc4-8257-a6ba5c70e33d','46455bf7-ada7-495c-8019-8d7ab76d488e');`,
+    );
+    await queryRunner.query(
+      `INSERT INTO "user_team_id_team"("userId", "teamId") Values('11cf1dfd-43e9-4cc4-8257-a6ba5c70e34d','46455bf7-ada7-495c-8019-8d7ab76d488e');`,
+    );
+    await queryRunner.query(
+      `INSERT INTO "user_team_id_team"("userId", "teamId") Values('11cf1dfd-43e9-4cc4-8257-a6ba5c70e34d','46455bf7-ada7-495c-8019-8d7ab76d490e');`,
+    );
+    await queryRunner.query(
+      `INSERT INTO "user_team_id_team"("userId", "teamId") Values('11cf1dfd-43e9-4cc4-8257-a6ba5c70e34d','46455bf7-ada7-495c-8019-8d7ab76d489e');`,
     );
 
     //   await queryRunner.query(`INSERT INTO USER(id, username, password, role, name, teamId) VALUES(?, ?, ?, ?, ?, ?);`, [
@@ -224,8 +237,9 @@ export class InsertData1619596002445 implements MigrationInterface {
     //     2
     //   ]);
   }
-
   public async down(queryRunner: QueryRunner): Promise<void> {
+    await queryRunner.query(`ALTER TABLE "user_team_id_team" DROP CONSTRAINT "FK_1982ff364868fab18f5e2aca97e"`);
+    await queryRunner.query(`ALTER TABLE "user_team_id_team" DROP CONSTRAINT "FK_b29b5a3393388510a5c1f00a325"`);
     await queryRunner.query(`ALTER TABLE "visibility" DROP CONSTRAINT "FK_396c9b89d74447b5dd2e60b9b24"`);
     await queryRunner.query(`ALTER TABLE "team_links" DROP CONSTRAINT "FK_e2facb7b8634882f8a0ee04979f"`);
     await queryRunner.query(`ALTER TABLE "videos" DROP CONSTRAINT "FK_d20b5471e94253b5c2f194016b7"`);
@@ -240,9 +254,11 @@ export class InsertData1619596002445 implements MigrationInterface {
     await queryRunner.query(`ALTER TABLE "sprint" DROP CONSTRAINT "FK_738321a380b6d8e5266516b5302"`);
     await queryRunner.query(`ALTER TABLE "sprint" DROP CONSTRAINT "FK_39768350e23ee9800f4b30bb94f"`);
     await queryRunner.query(`ALTER TABLE "daily_meeting" DROP CONSTRAINT "FK_0654efb07db0f680ea953c810c6"`);
-    await queryRunner.query(`ALTER TABLE "user" DROP CONSTRAINT "FK_1e89f1fd137dc7fea7242377e25"`);
     await queryRunner.query(`ALTER TABLE "user" DROP CONSTRAINT "FK_ee24a311e8099f9f44424df108e"`);
     await queryRunner.query(`ALTER TABLE "team" DROP CONSTRAINT "FK_780f295d5c3ed479ac1358a9f01"`);
+    await queryRunner.query(`DROP INDEX "IDX_1982ff364868fab18f5e2aca97"`);
+    await queryRunner.query(`DROP INDEX "IDX_b29b5a3393388510a5c1f00a32"`);
+    await queryRunner.query(`DROP TABLE "user_team_id_team"`);
     await queryRunner.query(`DROP TABLE "visibility"`);
     await queryRunner.query(`DROP TABLE "team_links"`);
     await queryRunner.query(`DROP TABLE "videos"`);

@@ -29,9 +29,11 @@ export class ImagesCrudService extends TypeOrmCrudService<Images> {
    * @param {teamId} .Takes teamId as input
    * @return {TeamLinks} ImageResponse[] as response for that team
    */
-  async getPathOfImage(teamId: string): Promise<ImageResponse[]> {
+  async getPathOfImage(teamId: string): Promise<ImageResponse[] | undefined> {
     const result = await this.imageRepository.find({ where: { team: teamId } });
-
+    if (result == null) {
+      return undefined;
+    }
     console.log('Images*******************');
     console.log(result);
     let i = 0;

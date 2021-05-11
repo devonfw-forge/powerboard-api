@@ -18,7 +18,7 @@ export class CodeQualitySnapshotCrudService extends TypeOrmCrudService<CodeQuali
    * @return {CodeQualityResponse} Code Quality as response for that team
    */
   codeQualityResponse: CodeQualityResponse = {} as CodeQualityResponse;
-  async getCodeQualitySnapshot(team_Id: string): Promise<CodeQualityResponse> {
+  async getCodeQualitySnapshot(team_Id: string): Promise<CodeQualityResponse | undefined> {
     const result = (await this.codeQualityRepository
       .createQueryBuilder('code_quality_snapshot')
       .where('code_quality_snapshot.team_id=:team_id', { team_id: team_Id })
@@ -33,12 +33,15 @@ export class CodeQualitySnapshotCrudService extends TypeOrmCrudService<CodeQuali
     // })) as CodeQualitySnapshot[];
 
     //console.log(result);
+    if (result == null) {
+      return undefined;
+    } else {
+      this.codeQualityResponse.bugs = result.bugs;
+      this.codeQualityResponse.debt = result.debt;
+      this.codeQualityResponse.codeCoverage = result.code_coverage;
+      this.codeQualityResponse.status = result.status;
 
-    this.codeQualityResponse.bugs = result.bugs;
-    this.codeQualityResponse.debt = result.debt;
-    this.codeQualityResponse.codeCoverage = result.code_coverage;
-    this.codeQualityResponse.status = result.status;
-
-    return this.codeQualityResponse;
+      return this.codeQualityResponse;
+    }
   }
 }

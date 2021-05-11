@@ -23,7 +23,7 @@ export class SprintCrudService extends TypeOrmCrudService<Sprint> {
    * @param {teamId} ,Takes teamId as input
    * @return {SprintDetailResponse} SprintDetail as response
    */
-  async getSprintDetailResponse(teamId: string): Promise<SprintDetailResponse> {
+  async getSprintDetailResponse(teamId: string): Promise<SprintDetailResponse | undefined> {
     let sprintDetailResponse: SprintDetailResponse = {} as SprintDetailResponse;
 
     const sprintDetail = await this.sprintRepository
@@ -49,28 +49,31 @@ export class SprintCrudService extends TypeOrmCrudService<Sprint> {
     //   teamId +
     //   ' and s.status = 2 order by ss.date_time desc limit(2)',
     // );
-    console.log('sprint detail response ***************************************');
-    console.log(sprintDetail);
-    var end_date = new Date(sprintDetail[0].sprint_end_date);
-    var start_date = new Date(sprintDetail[0].sprint_start_date);
-    var currentDate = new Date();
-    const diff1 = Math.abs(currentDate.getTime() - start_date.getTime());
-    const diff2 = Math.abs(end_date.getTime() - start_date.getTime());
-    const Sprint_current_day = Math.ceil(diff1 / (1000 * 60 * 60 * 24));
-    const Sprint_days = Math.ceil(diff2 / (1000 * 60 * 60 * 24));
-    sprintDetailResponse.Sprint_current_day = Sprint_current_day;
-    sprintDetailResponse.sprint_number = sprintDetail[0].sprint_sprint_number;
-    sprintDetailResponse.Sprint_days = Sprint_days;
-    return sprintDetailResponse;
+    if (sprintDetail == null) {
+      return undefined;
+    } else {
+      console.log('sprint detail response ***************************************');
+      console.log(sprintDetail);
+      var end_date = new Date(sprintDetail[0].sprint_end_date);
+      var start_date = new Date(sprintDetail[0].sprint_start_date);
+      var currentDate = new Date();
+      const diff1 = Math.abs(currentDate.getTime() - start_date.getTime());
+      const diff2 = Math.abs(end_date.getTime() - start_date.getTime());
+      const Sprint_current_day = Math.ceil(diff1 / (1000 * 60 * 60 * 24));
+      const Sprint_days = Math.ceil(diff2 / (1000 * 60 * 60 * 24));
+      sprintDetailResponse.Sprint_current_day = Sprint_current_day;
+      sprintDetailResponse.sprint_number = sprintDetail[0].sprint_sprint_number;
+      sprintDetailResponse.Sprint_days = Sprint_days;
+      return sprintDetailResponse;
+    }
   }
-
   burndownResponse: BurndownResponse = {} as BurndownResponse;
   /**
    * getBurndown method will retrieve the burndown report of current sprint
    * @param {teamId} teamId Takes teamId as input
    * @return {BurndownResponse} Burndown as response for that team's current sprint
    */
-  async getBurndown(teamId: string): Promise<BurndownResponse> {
+  async getBurndown(teamId: string): Promise<BurndownResponse | undefined> {
     let output: BurndownResponse = {} as BurndownResponse;
 
     const sprintForBurndown = await this.sprintRepository
@@ -100,20 +103,24 @@ export class SprintCrudService extends TypeOrmCrudService<Sprint> {
     // );
     console.log('Get Burndown ***************************');
     console.log(sprintForBurndown);
-    const start_date = new Date(sprintForBurndown[0].sprint_start_date);
-    const end_date = new Date(sprintForBurndown[0].sprint_end_date);
-    const diff = Math.abs(new Date().getTime() - start_date.getTime());
-    const diff1 = Math.abs(end_date.getTime() - start_date.getTime());
-    const currentDay = Math.ceil(diff / (1000 * 60 * 60 * 24));
-    const totalDays = Math.ceil(diff1 / (1000 * 60 * 60 * 24));
-    if (sprintForBurndown[0].smt_name == 'Work Committed') {
-      return this.calculateBurnDownFirstCase(sprintForBurndown, totalDays, currentDay);
-    } else if (sprintForBurndown[0].smt_name == 'Work Completed') {
-      return this.calculateBurnDownSecondCase(sprintForBurndown, totalDays, currentDay);
+    if (sprintForBurndown == null) {
+      return undefined;
     } else {
-      console.log('work spillover');
+      const start_date = new Date(sprintForBurndown[0].sprint_start_date);
+      const end_date = new Date(sprintForBurndown[0].sprint_end_date);
+      const diff = Math.abs(new Date().getTime() - start_date.getTime());
+      const diff1 = Math.abs(end_date.getTime() - start_date.getTime());
+      const currentDay = Math.ceil(diff / (1000 * 60 * 60 * 24));
+      const totalDays = Math.ceil(diff1 / (1000 * 60 * 60 * 24));
+      if (sprintForBurndown[0].smt_name == 'Work Committed') {
+        return this.calculateBurnDownFirstCase(sprintForBurndown, totalDays, currentDay);
+      } else if (sprintForBurndown[0].smt_name == 'Work Completed') {
+        return this.calculateBurnDownSecondCase(sprintForBurndown, totalDays, currentDay);
+      } else {
+        console.log('work spillover');
+      }
+      return output;
     }
-    return output;
   }
 
   /**

@@ -18,6 +18,7 @@ import { diskStorage } from 'multer';
 import { v4 as uuidv4 } from 'uuid';
 import path = require('path');
 import { join } from 'path';
+// import { VideoResponse } from '../model/dto/VideoResponse';
 
 export const storage = {
   storage: diskStorage({
@@ -49,12 +50,12 @@ export class VideosCrudController {
     return result;
   }
 
-  @Get('getVideo/:teamId')
-  async findVideo(@Param('teamId') teamId: any): Promise<Object> {
-    const path = await this.videoService.getPathOfVideos(teamId);
-    console.log(path);
-    return path;
-  }
+  // @Get('getVideo/:teamId')
+  // async findVideo(@Param('teamId') teamId: any): Promise<VideoResponse[]|undefined> {
+  //   const path = await this.videoService.getPathOfVideos(teamId);
+  //   console.log(path);
+  //   return path;
+  // }
 
   @Delete('delete/:id')
   async deleteVideoById(@Param('id') videoId: string): Promise<any> {

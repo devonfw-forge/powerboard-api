@@ -6,6 +6,7 @@ import { LoginDTO } from '../model/LoginDTO';
 
 import { TeamCrudService } from '../../../dashboard/teams/services/team.crud.service';
 import { JwtService } from '@nestjs/jwt';
+import { UserTeam } from '../../user/model/dto/UserTeam';
 
 @Injectable()
 export class AuthService {
@@ -58,10 +59,26 @@ export class AuthService {
 
     if (payload) {
       const accessToken = await this.signIn(user.username, user.password);
-      //let userId = payload!.id;
-      let teamId = payload!.teamId.id;
-      const loginResponse = await this.teamService.getPowerboardByTeamId(teamId);
-      return { loginResponse, accessToken };
+      let teamId;
+      if (payload.teamId.length > 1) {
+        console.log(payload);
+        console.log('Siva will handle multiple teams');
+        let teamsWithinUser: UserTeam = {} as UserTeam;
+        let teamsDTOArray = [],
+          i;
+        for (i = 0; i < payload.teamId.length; i++) {
+          teamsWithinUser.teamId = payload.teamId[i].id;
+          teamsWithinUser.teamName = payload.teamId[i].name;
+
+          teamsDTOArray.push(teamsWithinUser);
+          teamsWithinUser = {} as UserTeam;
+        }
+        return teamsDTOArray;
+      } else {
+        teamId = payload!.teamId[0].id;
+        const loginResponse = await this.teamService.getPowerboardByTeamId(teamId);
+        return { loginResponse, accessToken };
+      }
     } else {
       throw new UnauthorizedException('Wrong username or password');
     }

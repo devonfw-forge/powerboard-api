@@ -5,12 +5,12 @@ import { TeamLinkResponse } from '../../../../team-links/model/dto/TeamLinkRespo
 import { VisibilityResponse } from '../../../../visibility/model/dto/VisibilityResponse';
 
 export interface ElectronBoardResponse {
-  teamId: string;
-  center: string;
-  teamLogo: string;
-  dailyMeetingResponse: DailyMeetingResponse[];
-  teamLinkResponse: TeamLinkResponse[];
-  imageResponse: ImageResponse[];
-  videoResponse: VideoResponse[];
-  visibleResponse: VisibilityResponse;
+  // teamId: string;
+  // center: string;
+  // teamLogo: string;
+  dailyMeetingResponse: DailyMeetingResponse[] | undefined;
+  teamLinkResponse: TeamLinkResponse[] | undefined;
+  imageResponse: ImageResponse[] | undefined;
+  videoResponse: VideoResponse[] | undefined;
+  visibleResponse: VisibilityResponse | undefined;
 }
