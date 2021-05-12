@@ -30,10 +30,10 @@ export class InsertData1620719566255 implements MigrationInterface {
     );
 
     await queryRunner.query(
-      `INSERT INTO "team" ("id","logo", "name", "business_unit_id") VALUES ('46455bf7-ada7-495c-8019-8d7ab76d488e' ,'uploads\\logo\\logo31ca9983-ae97-4bb0-9f22-4867d3cc16a0.png','Diamler Devops','46655bf7-ada7-495c-8019-8d7ab62d488e');`,
+      `INSERT INTO "team" ("id","logo", "name", "business_unit_id") VALUES ('46455bf7-ada7-495c-8019-8d7ab76d488e' ,'uploads\\logo\\team_logof1421c16-7ce3-44ad-a94b-5231bcea6887.jpg','Diamler Devops','46655bf7-ada7-495c-8019-8d7ab62d488e');`,
     );
     await queryRunner.query(
-      `INSERT INTO "team" ("id","logo", "name", "business_unit_id") VALUES ('46455bf7-ada7-495c-8019-8d7ab76d489e' ,'' ,'Devon Offshore','46655bf7-ada7-495c-8019-8d7ab62d488e');`,
+      `INSERT INTO "team" ("id","logo", "name", "business_unit_id") VALUES ('46455bf7-ada7-495c-8019-8d7ab76d489e' ,'' ,'Devon Offshore','46555bf7-ada7-495c-8019-8d7ab62d488e');`,
     );
     await queryRunner.query(
       `INSERT INTO "team" ("id", "logo","name", "business_unit_id" ) VALUES ('46455bf7-ada7-495c-8019-8d7ab76d490e' ,'', 'K&N','46655bf7-ada7-495c-8019-8d7ab62d488e');`,
@@ -50,22 +50,44 @@ export class InsertData1620719566255 implements MigrationInterface {
     );
 
     await queryRunner.query(
-      `INSERT INTO "images" ("id", "image", "image_team_id") VALUES ('cbb8fcc9-748f-4d85-b58c-e03fdcf59c8f' ,'uploads\\profileimages\\bangalore96fa8214-4d64-4b2a-916a-8dc504d86f0c.jpg','46455bf7-ada7-495c-8019-8d7ab76d488e');`,
+      `INSERT INTO "images" ("id", "image", "image_team_id") VALUES ('cf959b61-58b1-4985-92e5-4d5f9f5afa87' ,'uploads\\profileimages\\chara5ac33c9-e152-4522-9ce5-e902fe5f2d1c.jpg','46455bf7-ada7-495c-8019-8d7ab76d488e');`,
     );
     await queryRunner.query(
-      `INSERT INTO "images" ("id", "image", "image_team_id") VALUES ('5527a4b6-a64a-4743-886c-104072a0d8fd' ,'uploads\\profileimages\\capgemini_bangaloref8b84128-5750-4c80-bd87-bd5be9cdbd3a.jpg','46455bf7-ada7-495c-8019-8d7ab76d488e');`,
+      `INSERT INTO "images" ("id", "image", "image_team_id") VALUES ('117ae945-4803-427c-aeb4-410081c88f88' ,'uploads\\profileimages\\france-capgeminife447381-c7fb-4f7a-a02a-e0e727cd7393.jpg','46455bf7-ada7-495c-8019-8d7ab76d488e');`,
     );
     await queryRunner.query(
-      `INSERT INTO "images" ("id", "image", "image_team_id") VALUES ('66cd7fdf-73f1-4350-8e9a-c1985ebab62d' ,'uploads\\profileimages\\capgemini_pune1e6ba269-1847-474e-b5fd-2480f8c75392.jpg','46455bf7-ada7-495c-8019-8d7ab76d488e');`,
+      `INSERT INTO "images" ("id", "image", "image_team_id") VALUES ('e732a995-4c70-4ef3-ab71-041f458d0d83' ,'uploads\\profileimages\\altrandd662280-77f7-4884-98c1-03e42dbee263.jpg','46455bf7-ada7-495c-8019-8d7ab76d488e');`,
     );
     await queryRunner.query(
-      `INSERT INTO "images" ("id", "image", "image_team_id") VALUES ('baa3c8a8-eec7-486e-9ae9-cab96c7f3ba4' ,'uploads\\profileimages\\capgemini_mumbai3e61a9e1-3fd5-465a-b071-054f6429c464.jpg','46455bf7-ada7-495c-8019-8d7ab76d488e');`,
+      `INSERT INTO "images" ("id", "image", "image_team_id") VALUES ('6da523cf-b1ba-4731-8da7-0d989a4f00f4' ,'uploads\\profileimages\\bannered66c18c-a4de-4da6-8cb9-005cddc9087e.jpg','46455bf7-ada7-495c-8019-8d7ab76d488e');`,
     );
     await queryRunner.query(
-      `INSERT INTO "videos" ("id", "content", "video_team_id") VALUES ('52255bf8-ada5-495c-8019-8d7ab76d488e' ,'uploads\\videos\\coronab47da341-3258-4cf2-b19f-9f93de76241a.mp4','46455bf7-ada7-495c-8019-8d7ab76d488e');`,
+      `INSERT INTO "images" ("id", "image", "image_team_id") VALUES ('9494e8ed-e68a-432e-86ea-e37495fd23d0' ,'uploads\\profileimages\\Capgeminif3ddc40c-2f8d-4f7b-beee-f5bc8388239f.jpg','46455bf7-ada7-495c-8019-8d7ab76d488e');`,
     );
     await queryRunner.query(
-      `INSERT INTO "videos" ("id", "content", "video_team_id") VALUES ('52355bf8-ada5-495c-8019-8d7ab76d488e','uploads\\videos\\aspirants95cf1dfd-43e9-4cc4-8257-a6ba5c70e3bd.mp4','46455bf7-ada7-495c-8019-8d7ab76d488e');`,
+      `INSERT INTO "images" ("id", "image", "image_team_id") VALUES ('181d444b-b42c-4f7f-9834-0603e8b328b0' ,'uploads\\profileimages\\manyata_collage2c648b45-37c1-448d-a85d-3a4de68f941b.jpg','46455bf7-ada7-495c-8019-8d7ab76d488e');`,
+    );
+    await queryRunner.query(
+      `INSERT INTO "images" ("id", "image", "image_team_id") VALUES ('196726f99-e026-4d8b-acc7-51aad9fa258a' ,'uploads\\profileimages\\media-handler58ee93d8-35ca-41a7-8514-37c713b28d32.jpg','46455bf7-ada7-495c-8019-8d7ab76d488e');`,
+    );
+    await queryRunner.query(
+      `INSERT INTO "images" ("id", "image", "image_team_id") VALUES ('3fd1997b-348f-48d0-91e4-d954fb1bd5ef' ,'uploads\\profileimages\\skybaeb6aaa-5d3e-4b1f-b4f5-72eb569afbd9.jpg','46455bf7-ada7-495c-8019-8d7ab76d488e');`,
+    );
+    await queryRunner.query(
+      `INSERT INTO "images" ("id", "image", "image_team_id") VALUES ('23dee64a-5382-4405-934a-680d98e97429' ,'uploads\\profileimages\\Winner57dbf7ec-fb7c-4246-a82b-b7439eadad6f.jpeg','46455bf7-ada7-495c-8019-8d7ab76d488e');`,
+    );
+
+    await queryRunner.query(
+      `INSERT INTO "videos" ("id", "content", "video_team_id") VALUES ('5121e15a-2d3d-44d8-9d4d-4c2a50dc426c' ,'uploads\\videos\\CapgeminiPurposeaf737d4e-a121-4781-b49a-86575b2886d3.mp4','46455bf7-ada7-495c-8019-8d7ab76d488e');`,
+    );
+    await queryRunner.query(
+      `INSERT INTO "videos" ("id", "content", "video_team_id") VALUES ('d0bdc9da-0092-43fc-a9cb-220a63992b77','uploads\\videos\\CapgeminiValues9a20518c-e2d5-46a9-9c5d-9b5c72f66174.mp4','46455bf7-ada7-495c-8019-8d7ab76d488e');`,
+    );
+    await queryRunner.query(
+      `INSERT INTO "videos" ("id", "content", "video_team_id") VALUES ('458e5d53-9513-4009-af1d-f5c06ba97839','uploads\\videos\\Capgemini_GetTheFutureYouWant18c0092d-d55f-4b6e-a191-ea25306e01d7.mp4','46455bf7-ada7-495c-8019-8d7ab76d488e');`,
+    );
+    await queryRunner.query(
+      `INSERT INTO "videos" ("id", "content", "video_team_id") VALUES ('716d642a-fbb8-4bae-9550-d05eeb77f2d9','uploads\\videos\\Servicesaaf35ae4-f5d3-4521-8abd-787dd9d218c9.mp4','46455bf7-ada7-495c-8019-8d7ab76d488e');`,
     );
     await queryRunner.query(
       `INSERT INTO "visibility" ("id", "daily_meeting", "team_link","images","videos","visibility_team_id") VALUES ('52455bf8-ada5-495c-8019-8d7ab76d488e',true, true, true, true,'46455bf7-ada7-495c-8019-8d7ab76d488e');`,
