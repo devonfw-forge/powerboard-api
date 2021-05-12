@@ -3,7 +3,6 @@ import { Crud } from '@nestjsx/crud';
 import { CrudType } from '@devon4node/common/serializer';
 import { Team } from '../model/entities/team.entity';
 import { TeamCrudService } from '../services/team.crud.service';
-import { LoginResponse } from '../model/dto/LoginResponse';
 import { DashBoardResponse } from '../model/dto/DashBoardResponse';
 import { TeamResponse } from '../model/dto/TeamResponse';
 import { diskStorage } from 'multer';
@@ -47,9 +46,9 @@ export class TeamCrudController {
   // }
 
   @Get('powerboard/team/:teamId')
-  async getPowerboardByTeamId(@Param('teamId') teamId: string): Promise<LoginResponse> {
+  async getPowerboardByTeamId(@Param('teamId') teamId: string): Promise<any> {
     const loginResponse = await this.teamService.getPowerboardByTeamId(teamId);
-    return loginResponse;
+    return { loginResponse };
   }
 
   @Get('team/:id')

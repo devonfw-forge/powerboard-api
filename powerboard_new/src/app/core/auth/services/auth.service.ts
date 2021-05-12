@@ -59,6 +59,7 @@ export class AuthService {
 
     if (payload) {
       const accessToken = await this.signIn(user.username, user.password);
+      console.log(accessToken);
       let teamId;
       if (payload.teamId.length > 1) {
         console.log(payload);
