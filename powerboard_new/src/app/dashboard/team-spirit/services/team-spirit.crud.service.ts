@@ -28,7 +28,10 @@ export class TeamSpiritCrudService extends TypeOrmCrudService<TeamSpirit> {
       .skip(1)
       .take(1)
       .getOne()) as Sprint;
-
+   if(sprint==null){
+     return undefined;
+   }
+   else{
     const teamSpirit = (await this.teamSpiritRepository
       .createQueryBuilder('team_spirit')
       .where('team_spirit.sprint_id=:sprint_id', { sprint_id: sprint.id })
@@ -44,4 +47,6 @@ export class TeamSpiritCrudService extends TypeOrmCrudService<TeamSpirit> {
       return this.teamSpiritResponse;
     }
   }
+
+}
 }

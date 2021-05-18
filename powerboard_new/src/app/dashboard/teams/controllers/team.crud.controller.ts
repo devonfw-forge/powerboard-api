@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Post, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { Crud } from '@nestjsx/crud';
 import { CrudType } from '@devon4node/common/serializer';
 import { Team } from '../model/entities/team.entity';
@@ -9,6 +9,7 @@ import { diskStorage } from 'multer';
 import path = require('path');
 import { v4 as uuidv4 } from 'uuid';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { AddTeamDTO } from '../model/dto/AddTeamDTO';
 //import { AuthGuard } from '@nestjs/passport';
 export const storage = {
   storage: diskStorage({
@@ -69,5 +70,12 @@ export class TeamCrudController {
     console.log(file);
     const result = this.teamService.setLogoPath(file.path, teamId);
     return result;
+  }
+
+  //Adding more team to powerboard application by system admin
+  @Post('addTeam')
+  async addTeam(@Body() addTeam: AddTeamDTO):Promise<any>{
+    await this.teamService.addTeam(addTeam);
+
   }
 }

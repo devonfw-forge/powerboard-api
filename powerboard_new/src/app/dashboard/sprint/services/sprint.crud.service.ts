@@ -49,11 +49,12 @@ export class SprintCrudService extends TypeOrmCrudService<Sprint> {
     //   teamId +
     //   ' and s.status = 2 order by ss.date_time desc limit(2)',
     // );
-    if (sprintDetail == null) {
+    console.log('sprint detail response ***************************************');
+    console.log(sprintDetail);
+    if (sprintDetail[0] == null) {
       return undefined;
     } else {
-      console.log('sprint detail response ***************************************');
-      console.log(sprintDetail);
+   
       var end_date = new Date(sprintDetail[0].sprint_end_date);
       var start_date = new Date(sprintDetail[0].sprint_start_date);
       var currentDate = new Date();
@@ -103,7 +104,7 @@ export class SprintCrudService extends TypeOrmCrudService<Sprint> {
     // );
     console.log('Get Burndown ***************************');
     console.log(sprintForBurndown);
-    if (sprintForBurndown == null) {
+    if (sprintForBurndown[0] == null) {
       return undefined;
     } else {
       const start_date = new Date(sprintForBurndown[0].sprint_start_date);
@@ -184,7 +185,7 @@ export class SprintCrudService extends TypeOrmCrudService<Sprint> {
    * @param {teamId} teamId Takes teamId as input
    * @return {VelocityComparisonResponse} VelocityComparison as response for that team's current sprint
    */
-  async getVelocityComparison(teamId: string): Promise<VelocityComparisonResponse> {
+  async getVelocityComparison(teamId: string): Promise<VelocityComparisonResponse|undefined> {
     const sprintMetricsResponse = await this.sprintRepository
       .createQueryBuilder('sprint')
       .addSelect('sprint.id', 'sprint_id')
@@ -202,15 +203,13 @@ export class SprintCrudService extends TypeOrmCrudService<Sprint> {
       .limit(2)
       .getRawMany();
 
-    // const sprintMetricsResponse = await this.sprintRepository.query(
-    //   ' select s.id,st.status, ss.id, smt.name, ssd.value from sprint s INNER JOIN sprint_status st ON st.id = s.status INNER JOIN sprint_snapshot ss ON ss.sprint_id = s.id INNER JOIN sprint_snapshot_metric ssd ON ssd.snapshot_id = ss.id LEFT JOIN sprint_metric smt ON smt.id = ssd.metric_id where s.team_id =' +
-    //   teamId +
-    //   ' and s.status = 2 order by ss.date_time desc limit(2)',
-    // );
-
     console.log('Get Velocity Comparison ****************************************');
     console.log(sprintMetricsResponse);
-
+    if(sprintMetricsResponse==null){
+      return undefined;
+    }
+  
+else{
     const previousSprintCompleted = await this.sprintRepository
       .createQueryBuilder('sprint')
       .addSelect('sprint.id', 'sprint_id')
@@ -229,18 +228,18 @@ export class SprintCrudService extends TypeOrmCrudService<Sprint> {
       .getRawMany();
     console.log('Previous sprint completed ***********************');
     console.log(previousSprintCompleted);
-    // const previousSprintCompleted = await this.sprintRepository.query(
-    //   'select s.id ,st.status, ss.id, smt.name, ssd.value from sprint s INNER JOIN sprint_status st ON st.id = s.status INNER JOIN sprint_snapshot ss ON ss.sprint_id = s.id INNER JOIN sprint_snapshot_metric ssd ON ssd.snapshot_id = ss.id  LEFT JOIN sprint_metric smt ON smt.id = ssd.metric_id  where s.team_id =' +
-    //   teamId +
-    //   ' and s.status=3 and ssd.metric_id=2 order by s.id',
-    // );
-    // console.log("Using raw query for previous sprint");
-    // console.log(previousSprintCompleted);
-
+     if(previousSprintCompleted.length==0 ||previousSprintCompleted==null){
+       console.log('ho gya')
+       return undefined;
+     }
+     else{
     this.velocityComparisonResponse.Avg = this.getAverageVelocity(previousSprintCompleted);
     this.velocityComparisonResponse = this.getVelocityData(sprintMetricsResponse);
     return this.velocityComparisonResponse;
+     }
   }
+  
+}
 
   /**
    * getAverageVelocity method will calculate the average velocity

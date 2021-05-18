@@ -7,7 +7,7 @@ import { VelocityComparisonResponse } from '../../../sprint/model/dto/VelocityCo
 
 export interface DashBoardResponse {
   teamId: string;
-  teamStatus: number;
+  teamStatus: number|undefined;
   codeQualityResponse: CodeQualityResponse | undefined;
   clientStatusResponse: ClientStatusResponse | undefined;
   teamSpiritResponse: TeamSpiritResponse | undefined;

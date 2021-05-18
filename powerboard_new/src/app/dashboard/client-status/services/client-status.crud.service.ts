@@ -28,7 +28,10 @@ export class ClientStatusCrudService extends TypeOrmCrudService<ClientStatus> {
       .skip(1)
       .take(1)
       .getOne()) as Sprint;
-
+if(sprint==null){
+  return undefined;
+}
+else{}
     // const sprint = await this.sprintRepository.find({
     //   where: { team: team_Id },
     //   order: { sprint_number: 'DESC' },

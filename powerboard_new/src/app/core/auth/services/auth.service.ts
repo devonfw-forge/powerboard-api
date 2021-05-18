@@ -7,6 +7,8 @@ import { LoginDTO } from '../model/LoginDTO';
 import { TeamCrudService } from '../../../dashboard/teams/services/team.crud.service';
 import { JwtService } from '@nestjs/jwt';
 import { UserTeam } from '../../user/model/dto/UserTeam';
+import { AddTeamUserDTO } from '../model/addTeamUserDTO';
+import { compare } from 'bcrypt';
 
 @Injectable()
 export class AuthService {
@@ -25,7 +27,8 @@ export class AuthService {
   // }
   async validateUser(username: string, pass: string): Promise<User | undefined> {
     const user = (await this.usersService.findOne({ where: { username: username } })) as User;
-    if (user?.password == pass) {
+    // if (user?.password == pass) {
+      if (user && (await compare(pass, user.password!))){
       return classToPlain(user) as User;
     }
     return undefined;
@@ -96,5 +99,8 @@ export class AuthService {
 
   register(user: User): Promise<User> {
     return this.usersService.registerUser(user);
+  }
+  addTeamsToUser(addTeam:AddTeamUserDTO):Promise<any>{
+    return this.usersService.addTeamsToUser(addTeam);
   }
 }

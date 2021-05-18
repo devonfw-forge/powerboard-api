@@ -12,9 +12,6 @@ export class UserInfo extends BaseEntity {
   @Column('varchar', { length: 255, nullable: true })
   center!: string;
 
-  @Column('varchar', { length: 255, nullable: false })
-  email!: string;
-
-  @Column('varchar', { name: 'team_spirit_name', length: 255, nullable: true })
+   @Column('varchar', { name: 'team_spirit_name', length: 255, nullable: true })
   teameSpiritName!: string;
 }

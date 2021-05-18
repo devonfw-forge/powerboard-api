@@ -6,6 +6,9 @@ import { BaseEntity } from '../../../../shared/model/entities/base-entity.entity
 export class Team extends BaseEntity {
   @Column('varchar', { length: 255, nullable: false })
   name!: string;
+  
+  @Column('varchar', {name:'team_code', length: 255, nullable: false ,unique:true})
+  teamCode!: string;
 
   @Column('varchar', { length: 3000, nullable: true })
   logo!: string;

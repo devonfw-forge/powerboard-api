@@ -30,6 +30,7 @@ import { ImageResponse } from '../../../multimedia/images/model/dto/ImageRespons
 import { VideoResponse } from '../../../multimedia/videos/model/dto/VideoResponse';
 import { VisibilityCrudService } from '../../../visibility/services/visibility.crud.service';
 import { VisibilityResponse } from '../../../visibility/model/dto/VisibilityResponse';
+import { AddTeamDTO } from '../model/dto/AddTeamDTO';
 
 @Injectable()
 export class TeamCrudService extends TypeOrmCrudService<Team> {
@@ -69,6 +70,7 @@ export class TeamCrudService extends TypeOrmCrudService<Team> {
     this.loginResponse.team_id = teams.id;
     this.loginResponse.team_name = teams.name;
     this.loginResponse.center = teams.business_unit.name;
+    this.loginResponse.team_code = teams.teamCode
     this.loginResponse.logo = teams.logo;
     this.dash = await this.getDashboardByTeamId(teams.id);
     this.loginResponse.dashboard = this.dash;
@@ -144,11 +146,11 @@ export class TeamCrudService extends TypeOrmCrudService<Team> {
 
     const sprintDetail: SprintDetailResponse | undefined = await this.sprintService.getSprintDetailResponse(teamId);
     this.dash.sprintDetailResponse = sprintDetail;
-    const velocityComparisonDTO:
-      | VelocityComparisonResponse
-      | undefined = await this.sprintService.getVelocityComparison(teamId);
+    const velocityComparisonDTO:VelocityComparisonResponse| undefined = await this.sprintService.getVelocityComparison(teamId);
     this.dash.velocityResponse = velocityComparisonDTO;
+    console.log(this.dash)
     this.dash.teamStatus = this.fetchStatus(this.dash);
+    console.log(this.dash.teamStatus)
     return this.dash;
   }
 
@@ -194,12 +196,18 @@ export class TeamCrudService extends TypeOrmCrudService<Team> {
    * @param {dashboard} dashboard takes dashboard object as input
    * @return {number} number as status value
    */
-  fetchStatus(dashboard: DashBoardResponse | any): number {
+  fetchStatus(dashboard: DashBoardResponse): number|undefined {
+  
+    if(dashboard?.clientStatusResponse==null){
+      return undefined;
+    }
+    else{
+      console.log('hi')
     let statusResult;
-    const codeQualityStatus = dashboard.codeQualityResponse.status;
-    const teamSpiritStatus = dashboard.teamSpiritResponse.teamSpiritRating;
-    const clientStatus = dashboard.clientStatusResponse.clientSatisfactionRating;
-    const burndownStatus = dashboard.burndownResponse.burndownStatus;
+    const codeQualityStatus = dashboard!.codeQualityResponse!.status;
+    const teamSpiritStatus = dashboard!.teamSpiritResponse!.teamSpiritRating;
+    const clientStatus = dashboard!.clientStatusResponse!.clientSatisfactionRating;
+    const burndownStatus = dashboard!.burndownResponse!.burndownStatus;
     if (clientStatus >= 6 && teamSpiritStatus >= 6 && codeQualityStatus == 'PASSED' && burndownStatus == 'Ahead Time') {
       statusResult = 2;
     } else if (
@@ -213,7 +221,7 @@ export class TeamCrudService extends TypeOrmCrudService<Team> {
       statusResult = 1;
     }
     return statusResult;
-  }
+  }}
   // board: ElectronBoardResponse = {} as ElectronBoardResponse;
   // async getElectronBoardByUserId(userId: string): Promise<ElectronBoardResponse> {
   //   const users: User = (await this.userRepository.findOne({ where: { id: userId } })) as User;
@@ -259,4 +267,20 @@ export class TeamCrudService extends TypeOrmCrudService<Team> {
     this.board.visibleResponse = visible;
     return this.board;
   }
+
+  async addTeam(addteam: AddTeamDTO):Promise<any>{
+    const value = addteam.teamCode;
+    const result = await this.teamRepository.findOne({where :{teamCode :value}});
+    if(result!=null){
+      console.log('team exists')
+    }
+    else{
+      let team = new Team();
+      team.name = addteam.name;
+      team.teamCode= addteam.teamCode;
+      team.logo= addteam.logo;
+      team.business_unit.id= addteam.business_unit;
+    return await this.teamRepository.save(team);
+  }
+}
 }

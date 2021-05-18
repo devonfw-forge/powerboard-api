@@ -21,7 +21,7 @@ export class SprintCrudController {
   }
 
   @Get('velocity/demo/:id')
-  async getVelocityComparison(@Param('id') teamId: string): Promise<VelocityComparisonResponse> {
+  async getVelocityComparison(@Param('id') teamId: string): Promise<VelocityComparisonResponse|undefined> {
     return await this.service.getVelocityComparison(teamId);
   }
 }

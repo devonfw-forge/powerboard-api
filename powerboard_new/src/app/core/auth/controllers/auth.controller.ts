@@ -5,6 +5,7 @@ import { AuthService } from '../services/auth.service';
 
 import { GetUser } from '../decorators/get-user.decorator';
 import { LoginDTO } from '../model/LoginDTO';
+import { AddTeamUserDTO } from '../model/addTeamUserDTO';
 
 @Controller('auth')
 export class AuthController {
@@ -26,12 +27,25 @@ export class AuthController {
   @Post('register')
   async register(@Body() user: User): Promise<User> {
     try {
+      console.log('controller');
+      console.log(user);
       const registered = await this.authService.register(user);
+      console.log('resultttttttttt');
+      console.log(registered);
+
       return registered;
     } catch (e) {
       throw new BadRequestException(e.message);
     }
   }
+  //Adding more teams to one particular user
+  @Post('addTeamsToUser')
+  async addMoreTeamForUser(@Body() addTeam: AddTeamUserDTO): Promise<any> {
+    
+    return  await this.authService.addTeamsToUser(addTeam); 
+  }
+
+  
 
   @Get('currentuser')
   @UseGuards(AuthGuard())

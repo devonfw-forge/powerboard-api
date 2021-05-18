@@ -8,6 +8,7 @@ export interface LoginResponse {
   team_name: string;
   center: string;
   logo: string;
+  team_code:string;
   dashboard: DashBoardResponse;
   user_breadCrumb: BreadCrumbResponse[];
   dump_businessUnit: BusinessUnit[];
