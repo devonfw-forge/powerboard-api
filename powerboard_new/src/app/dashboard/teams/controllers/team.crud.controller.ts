@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { Crud } from '@nestjsx/crud';
 import { CrudType } from '@devon4node/common/serializer';
 import { Team } from '../model/entities/team.entity';
@@ -32,20 +32,8 @@ export const storage = {
 export class TeamCrudController {
   constructor(public teamService: TeamCrudService) {}
 
-  // @Get('user/:id/:flag')
-  // async getDashboardByUserId(
-  //   @Param('id') userId: string,
-  //   @Param('flag') flag: boolean,
-  // ): Promise<LoginResponse | ElectronBoardResponse> {
-  //   if (flag) {
-  //     const loginResponse = await this.teamService.getDashboardByUserId(userId);
-  //     return loginResponse;
-  //   } else {
-  //     const electronResponse = await this.teamService.getElectronBoardByUserId(userId);
-  //     return electronResponse;
-  //   }
-  // }
 
+//Return whole detail of team as LoginResponse (including dashboard+ electronboard)
   @Get('powerboard/team/:teamId')
   async getPowerboardByTeamId(@Param('teamId') teamId: string): Promise<any> {
     const loginResponse = await this.teamService.getPowerboardByTeamId(teamId);
@@ -73,9 +61,30 @@ export class TeamCrudController {
   }
 
   //Adding more team to powerboard application by system admin
-  @Post('addTeam')
+  @Post('team/addTeam')
   async addTeam(@Body() addTeam: AddTeamDTO):Promise<any>{
     await this.teamService.addTeam(addTeam);
 
+  }
+
+  //Deleting the team , system admin can do it //pendinf
+  @Delete('team/delete/:id')
+  async deleteTeamById(@Param('id') teamId: string): Promise<any> {
+    return await this.teamService.deleteTeamById(teamId);
+  }
+
+  //View All Team
+  @Get('viewAllTeams')
+  async getAllTeams():Promise<any>{
+    const result = await this.teamService.getAllTeams();
+    console.log(result)
+    return result;
+  }
+
+  //Update the team
+  @Put('team/update')
+  async updateTheteam(@Body() updateTeam:AddTeamDTO):Promise<any>
+  {
+      return await this.teamService.updateTeam(updateTeam);
   }
 }

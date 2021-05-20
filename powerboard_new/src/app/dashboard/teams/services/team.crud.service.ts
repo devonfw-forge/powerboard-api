@@ -31,6 +31,8 @@ import { VideoResponse } from '../../../multimedia/videos/model/dto/VideoRespons
 import { VisibilityCrudService } from '../../../visibility/services/visibility.crud.service';
 import { VisibilityResponse } from '../../../visibility/model/dto/VisibilityResponse';
 import { AddTeamDTO } from '../model/dto/AddTeamDTO';
+import { ViewTeamsResponse } from '../model/dto/ViewTeamsResponse';
+
 
 @Injectable()
 export class TeamCrudService extends TypeOrmCrudService<Team> {
@@ -267,7 +269,14 @@ export class TeamCrudService extends TypeOrmCrudService<Team> {
     this.board.visibleResponse = visible;
     return this.board;
   }
+ 
 
+
+  /**
+   * addTeam method will add team , and system admin can do so
+   * @param {AddTeamDTO} .Takes AddTeamDTO as input
+   * @return {Team} Created Team as response
+   */
   async addTeam(addteam: AddTeamDTO):Promise<any>{
     const value = addteam.teamCode;
     const result = await this.teamRepository.findOne({where :{teamCode :value}});
@@ -278,9 +287,61 @@ export class TeamCrudService extends TypeOrmCrudService<Team> {
       let team = new Team();
       team.name = addteam.name;
       team.teamCode= addteam.teamCode;
+      console.log(team.teamCode)
       team.logo= addteam.logo;
-      team.business_unit.id= addteam.business_unit;
+      team.business_unit= addteam.business_unit;
+      console.log(team.business_unit.id)
     return await this.teamRepository.save(team);
   }
 }
+
+
+/**
+   * deleteTeamById method will delete team , and system admin can do so
+   * @param {teamId} .Takes teamId as input
+   * @return {void} 
+   */
+   async deleteTeamById(teamId:string):Promise<any>{
+     await this.teamRepository.delete(teamId);
+   }
+
+   /**
+   * getAllTeams method will fetch all team , and system admin can do so
+   * @param {} .Takes nothing as input
+   * @return {team[]} return team array as response
+   */
+   async getAllTeams():Promise<ViewTeamsResponse[]>{
+      const teamList =await this.teamRepository.find();
+    let viewTeamsResponse: ViewTeamsResponse = {} as ViewTeamsResponse;
+    let viewteamList = [],
+      i;
+    for (i = 0; i < teamList.length; i++) {
+      viewTeamsResponse.teamId = teamList[i].id;
+      viewTeamsResponse.teamName = teamList[i].name;
+      viewTeamsResponse.projectCode= teamList[i].teamCode;
+      viewTeamsResponse.businessUnit = teamList[i].business_unit.name;
+      viewteamList.push(viewTeamsResponse);
+      viewTeamsResponse = {} as ViewTeamsResponse;
+    }
+    return viewteamList;
+   }
+
+  /**
+   * updateTeam method will update exsiting team , and system admin can do so
+   * @param {AddTeamDTO} .Takes AddTeamDTO as input
+   * @return {Team} Created Team as response
+   */
+  async updateTeam(updateTeam: AddTeamDTO):Promise<any>{
+    const value = updateTeam.teamCode;
+    const result = await this.teamRepository.findOne({where :{teamCode :value}});
+    let team = new Team();
+    if(result){
+       team.id = result.id
+    } 
+      team.name = updateTeam.name;
+      team.teamCode= updateTeam.teamCode;
+      team.logo= updateTeam.logo;
+      team.business_unit= updateTeam.business_unit;
+    return await this.teamRepository.save(team);
+  }
 }

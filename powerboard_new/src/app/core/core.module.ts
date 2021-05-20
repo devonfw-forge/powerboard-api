@@ -8,14 +8,12 @@ import { Config } from '../shared/model/config/config.model';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
-import { UserInfoModule } from './userinfo/userinfo.module';
 
 @Global()
 @Module({
   imports: [
     UserModule,
     AuthModule,
-    UserInfoModule,
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: (config: ConfigService<Config>) => {

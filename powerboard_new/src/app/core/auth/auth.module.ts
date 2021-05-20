@@ -29,6 +29,7 @@ import { ImagesCrudService } from '../../multimedia/images/services/images.crud.
 import { VideosCrudService } from '../../multimedia/videos/services/videos.crud.service';
 import { TeamLinksCrudService } from '../../team-links/services/team-links.crud.service';
 import { VisibilityCrudService } from '../../visibility/services/visibility.crud.service';
+import { UserTeam } from '../user/model/entities/user_team.entity';
 
 @Module({
   imports: [
@@ -51,6 +52,7 @@ import { VisibilityCrudService } from '../../visibility/services/visibility.crud
       TeamLinks,
       DailyMeeting,
       Visibility,
+      UserTeam,
     ]),
   ],
   providers: [

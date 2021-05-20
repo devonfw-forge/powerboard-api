@@ -1,9 +1,9 @@
 import { Exclude } from 'class-transformer';
 import { BaseEntity } from '../../../../shared/model/entities/base-entity.entity';
 import { roles } from '../../../auth/model/roles.enum';
-import { Team } from '../../../../dashboard/teams/model/entities/team.entity';
-import { Column, Entity, JoinColumn, JoinTable, ManyToMany, OneToOne } from 'typeorm';
-import { UserInfo } from '../../../userinfo/model/entities/userinfo.entity';
+import { Column, Entity, OneToMany } from 'typeorm';
+import { UserTeam } from './user_team.entity';
+
 @Entity()
 export class User extends BaseEntity {
   @Column('varchar', { length: 255, nullable: false })
@@ -12,18 +12,34 @@ export class User extends BaseEntity {
   @Column('varchar', { length: 255, nullable: false })
   @Exclude({ toPlainOnly: true })
   password!: string;
-  
+
   @Column('varchar', { length: 255, nullable: true })
-  email!: string; 
+  email!: string;
 
   @Column('int', { nullable: false, default: roles.USER })
   role!: number;
 
-  @OneToOne(() => UserInfo, { eager: true , nullable:true })
-  @JoinColumn({ name: 'user_info_id', referencedColumnName: 'id' })
-  user!: UserInfo;
+  @OneToMany(() => UserTeam, userteam => userteam.user, { nullable: true })
+  userTeam!: UserTeam[];
 
-  @ManyToMany(() => Team, { eager: true, cascade:true })
-  @JoinTable()
-  teamId!: Team[];
+  // @OneToOne(() => UserInfo, { eager: true, nullable: true })
+  // @JoinColumn({ name: 'user_info_id', referencedColumnName: 'id' })
+  // user!: UserInfo;
+
+  // @ManyToMany(() => Team, { eager: true, cascade: true, nullable: true })
+  // teamId!: Team[];
+  // @JoinTable({
+  //   name: 'user_team',
+  //   joinColumn: {
+  //     name: 'user_Id',
+  //     referencedColumnName: 'id',
+  //   },
+  //   inverseJoinColumn: {
+  //     name: 'team_Id',
+  //     referencedColumnName: 'id',
+  //   },
+  // })
+  // teamId!: Team[];
+
+  
 }
