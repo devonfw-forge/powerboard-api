@@ -7,9 +7,11 @@ import { TeamSpiritCrudService } from '../../../dashboard/team-spirit-integratio
 
 @Injectable()
 export class AdminService {
-  constructor(private readonly teamService: TeamCrudService,
-     private readonly userService: UserService,
-     private readonly teamSpiritService:TeamSpiritCrudService) {}
+  constructor(
+    private readonly teamService: TeamCrudService,
+    private readonly userService: UserService,
+    private readonly teamSpiritService: TeamSpiritCrudService,
+  ) {}
 
   /**
    * addTeamByAdmin method will add team , and system admin can do so
@@ -18,8 +20,10 @@ export class AdminService {
    */
   async addTeamByAdmin(addTeam: AddTeam): Promise<any> {
     const result = await this.teamService.addTeam(addTeam);
-    if(result){
-      await this.teamSpiritService.addProjectToTeamSpirit(addTeam.name);
+    console.log('hiiiiiiiiiii');
+    console.log(result);
+    if (result) {
+      this.teamSpiritService.addProjectToTeamSpirit(addTeam.name);
     }
   }
 

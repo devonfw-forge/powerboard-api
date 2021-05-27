@@ -5,5 +5,5 @@ export interface UserDTO {
   password: string;
   email: string;
   accessRole: number;
-  teamId: Team[];
+  teamId: Team;
 }

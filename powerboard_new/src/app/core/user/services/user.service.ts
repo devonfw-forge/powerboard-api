@@ -50,7 +50,7 @@ export class UserService extends TypeOrmCrudService<User> {
     if (result) {
       let userTeam = new UserTeam();
       userTeam.user = result;
-      userTeam.team = userDTO.teamId[0];
+      userTeam.team = userDTO.teamId;
       console.log(userTeam.team.id);
       userTeam.accessRole = userDTO.accessRole;
       const output = await this.userTeamRepository.save(userTeam);
@@ -68,7 +68,7 @@ export class UserService extends TypeOrmCrudService<User> {
    */
   async addTeamsToUser(actualUser: User | undefined, userDTO: UserDTO): Promise<any> {
     let userTeam = new UserTeam();
-    userTeam.team = userDTO.teamId[0];
+    userTeam.team = userDTO.teamId;
     userTeam.accessRole = userDTO.accessRole;
     userTeam.user = actualUser!;
     const output = await this.userTeamRepository.save(userTeam);
