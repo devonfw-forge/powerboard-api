@@ -1,4 +1,4 @@
-import { Team } from '../../../../dashboard/teams/model/entities/team.entity';
+import { Team } from '../../../../teams/model/entities/team.entity';
 
 export interface ImageDTO {
   image: string;

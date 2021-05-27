@@ -8,12 +8,14 @@ import { Config } from '../shared/model/config/config.model';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
+import { AdminModule } from './admin/admin.module';
 
 @Global()
 @Module({
   imports: [
     UserModule,
     AuthModule,
+    AdminModule,
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: (config: ConfigService<Config>) => {
@@ -32,6 +34,6 @@ import { UserModule } from './user/user.module';
     { provide: APP_INTERCEPTOR, useClass: ClassSerializerInterceptor },
     WinstonLogger,
   ],
-  exports: [UserModule, AuthModule, ConfigModule, WinstonLogger],
+  exports: [UserModule, AuthModule, AdminModule,ConfigModule, WinstonLogger],
 })
 export class CoreModule {}

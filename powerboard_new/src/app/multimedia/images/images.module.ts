@@ -10,4 +10,4 @@ import { ImagesCrudService } from './services/images.crud.service';
   controllers: [ImagesCrudController],
   exports: [ImagesCrudService],
 })
-export class ImagessModule {}
+export class ImagesModule {}

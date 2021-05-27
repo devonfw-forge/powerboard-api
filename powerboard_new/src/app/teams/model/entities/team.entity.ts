@@ -1,8 +1,7 @@
-import { BusinessUnit } from '../../../business-units/model/entities/business-unit.entity';
+import { BusinessUnit } from '../../../dashboard/business-units/model/entities/business-unit.entity';
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
-import { BaseEntity } from '../../../../shared/model/entities/base-entity.entity';
-// import { User } from 'src/app/core/user/model/entities/user.entity';
-import { UserTeam } from 'src/app/core/user/model/entities/user_team.entity';
+import { BaseEntity } from '../../../shared/model/entities/base-entity.entity';
+import { UserTeam } from '../../../core/user/model/entities/user_team.entity';
 
 @Entity()
 export class Team extends BaseEntity {

@@ -1,4 +1,4 @@
-import { BusinessUnit } from '../../../business-units/model/entities/business-unit.entity';
+import { BusinessUnit } from '../../../dashboard/business-units/model/entities/business-unit.entity';
 import { BreadCrumbResponse } from './BreadCrumbResponse';
 import { DashBoardResponse } from './DashBoardResponse';
 import { ElectronBoardResponse } from './ElectronBoardResponse';
@@ -8,7 +8,7 @@ export interface LoginResponse {
   team_name: string;
   center: string;
   logo: string;
-  team_code:string;
+  team_code: string;
   dashboard: DashBoardResponse;
   user_breadCrumb: BreadCrumbResponse[];
   dump_businessUnit: BusinessUnit[];

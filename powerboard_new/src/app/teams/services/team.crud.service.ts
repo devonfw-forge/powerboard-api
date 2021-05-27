@@ -1,38 +1,37 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { TypeOrmCrudService } from '@nestjsx/crud-typeorm';
-import { BusinessUnit } from '../../business-units/model/entities/business-unit.entity';
-import { ClientStatusResponse } from '../../client-status/model/dto/ClientStatusResponse';
-import { ClientStatusCrudService } from '../../client-status/services/client-status.crud.service';
-import { CodeQualityResponse } from '../../code-quality-snapshot/model/dto/CodeQualityResponse';
-import { CodeQualitySnapshotCrudService } from '../../code-quality-snapshot/services/code-quality-snapshot.crud.service';
-// import { User } from '../../../core/user/model/entities/user.entity';
-import { SprintDetailResponse } from '../../sprint/model/dto/SprintDetailResponse';
-import { TeamSpiritResponse } from '../../team-spirit/model/dto/TeamSpiritResponse';
-import { TeamSpiritCrudService } from '../../team-spirit/services/team-spirit.crud.service';
+import { BusinessUnit } from '../../dashboard/business-units/model/entities/business-unit.entity';
+import { ClientStatusResponse } from '../../dashboard/client-status/model/dto/ClientStatusResponse';
+import { ClientStatusCrudService } from '../../dashboard/client-status/services/client-status.crud.service';
+import { CodeQualityResponse } from '../../dashboard/code-quality-snapshot/model/dto/CodeQualityResponse';
+import { CodeQualitySnapshotCrudService } from '../../dashboard/code-quality-snapshot/services/code-quality-snapshot.crud.service';
+import { SprintDetailResponse } from '../../dashboard/sprint/model/dto/SprintDetailResponse';
+import { TeamSpiritResponse } from '../../dashboard/team-spirit-integration/model/dto/TeamSpiritResponse';
+import { TeamSpiritCrudService } from '../../dashboard/team-spirit-integration/services/team-spirit.crud.service';
 import { Repository } from 'typeorm';
-import { BurndownResponse } from '../../sprint/model/dto/BurndownResponse';
-import { VelocityComparisonResponse } from '../../sprint/model/dto/VelocityComparisonResponse';
-import { SprintCrudService } from '../../sprint/services/sprint.crud.service';
+import { BurndownResponse } from '../../dashboard/sprint/model/dto/BurndownResponse';
+import { VelocityComparisonResponse } from '../../dashboard/sprint/model/dto/VelocityComparisonResponse';
+import { SprintCrudService } from '../../dashboard/sprint/services/sprint.crud.service';
 import { BreadCrumbResponse } from '../model/dto/BreadCrumbResponse';
 import { DashBoardResponse } from '../model/dto/DashBoardResponse';
 import { LoginResponse } from '../model/dto/LoginResponse';
 import { TeamResponse } from '../model/dto/TeamResponse';
 import { Team } from '../model/entities/team.entity';
-import { DailyMeetingResponse } from '../../../daily-links/model/dto/DailyMeetingResponse';
-import { DailyMeetingCrudService } from '../../../daily-links/services/daily-meeting.crud.service';
-import { TeamLinksCrudService } from '../../../team-links/services/team-links.crud.service';
-import { ImagesCrudService } from '../../../multimedia/images/services/images.crud.service';
-import { VideosCrudService } from '../../../multimedia/videos/services/videos.crud.service';
+import { DailyMeetingResponse } from '../../daily-links/model/dto/DailyMeetingResponse';
+import { DailyMeetingCrudService } from '../../daily-links/services/daily-meeting.crud.service';
+import { TeamLinksCrudService } from '../../team-links/services/team-links.crud.service';
+import { ImagesCrudService } from '../../multimedia/images/services/images.crud.service';
+import { VideosCrudService } from '../../multimedia/videos/services/videos.crud.service';
 import { ElectronBoardResponse } from '../model/dto/ElectronBoardResponse';
-import { TeamLinkResponse } from '../../../team-links/model/dto/TeamLinkResponse';
-import { ImageResponse } from '../../../multimedia/images/model/dto/ImageResponse';
-import { VideoResponse } from '../../../multimedia/videos/model/dto/VideoResponse';
-import { VisibilityCrudService } from '../../../visibility/services/visibility.crud.service';
-import { VisibilityResponse } from '../../../visibility/model/dto/VisibilityResponse';
-import { AddTeamDTO } from '../model/dto/AddTeamDTO';
-import { ViewTeamsResponse } from '../model/dto/ViewTeamsResponse';
+import { TeamLinkResponse } from '../../team-links/model/dto/TeamLinkResponse';
+import { ImageResponse } from '../../multimedia/images/model/dto/ImageResponse';
+import { VideoResponse } from '../../multimedia/videos/model/dto/VideoResponse';
+import { VisibilityCrudService } from '../../visibility/services/visibility.crud.service';
+import { VisibilityResponse } from '../../visibility/model/dto/VisibilityResponse';
 
+import { ViewTeamsResponse } from '../model/dto/ViewTeamsResponse';
+import { AddTeam } from 'src/app/shared/interfaces/addTeam.interface';
 
 @Injectable()
 export class TeamCrudService extends TypeOrmCrudService<Team> {
@@ -72,7 +71,7 @@ export class TeamCrudService extends TypeOrmCrudService<Team> {
     this.loginResponse.team_id = teams.id;
     this.loginResponse.team_name = teams.name;
     this.loginResponse.center = teams.business_unit.name;
-    this.loginResponse.team_code = teams.teamCode
+    this.loginResponse.team_code = teams.teamCode;
     this.loginResponse.logo = teams.logo;
     this.dash = await this.getDashboardByTeamId(teams.id);
     this.loginResponse.dashboard = this.dash;
@@ -148,11 +147,13 @@ export class TeamCrudService extends TypeOrmCrudService<Team> {
 
     const sprintDetail: SprintDetailResponse | undefined = await this.sprintService.getSprintDetailResponse(teamId);
     this.dash.sprintDetailResponse = sprintDetail;
-    const velocityComparisonDTO:VelocityComparisonResponse| undefined = await this.sprintService.getVelocityComparison(teamId);
+    const velocityComparisonDTO:
+      | VelocityComparisonResponse
+      | undefined = await this.sprintService.getVelocityComparison(teamId);
     this.dash.velocityResponse = velocityComparisonDTO;
-    console.log(this.dash)
+    console.log(this.dash);
     this.dash.teamStatus = this.fetchStatus(this.dash);
-    console.log(this.dash.teamStatus)
+    console.log(this.dash.teamStatus);
     return this.dash;
   }
 
@@ -198,59 +199,37 @@ export class TeamCrudService extends TypeOrmCrudService<Team> {
    * @param {dashboard} dashboard takes dashboard object as input
    * @return {number} number as status value
    */
-  fetchStatus(dashboard: DashBoardResponse): number|undefined {
-  
-    if(dashboard?.clientStatusResponse==null){
+  fetchStatus(dashboard: DashBoardResponse): number | undefined {
+    if (dashboard?.clientStatusResponse == null) {
       return undefined;
-    }
-    else{
-      console.log('hi')
-    let statusResult;
-    const codeQualityStatus = dashboard!.codeQualityResponse!.status;
-    const teamSpiritStatus = dashboard!.teamSpiritResponse!.teamSpiritRating;
-    const clientStatus = dashboard!.clientStatusResponse!.clientSatisfactionRating;
-    const burndownStatus = dashboard!.burndownResponse!.burndownStatus;
-    if (clientStatus >= 6 && teamSpiritStatus >= 6 && codeQualityStatus == 'PASSED' && burndownStatus == 'Ahead Time') {
-      statusResult = 2;
-    } else if (
-      clientStatus < 6 &&
-      teamSpiritStatus < 6 &&
-      codeQualityStatus == 'FAILED' &&
-      burndownStatus == 'Behind Time'
-    ) {
-      statusResult = 0;
     } else {
-      statusResult = 1;
+      console.log('hi');
+      let statusResult;
+      const codeQualityStatus = dashboard!.codeQualityResponse!.status;
+      const teamSpiritStatus = dashboard!.teamSpiritResponse!.teamSpiritRating;
+      const clientStatus = dashboard!.clientStatusResponse!.clientSatisfactionRating;
+      const burndownStatus = dashboard!.burndownResponse!.burndownStatus;
+      if (
+        clientStatus >= 6 &&
+        teamSpiritStatus >= 6 &&
+        codeQualityStatus == 'PASSED' &&
+        burndownStatus == 'Ahead Time'
+      ) {
+        statusResult = 2;
+      } else if (
+        clientStatus < 6 &&
+        teamSpiritStatus < 6 &&
+        codeQualityStatus == 'FAILED' &&
+        burndownStatus == 'Behind Time'
+      ) {
+        statusResult = 0;
+      } else {
+        statusResult = 1;
+      }
+      return statusResult;
     }
-    return statusResult;
-  }}
-  // board: ElectronBoardResponse = {} as ElectronBoardResponse;
-  // async getElectronBoardByUserId(userId: string): Promise<ElectronBoardResponse> {
-  //   const users: User = (await this.userRepository.findOne({ where: { id: userId } })) as User;
-  //   if (users) {
-  //     const teamId = users.teamId.id;
-  //     this.board.teamId = teamId;
-  //     this.board.center = users.teamId.business_unit.name;
-  //     this.board.teamLogo = users.teamId.logo;
-  //     const dailyMeeting: DailyMeetingResponse[] = await this.dailyMeetingService.getDailyLinks(teamId);
-  //     this.board.dailyMeetingResponse = dailyMeeting;
+  }
 
-  //     const teamLink: TeamLinkResponse[] = await this.teamLinkService.getTeamLinks(teamId);
-  //     this.board.teamLinkResponse = teamLink;
-
-  //     const images: ImageResponse[] = await this.imageService.getPathOfImage(teamId);
-  //     this.board.imageResponse = images;
-
-  //     const videos: VideoResponse[] = await this.videoService.getPathOfVideos(teamId);
-  //     this.board.videoResponse = videos;
-
-  //     const visible: VisibilityResponse = await this.visibleService.getVisiblilityForTeam(teamId);
-  //     this.board.visibleResponse = visible;
-  //     return this.board;
-  //   } else {
-  //     throw new NotFoundException('userId not found');
-  //   }
-  // }
   board: ElectronBoardResponse = {} as ElectronBoardResponse;
   async getElectronBoardByTeamId(teamId: string): Promise<ElectronBoardResponse> {
     const dailyMeeting: DailyMeetingResponse[] = await this.dailyMeetingService.getDailyLinks(teamId);
@@ -269,79 +248,75 @@ export class TeamCrudService extends TypeOrmCrudService<Team> {
     this.board.visibleResponse = visible;
     return this.board;
   }
- 
-
 
   /**
    * addTeam method will add team , and system admin can do so
    * @param {AddTeamDTO} .Takes AddTeamDTO as input
    * @return {Team} Created Team as response
    */
-  async addTeam(addteam: AddTeamDTO):Promise<any>{
+  async addTeam(addteam: AddTeam): Promise<any> {
     const value = addteam.teamCode;
-    const result = await this.teamRepository.findOne({where :{teamCode :value}});
-    if(result!=null){
-      console.log('team exists')
-    }
-    else{
+    const result = await this.teamRepository.findOne({ where: { teamCode: value } });
+    if (result != null) {
+      console.log('team exists');
+    } else {
       let team = new Team();
       team.name = addteam.name;
-      team.teamCode= addteam.teamCode;
-      console.log(team.teamCode)
-      team.logo= addteam.logo;
-      team.business_unit= addteam.business_unit;
-      console.log(team.business_unit.id)
-    return await this.teamRepository.save(team);
+      team.teamCode = addteam.teamCode;
+      console.log(team.teamCode);
+      team.logo = addteam.logo;
+      team.business_unit = addteam.business_unit;
+      console.log(team.business_unit.id);
+      return await this.teamRepository.save(team);
+    }
   }
-}
 
-
-/**
+  /**
    * deleteTeamById method will delete team , and system admin can do so
    * @param {teamId} .Takes teamId as input
-   * @return {void} 
+   * @return {void}
    */
-   async deleteTeamById(teamId:string):Promise<any>{
-     await this.teamRepository.delete(teamId);
-   }
+  async deleteTeamById(teamId: string): Promise<any> {
+    await this.teamRepository.delete(teamId);
+  }
 
-   /**
+  /**
    * getAllTeams method will fetch all team , and system admin can do so
    * @param {} .Takes nothing as input
    * @return {team[]} return team array as response
    */
-   async getAllTeams():Promise<ViewTeamsResponse[]>{
-      const teamList =await this.teamRepository.find();
+  async getAllTeams(): Promise<ViewTeamsResponse[]> {
+    const teamList = await this.teamRepository.find();
     let viewTeamsResponse: ViewTeamsResponse = {} as ViewTeamsResponse;
     let viewteamList = [],
       i;
     for (i = 0; i < teamList.length; i++) {
       viewTeamsResponse.teamId = teamList[i].id;
       viewTeamsResponse.teamName = teamList[i].name;
-      viewTeamsResponse.projectCode= teamList[i].teamCode;
+      viewTeamsResponse.projectCode = teamList[i].teamCode;
       viewTeamsResponse.businessUnit = teamList[i].business_unit.name;
       viewteamList.push(viewTeamsResponse);
       viewTeamsResponse = {} as ViewTeamsResponse;
     }
     return viewteamList;
-   }
+  }
 
   /**
    * updateTeam method will update exsiting team , and system admin can do so
    * @param {AddTeamDTO} .Takes AddTeamDTO as input
    * @return {Team} Created Team as response
    */
-  async updateTeam(updateTeam: AddTeamDTO):Promise<any>{
+  async updateTeam(updateTeam: AddTeam): Promise<any> {
     const value = updateTeam.teamCode;
-    const result = await this.teamRepository.findOne({where :{teamCode :value}});
+    const result = await this.teamRepository.findOne({ where: { teamCode: value } });
     let team = new Team();
-    if(result){
-       team.id = result.id
-    } 
-      team.name = updateTeam.name;
-      team.teamCode= updateTeam.teamCode;
-      team.logo= updateTeam.logo;
-      team.business_unit= updateTeam.business_unit;
+    if (result) {
+      team.id = result.id;
+    }
+    team.name = updateTeam.name;
+    team.teamCode = updateTeam.teamCode;
+    team.logo = updateTeam.logo;
+    team.business_unit = updateTeam.business_unit;
     return await this.teamRepository.save(team);
   }
 }

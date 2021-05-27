@@ -1,4 +1,4 @@
-import { Team } from '../../../dashboard/teams/model/entities/team.entity';
+import { Team } from '../../../teams/model/entities/team.entity';
 import { BaseEntity } from '../../../shared/model/entities/base-entity.entity';
 import { Column, Entity, JoinColumn, OneToOne } from 'typeorm';
 @Entity()

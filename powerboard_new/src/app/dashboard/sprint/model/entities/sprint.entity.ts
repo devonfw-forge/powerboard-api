@@ -1,4 +1,4 @@
-import { Team } from '../../../teams/model/entities/team.entity';
+import { Team } from '../../../../teams/model/entities/team.entity';
 import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
 import { BaseEntity } from '../../../../shared/model/entities/base-entity.entity';
 import { SprintStatus } from './sprint_status.entity';

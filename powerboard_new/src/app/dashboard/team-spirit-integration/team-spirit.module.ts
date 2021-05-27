@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { HttpModule, Module } from '@nestjs/common';
 import { TeamSpirit } from './model/entities/team-spirit.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { TeamSpiritCrudService } from './services/team-spirit.crud.service';
@@ -6,7 +6,7 @@ import { TeamSpiritCrudController } from './controllers/team-spirit.crud.control
 import { Sprint } from '../sprint/model/entities/sprint.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([TeamSpirit, Sprint])],
+  imports: [TypeOrmModule.forFeature([TeamSpirit, Sprint]),HttpModule],
   providers: [TeamSpiritCrudService],
   controllers: [TeamSpiritCrudController],
   exports: [TeamSpiritCrudService],
