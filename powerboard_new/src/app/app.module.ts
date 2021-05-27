@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { ScheduleModule } from '@nestjs/schedule/dist/schedule.module';
+//import { ScheduleModule } from '@nestjs/schedule/dist/schedule.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { CoreModule } from './core/core.module';
@@ -12,7 +12,7 @@ import { VisibilityModule } from './visibility/visibility.module';
 
 @Module({
   imports: [
-    ScheduleModule.forRoot(),
+    // ScheduleModule.forRoot(),
     CoreModule,
     DashboardModule,
     DailyMeetingModule,
