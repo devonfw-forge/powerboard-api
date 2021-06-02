@@ -1,8 +1,9 @@
-import { BusinessUnit } from "src/app/dashboard/business-units/model/entities/business-unit.entity";
+import { ADCenter } from '../../dashboard/ad-center/model/entities/ad-center.entity';
 
-export interface AddTeam{
-    name:string;
-    teamCode:string;
-    logo:string;
-    business_unit:BusinessUnit;
+export interface AddTeam {
+  name: string;
+  teamCode: string;
+  projectKey:string;
+  logo?: string;
+  ad_center: ADCenter;
 }

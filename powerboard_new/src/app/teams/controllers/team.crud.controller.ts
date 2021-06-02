@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Post, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { Crud } from '@nestjsx/crud';
 import { CrudType } from '@devon4node/common/serializer';
 import { Team } from '../model/entities/team.entity';
@@ -9,6 +9,7 @@ import { diskStorage } from 'multer';
 import path = require('path');
 import { v4 as uuidv4 } from 'uuid';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { UserTeamDTO } from '../model/dto/UserTeamDTO';
 //import { AddTeamDTO } from '../model/dto/AddTeamDTO';
 //import { AuthGuard } from '@nestjs/passport';
 export const storage = {
@@ -32,12 +33,16 @@ export const storage = {
 export class TeamCrudController {
   constructor(public teamService: TeamCrudService) {}
 
-
-//Return whole detail of team as LoginResponse (including dashboard+ electronboard)
-  @Get('powerboard/team/:teamId')
-  async getPowerboardByTeamId(@Param('teamId') teamId: string): Promise<any> {
-    const loginResponse = await this.teamService.getPowerboardByTeamId(teamId);
-    return { loginResponse };
+  //Return whole detail of team as LoginResponse (including dashboard+ electronboard)
+  // @Get('powerboard/team/:teamId')
+  // async getPowerboardByTeamId(@Param('teamId') teamId: string): Promise<any> {
+  //   const powerboardResponse = await this.teamService.getPowerboardByTeamId(teamId);
+  //   return { powerboardResponse };
+  // }
+  @Post('powerboard/team')
+  async getPowerboardByTeamId(@Body() userTeam: UserTeamDTO): Promise<any> {
+    const powerboardResponse = await this.teamService.getPowerboardByTeamId(userTeam);
+    return { powerboardResponse };
   }
 
   @Get('team/:id')
@@ -47,9 +52,9 @@ export class TeamCrudController {
     return teamResponse;
   }
 
-  @Get('BU/:id')
-  async getTeamsByBUId(@Param('id') BU_Id: string): Promise<TeamResponse[]> {
-    return this.teamService.getTeamsByBUId(BU_Id);
+  @Get('center/:id')
+  async getTeamsByCenterId(@Param('id') centerId: string): Promise<TeamResponse[]> {
+    return this.teamService.getTeamsByCenterId(centerId);
   }
 
   @Post('uploadLogo/:teamId')

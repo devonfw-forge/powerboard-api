@@ -20,8 +20,6 @@ export class AdminService {
    */
   async addTeamByAdmin(addTeam: AddTeam): Promise<any> {
     const result = await this.teamService.addTeam(addTeam);
-    console.log('hiiiiiiiiiii');
-    console.log(result);
     if (result) {
       this.teamSpiritService.addProjectToTeamSpirit(addTeam.name);
     }

@@ -6,7 +6,7 @@ import { UserTeam } from './user_team.entity';
 
 @Entity()
 export class User extends BaseEntity {
-  @Column('varchar', { length: 255, nullable: false })
+  @Column('varchar', { length: 255, nullable: false, unique:true })
   username!: string;
 
   @Column('varchar', { length: 255, nullable: false })
@@ -18,6 +18,9 @@ export class User extends BaseEntity {
 
   @Column('int', { nullable: false, default: roles.USER })
   role!: number;
+
+  @Column('boolean', {default:false })
+  isPasswordChanged!:boolean;
 
   @OneToMany(() => UserTeam, userteam => userteam.user, { nullable: true })
   userTeam!: UserTeam[];
@@ -40,6 +43,4 @@ export class User extends BaseEntity {
   //   },
   // })
   // teamId!: Team[];
-
-  
 }

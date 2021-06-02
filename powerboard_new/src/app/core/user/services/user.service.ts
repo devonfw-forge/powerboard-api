@@ -1,15 +1,17 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { User } from '../model/entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { TypeOrmCrudService } from '@nestjsx/crud-typeorm';
 import { roles } from '../../auth/model/roles.enum';
-import { genSalt, hash } from 'bcrypt';
+import { compare, genSalt, hash } from 'bcrypt';
 import { UserTeam } from '../model/entities/user_team.entity';
 import { UserDTO } from '../model/dto/UserDTO';
 import { TeamsMemberResponse } from '../../../shared/interfaces/teamMemberResponse';
 import { UpdateRole } from 'src/app/shared/interfaces/updateRole.interface';
-
+import { accessRole } from '../../auth/model/access_role.enum';
+import { ChangePasswordDTO } from '../../auth/model/ChangePasswordDTO';
+var generator = require('generate-password');
 @Injectable()
 export class UserService extends TypeOrmCrudService<User> {
   constructor(
@@ -37,8 +39,14 @@ export class UserService extends TypeOrmCrudService<User> {
     if (actualUser) {
       return this.addTeamsToUser(actualUser, userDTO);
     }
+    var password = generator.generate({
+      length: 6,
+      numbers: true,
+    });
+    console.log(password);
+    console.log('kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk');
     const salt = await genSalt(12);
-    const hashPass = await hash(userDTO.password, salt);
+    const hashPass = await hash(password, salt);
     console.log(hashPass);
     let user = new User();
     user.username = userDTO.username;
@@ -128,5 +136,34 @@ export class UserService extends TypeOrmCrudService<User> {
 
   findUserTeamsByUserId(id: string) {
     return this.userTeamRepository.find({ where: { user: id } });
+  }
+
+  async getAccessRole(userId: string, teamId: string): Promise<accessRole> {
+    const output = await this.userTeamRepository.findOne({ where: { user: userId, team: teamId } });
+    if (!output) {
+      return accessRole.NOT_MEMBER_NOR_ADMIN;
+    } else {
+      return output.accessRole;
+    }
+  }
+
+  async changePassword(changePassword: ChangePasswordDTO): Promise<any> {
+    const output = await this.userRepository.findOne({ where: { id: changePassword.userId } });
+    const user = new User();
+    if (output && (await compare(changePassword.oldPassword, output.password))) {
+      user.id = output.id;
+      const salt = await genSalt(12);
+      const hashPass = await hash(changePassword.newPassword, salt);
+      user.password = hashPass;
+      user.isPasswordChanged = true;
+      return await this.userRepository.save(user);
+    } else {
+      console.log('User Not found');
+      throw new NotFoundException('User not found');
+    }
+  }
+  async myRole(userId: string): Promise<any> {
+    const output = await this.userRepository.findOne({ where: { id: userId } });
+    return output?.role;
   }
 }

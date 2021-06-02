@@ -1,42 +1,37 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
-export class InsertData1621511220430 implements MigrationInterface {
-  name = 'InsertData1621511220430';
+export class InsertData1622458202514 implements MigrationInterface {
+  name = 'InsertData1622458202514';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(
-      `INSERT INTO "business_unit" ("id", "name", "parent_id", "root_parent_id") VALUES ('11111bf1-ada1-111c-1111-1d1ab11d111e', 'Capgemini India', '11111bf1-ada1-111c-1111-1d1ab11d111e', '11111bf1-ada1-111c-1111-1d1ab11d111e');`,
+      `INSERT INTO "ad_center" ("id", "name") VALUES ('98655bf7-ada7-495c-8019-8d7ab62d488e', 'ADCenter Valencia');`,
     );
     await queryRunner.query(
-      `INSERT INTO "business_unit" ("id", "name", "parent_id", "root_parent_id") VALUES ('46055bf7-ada7-495c-8019-8d7ab62d488e', 'NA BU', '11111bf1-ada1-111c-1111-1d1ab11d111e', '11111bf1-ada1-111c-1111-1d1ab11d111e');`,
+      `INSERT INTO "ad_center" ("id", "name") VALUES ('98755bf7-ada7-495c-8019-8d7ab62d488e', 'ADCenter Mumbai');`,
     );
     await queryRunner.query(
-      `INSERT INTO "business_unit" ("id", "name", "parent_id", "root_parent_id") VALUES ('46155bf7-ada7-495c-8019-8d7ab62d488e', 'Sogeti', '11111bf1-ada1-111c-1111-1d1ab11d111e', '11111bf1-ada1-111c-1111-1d1ab11d111e');`,
+      `INSERT INTO "ad_center" ("id", "name") VALUES ('98855bf7-ada7-495c-8019-8d7ab62d488e', 'ADCenter Poland');`,
     );
     await queryRunner.query(
-      `INSERT INTO "business_unit" ("id", "name", "parent_id", "root_parent_id") VALUES ('46255bf7-ada7-495c-8019-8d7ab62d488e', 'NA AS CSD', '46055bf7-ada7-495c-8019-8d7ab62d488e', '11111bf1-ada1-111c-1111-1d1ab11d111e');`,
-    );
-    await queryRunner.query(
-      `INSERT INTO "business_unit" ("id", "name", "parent_id", "root_parent_id") VALUES ('46355bf7-ada7-495c-8019-8d7ab62d488e', 'Europe CSD AS', '46455bf7-ada7-495c-8019-8d7ab62d488e', '11111bf1-ada1-111c-1111-1d1ab11d111e');`,
-    );
-    await queryRunner.query(
-      `INSERT INTO "business_unit" ("id", "name", "parent_id", "root_parent_id") VALUES ('46455bf7-ada7-495c-8019-8d7ab62d488e', 'Europe BU', '11111bf1-ada1-111c-1111-1d1ab11d111e', '11111bf1-ada1-111c-1111-1d1ab11d111e');`,
-    );
-    await queryRunner.query(
-      `INSERT INTO "business_unit" ("id", "name", "parent_id", "root_parent_id") VALUES ('46555bf7-ada7-495c-8019-8d7ab62d488e', 'Europe CSD AD', '46455bf7-ada7-495c-8019-8d7ab62d488e', '11111bf1-ada1-111c-1111-1d1ab11d111e');`,
-    );
-    await queryRunner.query(
-      `INSERT INTO "business_unit" ("id", "name", "parent_id", "root_parent_id") VALUES ('46655bf7-ada7-495c-8019-8d7ab62d488e', 'ADCenter Bangalore', '46555bf7-ada7-495c-8019-8d7ab62d488e', '11111bf1-ada1-111c-1111-1d1ab11d111e');`,
+      `INSERT INTO "ad_center" ("id", "name") VALUES ('98955bf7-ada7-495c-8019-8d7ab62d488e', 'ADCenter Murcia');`,
     );
 
     await queryRunner.query(
-      `INSERT INTO "team" ("id","team_code", "logo", "name", "business_unit_id") VALUES ('46455bf7-ada7-495c-8019-8d7ab76d488e' ,'10012345','uploads\\logo\\team_logof1421c16-7ce3-44ad-a94b-5231bcea6887.jpg','Diamler Devops','46655bf7-ada7-495c-8019-8d7ab62d488e');`,
+      `INSERT INTO "ad_center" ("id", "name") VALUES ('99055bf7-ada7-495c-8019-8d7ab62d488e', 'ADCenter Bangalore');`,
+    );
+
+    await queryRunner.query(
+      `INSERT INTO "team" ("id","team_code","project_key", "logo", "name", "ad_center_id") VALUES ('46455bf7-ada7-495c-8019-8d7ab76d488e' ,'10012345','P123450','uploads\\logo\\team_logof1421c16-7ce3-44ad-a94b-5231bcea6887.jpg','Diamler Devops','99055bf7-ada7-495c-8019-8d7ab62d488e');`,
     );
     await queryRunner.query(
-      `INSERT INTO "team" ("id","team_code","logo", "name", "business_unit_id") VALUES ('46455bf7-ada7-495c-8019-8d7ab76d489e' ,'10012346','' ,'Devon Offshore','46555bf7-ada7-495c-8019-8d7ab62d488e');`,
+      `INSERT INTO "team" ("id","team_code","project_key","logo", "name", "ad_center_id") VALUES ('46455bf7-ada7-495c-8019-8d7ab76d489e' ,'10012346','P121340','' ,'Devon Offshore','99055bf7-ada7-495c-8019-8d7ab62d488e');`,
     );
     await queryRunner.query(
-      `INSERT INTO "team" ("id", "team_code","logo","name", "business_unit_id" ) VALUES ('46455bf7-ada7-495c-8019-8d7ab76d490e' ,'10012347','', 'K&N','46655bf7-ada7-495c-8019-8d7ab62d488e');`,
+      `INSERT INTO "team" ("id", "team_code","project_key","logo","name", "ad_center_id" ) VALUES ('46455bf7-ada7-495c-8019-8d7ab76d490e' ,'10012347','P112233','', 'K&N','99055bf7-ada7-495c-8019-8d7ab62d488e');`,
+    );
+    await queryRunner.query(
+      `INSERT INTO "team" ("id", "team_code","project_key","logo","name", "ad_center_id" ) VALUES ('46455bf7-ada7-495c-8019-8d7ab76d491e' ,'10033347','P123321','', 'BMW','98755bf7-ada7-495c-8019-8d7ab62d488e');`,
     );
 
     await queryRunner.query(
@@ -224,11 +219,11 @@ export class InsertData1621511220430 implements MigrationInterface {
     );
 
     await queryRunner.query(
-      `INSERT INTO "user"("id", "username", "password","email" ,"role") Values('10cf1dfd-43e9-4cc4-8257-a6ba5c70e33d', 'raj11' ,'$2b$12$.hA7MmRGIzsr7v.eYFRtuOUTNw5WEqkGPcE92EX6opaiVMbr77fme','raj@capgemini.com', 0);`,
+      `INSERT INTO "user"("id", "username", "password","email" ,"role","isPasswordChanged") Values('10cf1dfd-43e9-4cc4-8257-a6ba5c70e33d', 'raj11' ,'$2b$12$.hA7MmRGIzsr7v.eYFRtuOUTNw5WEqkGPcE92EX6opaiVMbr77fme','raj@capgemini.com', 0, true);`,
     );
 
     await queryRunner.query(
-      `INSERT INTO "user"("id", "username", "password", "email", "role") Values('11cf1dfd-43e9-4cc4-8257-a6ba5c70e34d', 'siva11' ,'$2b$12$.hA7MmRGIzsr7v.eYFRtuOUTNw5WEqkGPcE92EX6opaiVMbr77fme','siva@capgemini.com' ,0);`,
+      `INSERT INTO "user"("id", "username", "password", "email", "role", "isPasswordChanged") Values('11cf1dfd-43e9-4cc4-8257-a6ba5c70e34d', 'siva11' ,'$2b$12$.hA7MmRGIzsr7v.eYFRtuOUTNw5WEqkGPcE92EX6opaiVMbr77fme','siva@capgemini.com' ,0, true);`,
     );
     //   await queryRunner.query(`INSERT INTO "user"("id", "username", "password", "email", "role", "user_info_id") VALUES(?, ?, ?, ?, ?, ?);`, [
     //   '12cf1dfd-43e9-4cc4-8257-a6ba5c70e34d',
@@ -240,13 +235,10 @@ export class InsertData1621511220430 implements MigrationInterface {
     // ]);
     //Here userId and corresponding teamId  has been given
     await queryRunner.query(
-      `INSERT INTO "user_team"("id","user_Id", "team_Id","access_role","isActive") Values('762f1dfd-43e9-4cc4-8257-a6ba5c70e33d','10cf1dfd-43e9-4cc4-8257-a6ba5c70e33d','46455bf7-ada7-495c-8019-8d7ab76d488e',1, true);`,
+      `INSERT INTO "user_team"("id","user_Id", "team_Id","access_role","isActive") Values('762f1dfd-43e9-4cc4-8257-a6ba5c70e33d','10cf1dfd-43e9-4cc4-8257-a6ba5c70e33d','46455bf7-ada7-495c-8019-8d7ab76d488e',0, true);`,
     );
     await queryRunner.query(
       `INSERT INTO "user_team"("id" ,"user_Id", "team_Id", "access_role", "isActive") Values('763f1dfd-43e9-4cc4-8257-a6ba5c70e33d','11cf1dfd-43e9-4cc4-8257-a6ba5c70e34d','46455bf7-ada7-495c-8019-8d7ab76d488e',0 ,true );`,
-    );
-    await queryRunner.query(
-      `INSERT INTO "user_team"("id" ,"user_Id", "team_Id" ,"access_role", "isActive") Values('764f1dfd-43e9-4cc4-8257-a6ba5c70e33d','11cf1dfd-43e9-4cc4-8257-a6ba5c70e34d','46455bf7-ada7-495c-8019-8d7ab76d490e',1 , true);`,
     );
     await queryRunner.query(
       `INSERT INTO "user_team"("id" ,"user_Id", "team_Id" ,"access_role" ,"isActive") Values('765f1dfd-43e9-4cc4-8257-a6ba5c70e33d','11cf1dfd-43e9-4cc4-8257-a6ba5c70e34d','46455bf7-ada7-495c-8019-8d7ab76d489e',1 , true);`,
@@ -270,7 +262,8 @@ export class InsertData1621511220430 implements MigrationInterface {
     await queryRunner.query(`ALTER TABLE "daily_meeting" DROP CONSTRAINT "FK_0654efb07db0f680ea953c810c6"`);
     await queryRunner.query(`ALTER TABLE "user_team" DROP CONSTRAINT "FK_8d8673f465f0797bf6126766c96"`);
     await queryRunner.query(`ALTER TABLE "user_team" DROP CONSTRAINT "FK_f7c7dca694de337fa4a89d73ec8"`);
-    await queryRunner.query(`ALTER TABLE "team" DROP CONSTRAINT "FK_780f295d5c3ed479ac1358a9f01"`);
+    await queryRunner.query(`ALTER TABLE "team" DROP CONSTRAINT "FK_8e571805766848ea10996a178d4"`);
+    await queryRunner.query(`ALTER TABLE "ad_center" DROP CONSTRAINT "FK_981851c0e0af71d8c3a0088df19"`);
     await queryRunner.query(`DROP TABLE "visibility"`);
     await queryRunner.query(`DROP TABLE "team_links"`);
     await queryRunner.query(`DROP TABLE "videos"`);
@@ -287,6 +280,7 @@ export class InsertData1621511220430 implements MigrationInterface {
     await queryRunner.query(`DROP TABLE "daily_meeting"`);
     await queryRunner.query(`DROP TABLE "user_team"`);
     await queryRunner.query(`DROP TABLE "team"`);
+    await queryRunner.query(`DROP TABLE "ad_center"`);
     await queryRunner.query(`DROP TABLE "business_unit"`);
     await queryRunner.query(`DROP TABLE "user"`);
   }

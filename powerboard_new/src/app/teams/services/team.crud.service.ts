@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { TypeOrmCrudService } from '@nestjsx/crud-typeorm';
-import { BusinessUnit } from '../../dashboard/business-units/model/entities/business-unit.entity';
 import { ClientStatusResponse } from '../../dashboard/client-status/model/dto/ClientStatusResponse';
 import { ClientStatusCrudService } from '../../dashboard/client-status/services/client-status.crud.service';
 import { CodeQualityResponse } from '../../dashboard/code-quality-snapshot/model/dto/CodeQualityResponse';
@@ -13,9 +12,7 @@ import { Repository } from 'typeorm';
 import { BurndownResponse } from '../../dashboard/sprint/model/dto/BurndownResponse';
 import { VelocityComparisonResponse } from '../../dashboard/sprint/model/dto/VelocityComparisonResponse';
 import { SprintCrudService } from '../../dashboard/sprint/services/sprint.crud.service';
-import { BreadCrumbResponse } from '../model/dto/BreadCrumbResponse';
 import { DashBoardResponse } from '../model/dto/DashBoardResponse';
-import { LoginResponse } from '../model/dto/LoginResponse';
 import { TeamResponse } from '../model/dto/TeamResponse';
 import { Team } from '../model/entities/team.entity';
 import { DailyMeetingResponse } from '../../daily-links/model/dto/DailyMeetingResponse';
@@ -32,13 +29,17 @@ import { VisibilityResponse } from '../../visibility/model/dto/VisibilityRespons
 
 import { ViewTeamsResponse } from '../model/dto/ViewTeamsResponse';
 import { AddTeam } from 'src/app/shared/interfaces/addTeam.interface';
+import { ADCenter } from '../../dashboard/ad-center/model/entities/ad-center.entity';
+import { TeamsInADC } from '../model/dto/TeamsInADC';
+import { PowerboardResponse } from '../model/dto/PowerboardResponse';
+import { UserTeamDTO } from '../model/dto/UserTeamDTO';
+import { UserService } from 'src/app/core/user/services/user.service';
 
 @Injectable()
 export class TeamCrudService extends TypeOrmCrudService<Team> {
   constructor(
     @InjectRepository(Team) private readonly teamRepository: Repository<Team>,
-    @InjectRepository(BusinessUnit) private readonly businessRepository: Repository<BusinessUnit>,
-    // @InjectRepository(User) private readonly userRepository: Repository<User>,
+    @InjectRepository(ADCenter) readonly centerRepository: Repository<ADCenter>,
     private readonly codequalityService: CodeQualitySnapshotCrudService,
     private readonly clientStatusService: ClientStatusCrudService,
     private readonly teamSpiritService: TeamSpiritCrudService,
@@ -47,13 +48,13 @@ export class TeamCrudService extends TypeOrmCrudService<Team> {
     private readonly teamLinkService: TeamLinksCrudService,
     private readonly imageService: ImagesCrudService,
     private readonly videoService: VideosCrudService,
+    private readonly userService: UserService,
     private readonly visibleService: VisibilityCrudService,
   ) {
     super(teamRepository);
   }
 
-  loginResponse: LoginResponse = {} as LoginResponse;
-  chainBU: BreadCrumbResponse = {} as BreadCrumbResponse;
+  powerboardResponse: PowerboardResponse = {} as PowerboardResponse;
   dash: DashBoardResponse = {} as DashBoardResponse;
   electron_response: ElectronBoardResponse = {} as ElectronBoardResponse;
   /**
@@ -61,68 +62,31 @@ export class TeamCrudService extends TypeOrmCrudService<Team> {
    * @param {userId} userId Takes userId as input
    * @return {LoginResponse} Dashboard + Electron board as well as breadcrumb and dumb BU List
    */
-  async getPowerboardByTeamId(teamId: string): Promise<LoginResponse> {
-    this.loginResponse.user_breadCrumb = [];
-    this.loginResponse.dump_businessUnit = [];
+  async getPowerboardByTeamId(userTeam: UserTeamDTO): Promise<PowerboardResponse> {
     // const users: User = (await this.userRepository.findOne({ where: { id: userId } })) as User;
 
     // if (users) {
+    const teamId = userTeam.teamId;
+    const userId = userTeam.userId;
     const teams: Team = (await this.teamRepository.findOne({ where: { id: teamId } })) as Team;
-    this.loginResponse.team_id = teams.id;
-    this.loginResponse.team_name = teams.name;
-    this.loginResponse.center = teams.business_unit.name;
-    this.loginResponse.team_code = teams.teamCode;
-    this.loginResponse.logo = teams.logo;
+    this.powerboardResponse.team_id = teams.id;
+    this.powerboardResponse.team_name = teams.name;
+    this.powerboardResponse.center = teams.ad_center.name;
+    this.powerboardResponse.team_code = teams.teamCode;
+    this.powerboardResponse.logo = teams.logo;
+    const accessRole = await this.userService.getAccessRole(userId, teamId);
+    this.powerboardResponse.accessRole = accessRole;
     this.dash = await this.getDashboardByTeamId(teams.id);
-    this.loginResponse.dashboard = this.dash;
-    this.chainBU.bu_name = teams.name;
-    this.loginResponse.user_breadCrumb.push(this.chainBU);
-    this.chainBU = {} as BreadCrumbResponse;
-
+    this.powerboardResponse.dashboard = this.dash;
+    const myRole = await this.userService.myRole(userId);
+    console.log(myRole);
     this.electron_response = await this.getElectronBoardByTeamId(teams.id);
-    this.loginResponse.electron_response = this.electron_response;
-    let businessUnitsId = teams.business_unit.id;
-    let businessUnitsRootParentId = teams.business_unit.root_parent_id;
-    let business: BusinessUnit[] = await this.businessRepository
-      .createQueryBuilder('businessUnit')
-      .where('businessUnit.root_parent_id=:root_parent_id', { root_parent_id: businessUnitsRootParentId })
-      .getMany();
-    this.loginResponse.user_breadCrumb = this.getBUOrder(business, businessUnitsId);
+    this.powerboardResponse.electron_response = this.electron_response;
 
-    this.loginResponse.user_breadCrumb.reverse();
-    this.loginResponse.dump_businessUnit = business;
-
-    return this.loginResponse;
+    return this.powerboardResponse;
     // } else {
     //   throw new NotFoundException('userId not found');
     // }
-  }
-  /**
-   * getBUOrder method will arrange all BU hierarchy of login user
-   * @param {business ,businessUnitsId} ,it takes business[] and businessUnitsId as input
-   * @return {BreadCrumbResponse} BreadCrumb array will be returned as response
-   */
-  getBUOrder(business: BusinessUnit[], businessUnitsId: string): BreadCrumbResponse[] {
-    let i,
-      nextParentId = '';
-    let iterate: Boolean = true;
-    while (iterate) {
-      for (i = 0; i < business.length; i++) {
-        if (businessUnitsId == business[i].id) {
-          this.chainBU.bu_id = business[i].id;
-          this.chainBU.bu_name = business[i].name;
-          this.loginResponse.user_breadCrumb.push(this.chainBU);
-          this.chainBU = {} as BreadCrumbResponse;
-          nextParentId = business[i].parent_id;
-          if (business[i].parent_id == business[i].id) {
-            iterate = false;
-            break;
-          }
-        }
-      }
-      businessUnitsId = nextParentId;
-    }
-    return this.loginResponse.user_breadCrumb;
   }
 
   /**
@@ -162,10 +126,9 @@ export class TeamCrudService extends TypeOrmCrudService<Team> {
    * @param {Bu_id} Bu_id it takes Business Unit as input
    * @return {TeamResponse[]} list of teams with their status
    */
-  async getTeamsByBUId(BU_id: string): Promise<TeamResponse[]> {
-    const teams: Team[] = await this.teamRepository.find({ where: { business_unit: BU_id } });
+  async getTeamsByCenterId(CenterId: string): Promise<TeamResponse[]> {
+    const teams: Team[] = await this.teamRepository.find({ where: { ad_center: CenterId } });
     console.log(teams);
-    console.log('WWWWWWWWWWWWWWWWWWWWWWWWWWW');
     let teamsResponse: TeamResponse = {} as TeamResponse;
     let teamsDTOArray = [],
       i;
@@ -203,7 +166,6 @@ export class TeamCrudService extends TypeOrmCrudService<Team> {
     if (dashboard?.clientStatusResponse == null) {
       return undefined;
     } else {
-      console.log('hi');
       let statusResult;
       const codeQualityStatus = dashboard!.codeQualityResponse!.status;
       const teamSpiritStatus = dashboard!.teamSpiritResponse!.teamSpiritRating;
@@ -263,10 +225,10 @@ export class TeamCrudService extends TypeOrmCrudService<Team> {
       let team = new Team();
       team.name = addteam.name;
       team.teamCode = addteam.teamCode;
+      team.projectKey = addteam.projectKey;
       console.log(team.teamCode);
-      team.logo = addteam.logo;
-      team.business_unit = addteam.business_unit;
-      console.log(team.business_unit.id);
+      team.logo = addteam.logo!;
+      team.ad_center = addteam.ad_center;
       return await this.teamRepository.save(team);
     }
   }
@@ -294,7 +256,7 @@ export class TeamCrudService extends TypeOrmCrudService<Team> {
       viewTeamsResponse.teamId = teamList[i].id;
       viewTeamsResponse.teamName = teamList[i].name;
       viewTeamsResponse.projectCode = teamList[i].teamCode;
-      viewTeamsResponse.businessUnit = teamList[i].business_unit.name;
+      viewTeamsResponse.adCenter = teamList[i].ad_center.name;
       viewteamList.push(viewTeamsResponse);
       viewTeamsResponse = {} as ViewTeamsResponse;
     }
@@ -315,8 +277,26 @@ export class TeamCrudService extends TypeOrmCrudService<Team> {
     }
     team.name = updateTeam.name;
     team.teamCode = updateTeam.teamCode;
-    team.logo = updateTeam.logo;
-    team.business_unit = updateTeam.business_unit;
+    team.projectKey = updateTeam.projectKey;
+    team.logo = updateTeam.logo!;
+    team.ad_center = updateTeam.ad_center;
     return await this.teamRepository.save(team);
+  }
+
+  async viewTeamsInADC(teamId: string) {
+    const result = await this.teamRepository.findOne({ where: { id: teamId } });
+    const teamList = await this.teamRepository.find({ where: { ad_center: result?.ad_center } });
+    let viewTeamsInADC: TeamsInADC = {} as TeamsInADC;
+    let adcTeamList = [],
+      i;
+    for (i = 0; i < teamList.length; i++) {
+      viewTeamsInADC.teamId = teamList[i].id;
+      viewTeamsInADC.teamName = teamList[i].name;
+      this.dash = (await this.getDashboardByTeamId(teamList[i].id)) as DashBoardResponse;
+      viewTeamsInADC.teamStatus = this.fetchStatus(this.dash);
+      adcTeamList.push(viewTeamsInADC);
+      viewTeamsInADC = {} as TeamsInADC;
+    }
+    return adcTeamList;
   }
 }

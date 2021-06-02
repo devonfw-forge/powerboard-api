@@ -1,10 +1,11 @@
-import { BadRequestException, Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Get, Post, Put, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { User } from '../../user/model/entities/user.entity';
 import { AuthService } from '../services/auth.service';
 import { GetUser } from '../decorators/get-user.decorator';
 import { LoginDTO } from '../model/LoginDTO';
 import { UserDTO } from '../../user/model/dto/UserDTO';
+import { ChangePasswordDTO } from '../model/ChangePasswordDTO';
 
 @Controller('auth')
 export class AuthController {
@@ -28,6 +29,10 @@ export class AuthController {
     }
   }
 
+  @Put('change-password')
+  async changePassword(@Body() changePassword:ChangePasswordDTO):Promise<any>{
+    return await this.authService.changePassword(changePassword);
+  }
   @Get('currentuser')
   @UseGuards(AuthGuard())
   currentUser(@GetUser() user: User): User {

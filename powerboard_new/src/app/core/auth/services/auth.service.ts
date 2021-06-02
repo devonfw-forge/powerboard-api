@@ -7,16 +7,22 @@ import { JwtService } from '@nestjs/jwt';
 import { compare } from 'bcrypt';
 import { UserDTO } from '../../user/model/dto/UserDTO';
 import { TeamCrudService } from '../../../teams/services/team.crud.service';
-import { UserTeamResponse } from '../../user/model/dto/UserTeamResponse';
+import { MyProject } from '../../user/model/dto/my_project.interface';
+import { LoginResponse } from '../model/LoginResponse';
+import { ADCenterCrudService } from '../../../dashboard/ad-center/services/ad-center.crud.service';
+import { DashBoardResponse } from '../../../teams/model/dto/DashBoardResponse';
+import { ChangePasswordDTO } from '../model/ChangePasswordDTO';
 
 @Injectable()
 export class AuthService {
+  
   constructor(
     private readonly userService: UserService,
     private readonly teamService: TeamCrudService,
+    private readonly centerService: ADCenterCrudService,
     private jwtService: JwtService,
   ) {}
-
+  dash: DashBoardResponse = {} as DashBoardResponse;
   /**
    * validateUser method will validate User
    * @param {username, password} .Takes as input (username and password)
@@ -47,40 +53,32 @@ export class AuthService {
    * @param {LoginDTO} .Takes loginDTO as input (username and password)
    * @return {any}
    */
+
   async login(user: LoginDTO): Promise<any> {
+    let loginResponse: LoginResponse = {} as LoginResponse;
     const payload = await this.validateUser(user.username!, user.password!);
-    console.log(payload);
     if (payload) {
       const accessToken = await this.signIn(user.username, user.password);
-      console.log(accessToken);
       const userTeam = await this.userService.findUserTeamsByUserId(payload.id);
-      // const userTeam = await this.userTeamRepository.find({ where: { user: payload.id } });
-      console.log('hdshdjhdjdhsjhdjhdjhdjhdjshjhdjhdhsdhdhjhshdjshjdhd');
-      console.log(userTeam);
-
-      let teamId;
-      let teamsDTOArray = [],
-        i;
-      if (userTeam.length > 1) {
-        let teamsWithinUser: UserTeamResponse = {} as UserTeamResponse;
+      let teamsDTOArray = [], i;
+      if (userTeam.length >= 1) {
+        let teamsWithinUser: MyProject = {} as MyProject;
 
         for (i = 0; i < userTeam.length; i++) {
           teamsWithinUser.teamId = userTeam[i].team.id;
           teamsWithinUser.teamName = userTeam[i].team.name;
-          teamsWithinUser.accessRole = userTeam[i].accessRole;
-
+          this.dash = (await this.teamService.getDashboardByTeamId(userTeam[i].team.id)) as DashBoardResponse;
+          teamsWithinUser.teamStatus= this.teamService.fetchStatus(this.dash);
           teamsDTOArray.push(teamsWithinUser);
-          teamsWithinUser = {} as UserTeamResponse;
+          teamsWithinUser = {} as MyProject;
         }
-        return teamsDTOArray;
-      } else if (userTeam.length == 0) {
-        let user = new User();
-        user.id = payload.id;
-        user.email = payload.email;
-        return user;
-      } else {
-        teamId = userTeam[0].team.id;
-        const loginResponse = await this.teamService.getPowerboardByTeamId(teamId);
+        let teamId = teamsDTOArray[0].teamId;
+        loginResponse.userId = payload.id;
+        loginResponse.role= payload.role
+        loginResponse.isPasswordChanged = payload.isPasswordChanged;
+        loginResponse.My_Team = teamsDTOArray;
+        loginResponse.Teams_In_ADC = await this.teamService.viewTeamsInADC(teamId);
+        loginResponse.ADC_List = await this.centerService.getAllCenters();
         return { loginResponse, accessToken };
       }
     } else {
@@ -91,5 +89,8 @@ export class AuthService {
   //Further call to UserService
   register(user: UserDTO): Promise<User> {
     return this.userService.registerUser(user);
+  }
+  async changePassword(changePassword: ChangePasswordDTO):Promise<any> {
+   return await this.userService.changePassword(changePassword)
   }
 }

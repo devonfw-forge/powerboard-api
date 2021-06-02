@@ -9,11 +9,11 @@ import { VisibilityModule } from '../visibility/visibility.module';
 import { TeamLinksModule } from '../team-links/team-links.module';
 import { DailyMeetingModule } from '../daily-links/daily-meeting.module';
 import { DashboardModule } from '../dashboard/dashboard.module';
-import { BusinessUnit } from '../dashboard/business-units/model/entities/business-unit.entity';
+import { ADCenter } from '../dashboard/ad-center/model/entities/ad-center.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Team, BusinessUnit]),
+    TypeOrmModule.forFeature([Team, ADCenter]),
     DashboardModule,
     ImagesModule,
     VideosModule,

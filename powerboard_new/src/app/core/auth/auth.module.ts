@@ -7,6 +7,7 @@ import { JwtStrategy } from './strategies/jwt.strategy';
 import { ConfigModule, ConfigService } from '@devon4node/config';
 import { Config } from '../../shared/model/config/config.model';
 import { TeamsModule } from '../../teams/teams.module';
+import { ADCenterModule } from '../../dashboard/ad-center/ad-center.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { TeamsModule } from '../../teams/teams.module';
     }),
     // TypeOrmModule.forFeature([ UserTeam]),
     TeamsModule,
+    ADCenterModule,
   ],
   providers: [AuthService, JwtStrategy],
   exports: [AuthService, PassportModule],
