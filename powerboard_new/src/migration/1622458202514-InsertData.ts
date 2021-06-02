@@ -223,7 +223,7 @@ export class InsertData1622458202514 implements MigrationInterface {
     );
 
     await queryRunner.query(
-      `INSERT INTO "user"("id", "username", "password", "email", "role", "isPasswordChanged") Values('11cf1dfd-43e9-4cc4-8257-a6ba5c70e34d', 'siva11' ,'$2b$12$.hA7MmRGIzsr7v.eYFRtuOUTNw5WEqkGPcE92EX6opaiVMbr77fme','siva@capgemini.com' ,0, true);`,
+      `INSERT INTO "user"("id", "username", "password", "email", "role", "isPasswordChanged") Values('11cf1dfd-43e9-4cc4-8257-a6ba5c70e33d', 'siva11' ,'$2b$12$.hA7MmRGIzsr7v.eYFRtuOUTNw5WEqkGPcE92EX6opaiVMbr77fme','siva@capgemini.com' ,0, true);`,
     );
     //   await queryRunner.query(`INSERT INTO "user"("id", "username", "password", "email", "role", "user_info_id") VALUES(?, ?, ?, ?, ?, ?);`, [
     //   '12cf1dfd-43e9-4cc4-8257-a6ba5c70e34d',
@@ -238,10 +238,10 @@ export class InsertData1622458202514 implements MigrationInterface {
       `INSERT INTO "user_team"("id","user_Id", "team_Id","access_role","isActive") Values('762f1dfd-43e9-4cc4-8257-a6ba5c70e33d','10cf1dfd-43e9-4cc4-8257-a6ba5c70e33d','46455bf7-ada7-495c-8019-8d7ab76d488e',0, true);`,
     );
     await queryRunner.query(
-      `INSERT INTO "user_team"("id" ,"user_Id", "team_Id", "access_role", "isActive") Values('763f1dfd-43e9-4cc4-8257-a6ba5c70e33d','11cf1dfd-43e9-4cc4-8257-a6ba5c70e34d','46455bf7-ada7-495c-8019-8d7ab76d488e',0 ,true );`,
+      `INSERT INTO "user_team"("id" ,"user_Id", "team_Id", "access_role", "isActive") Values('763f1dfd-43e9-4cc4-8257-a6ba5c70e33d','11cf1dfd-43e9-4cc4-8257-a6ba5c70e33d','46455bf7-ada7-495c-8019-8d7ab76d488e',0 ,true );`,
     );
     await queryRunner.query(
-      `INSERT INTO "user_team"("id" ,"user_Id", "team_Id" ,"access_role" ,"isActive") Values('765f1dfd-43e9-4cc4-8257-a6ba5c70e33d','11cf1dfd-43e9-4cc4-8257-a6ba5c70e34d','46455bf7-ada7-495c-8019-8d7ab76d489e',1 , true);`,
+      `INSERT INTO "user_team"("id" ,"user_Id", "team_Id" ,"access_role" ,"isActive") Values('765f1dfd-43e9-4cc4-8257-a6ba5c70e33d','11cf1dfd-43e9-4cc4-8257-a6ba5c70e33d','46455bf7-ada7-495c-8019-8d7ab76d489e',1 , true);`,
     );
   }
 
