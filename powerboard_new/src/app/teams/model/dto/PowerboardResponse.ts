@@ -11,5 +11,4 @@ export interface PowerboardResponse {
   accessRole: accessRole;
   dashboard: DashBoardResponse;
   electron_response: ElectronBoardResponse;
-  //other_response?: OtherBoardResponse;
 }

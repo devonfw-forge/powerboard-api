@@ -4,12 +4,12 @@ import { CrudType } from '@devon4node/common/serializer';
 import { Team } from '../model/entities/team.entity';
 import { TeamCrudService } from '../services/team.crud.service';
 import { DashBoardResponse } from '../model/dto/DashBoardResponse';
-import { TeamResponse } from '../model/dto/TeamResponse';
 import { diskStorage } from 'multer';
 import path = require('path');
 import { v4 as uuidv4 } from 'uuid';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { UserTeamDTO } from '../model/dto/UserTeamDTO';
+import { TeamsInADC } from '../model/dto/TeamsInADC';
 //import { AddTeamDTO } from '../model/dto/AddTeamDTO';
 //import { AuthGuard } from '@nestjs/passport';
 export const storage = {
@@ -53,7 +53,7 @@ export class TeamCrudController {
   }
 
   @Get('center/:id')
-  async getTeamsByCenterId(@Param('id') centerId: string): Promise<TeamResponse[]> {
+  async getTeamsByCenterId(@Param('id') centerId: string): Promise<TeamsInADC[]> {
     return this.teamService.getTeamsByCenterId(centerId);
   }
 

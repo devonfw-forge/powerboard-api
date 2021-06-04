@@ -13,7 +13,7 @@ import { BurndownResponse } from '../../dashboard/sprint/model/dto/BurndownRespo
 import { VelocityComparisonResponse } from '../../dashboard/sprint/model/dto/VelocityComparisonResponse';
 import { SprintCrudService } from '../../dashboard/sprint/services/sprint.crud.service';
 import { DashBoardResponse } from '../model/dto/DashBoardResponse';
-import { TeamResponse } from '../model/dto/TeamResponse';
+
 import { Team } from '../model/entities/team.entity';
 import { DailyMeetingResponse } from '../../daily-links/model/dto/DailyMeetingResponse';
 import { DailyMeetingCrudService } from '../../daily-links/services/daily-meeting.crud.service';
@@ -34,6 +34,7 @@ import { TeamsInADC } from '../model/dto/TeamsInADC';
 import { PowerboardResponse } from '../model/dto/PowerboardResponse';
 import { UserTeamDTO } from '../model/dto/UserTeamDTO';
 import { UserService } from 'src/app/core/user/services/user.service';
+import { MyCenter } from '../model/dto/MyCenter';
 
 @Injectable()
 export class TeamCrudService extends TypeOrmCrudService<Team> {
@@ -80,7 +81,7 @@ export class TeamCrudService extends TypeOrmCrudService<Team> {
     this.powerboardResponse.dashboard = this.dash;
     const myRole = await this.userService.myRole(userId);
     console.log(myRole);
-    this.electron_response = await this.getElectronBoardByTeamId(teams.id);
+    this.electron_response = await this.getElectronBoardByTeamId(teams.id, myRole ,accessRole);
     this.powerboardResponse.electron_response = this.electron_response;
 
     return this.powerboardResponse;
@@ -126,19 +127,19 @@ export class TeamCrudService extends TypeOrmCrudService<Team> {
    * @param {Bu_id} Bu_id it takes Business Unit as input
    * @return {TeamResponse[]} list of teams with their status
    */
-  async getTeamsByCenterId(CenterId: string): Promise<TeamResponse[]> {
+  async getTeamsByCenterId(CenterId: string): Promise<TeamsInADC[]> {
     const teams: Team[] = await this.teamRepository.find({ where: { ad_center: CenterId } });
     console.log(teams);
-    let teamsResponse: TeamResponse = {} as TeamResponse;
+    let teamsResponse: TeamsInADC = {} as TeamsInADC;
     let teamsDTOArray = [],
       i;
     for (i = 0; i < teams.length; i++) {
       teamsResponse.teamId = teams[i].id;
       teamsResponse.teamName = teams[i].name;
       this.dash = (await this.getDashboardByTeamId(teams[i].id)) as DashBoardResponse;
-      teamsResponse.status = this.fetchStatus(this.dash);
+      teamsResponse.teamStatus = this.fetchStatus(this.dash);
       teamsDTOArray.push(teamsResponse);
-      teamsResponse = {} as TeamResponse;
+      teamsResponse = {} as TeamsInADC;
     }
     return teamsDTOArray;
   }
@@ -193,12 +194,19 @@ export class TeamCrudService extends TypeOrmCrudService<Team> {
   }
 
   board: ElectronBoardResponse = {} as ElectronBoardResponse;
-  async getElectronBoardByTeamId(teamId: string): Promise<ElectronBoardResponse> {
+  async getElectronBoardByTeamId(teamId: string,myRole:number , accessRole:number): Promise<ElectronBoardResponse> {
+    
     const dailyMeeting: DailyMeetingResponse[] = await this.dailyMeetingService.getDailyLinks(teamId);
-    this.board.dailyMeetingResponse = dailyMeeting;
-
+  
     const teamLink: TeamLinkResponse[] | undefined = await this.teamLinkService.getTeamLinks(teamId);
-    this.board.teamLinkResponse = teamLink;
+    if(myRole==0 && accessRole==2){
+      this.board.dailyMeetingResponse = [];
+      this.board.teamLinkResponse = [];
+    }
+    else{
+      this.board.dailyMeetingResponse = dailyMeeting;
+      this.board.teamLinkResponse = teamLink;
+    }
 
     const images: ImageResponse[] | undefined = await this.imageService.getPathOfImage(teamId);
     this.board.imageResponse = images;
@@ -287,8 +295,7 @@ export class TeamCrudService extends TypeOrmCrudService<Team> {
     const result = await this.teamRepository.findOne({ where: { id: teamId } });
     const teamList = await this.teamRepository.find({ where: { ad_center: result?.ad_center } });
     let viewTeamsInADC: TeamsInADC = {} as TeamsInADC;
-    let adcTeamList = [],
-      i;
+    let adcTeamList = [],i
     for (i = 0; i < teamList.length; i++) {
       viewTeamsInADC.teamId = teamList[i].id;
       viewTeamsInADC.teamName = teamList[i].name;
@@ -298,5 +305,13 @@ export class TeamCrudService extends TypeOrmCrudService<Team> {
       viewTeamsInADC = {} as TeamsInADC;
     }
     return adcTeamList;
+  }
+
+  async myCenter(teamId:string):Promise<MyCenter>{
+    const result = await this.teamRepository.findOne({ where: { id: teamId } });
+    let myCenter: MyCenter = {} as MyCenter;
+    myCenter.centerId = result?.ad_center.id!;
+    myCenter.centerName= result?.ad_center.name!
+    return myCenter;
   }
 }

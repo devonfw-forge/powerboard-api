@@ -76,6 +76,7 @@ export class AuthService {
         loginResponse.userId = payload.id;
         loginResponse.role= payload.role
         loginResponse.isPasswordChanged = payload.isPasswordChanged;
+        loginResponse.My_Center = await this.teamService.myCenter(teamId)
         loginResponse.My_Team = teamsDTOArray;
         loginResponse.Teams_In_ADC = await this.teamService.viewTeamsInADC(teamId);
         loginResponse.ADC_List = await this.centerService.getAllCenters();
