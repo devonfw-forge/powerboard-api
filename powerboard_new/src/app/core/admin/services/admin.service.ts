@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { TeamCrudService } from '../../../teams/services/team.crud.service';
 import { AddTeam } from '../../../shared/interfaces/addTeam.interface';
-import { UpdateRole } from '../../../shared/interfaces/updateRole.interface';
 import { UserService } from '../../user/services/user.service';
 import { TeamSpiritCrudService } from '../../../dashboard/team-spirit-integration/services/team-spirit.crud.service';
 
@@ -21,7 +20,7 @@ export class AdminService {
   async addTeamByAdmin(addTeam: AddTeam): Promise<any> {
     const result = await this.teamService.addTeam(addTeam);
     if (result) {
-      this.teamSpiritService.addProjectToTeamSpirit(addTeam.name);
+      this.teamSpiritService.addProjectToTeamSpirit(addTeam.teamName);
     }
   }
 
@@ -57,7 +56,7 @@ export class AdminService {
    * @param {UpdateRole} .Takes UpdateRole as input
    * @return {boolean} .Return boolean as response
    */
-  updateUserRole(updateRole: UpdateRole): boolean | PromiseLike<boolean> {
+  updateUserRole(updateRole: any): boolean | PromiseLike<boolean> {
     return this.userService.updateUserRole(updateRole);
   }
 

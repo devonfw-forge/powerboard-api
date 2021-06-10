@@ -33,12 +33,7 @@ export const storage = {
 export class TeamCrudController {
   constructor(public teamService: TeamCrudService) {}
 
-  //Return whole detail of team as LoginResponse (including dashboard+ electronboard)
-  // @Get('powerboard/team/:teamId')
-  // async getPowerboardByTeamId(@Param('teamId') teamId: string): Promise<any> {
-  //   const powerboardResponse = await this.teamService.getPowerboardByTeamId(teamId);
-  //   return { powerboardResponse };
-  // }
+
   @Post('powerboard/team')
   async getPowerboardByTeamId(@Body() userTeam: UserTeamDTO): Promise<any> {
     const powerboardResponse = await this.teamService.getPowerboardByTeamId(userTeam);

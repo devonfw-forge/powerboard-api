@@ -8,10 +8,10 @@ import { VelocityComparisonResponse } from '../../../dashboard/sprint/model/dto/
 export interface DashBoardResponse {
   teamId: string;
   teamStatus: number | undefined;
-  codeQualityResponse: CodeQualityResponse | undefined;
-  clientStatusResponse: ClientStatusResponse | undefined;
-  teamSpiritResponse: TeamSpiritResponse | undefined;
-  burndownResponse: BurndownResponse | undefined;
-  sprintDetailResponse: SprintDetailResponse | undefined;
-  velocityResponse: VelocityComparisonResponse | undefined;
+  codeQuality: CodeQualityResponse | undefined;
+  clientStatus: ClientStatusResponse | undefined;
+  teamSpirit: TeamSpiritResponse | undefined;
+  burndown: BurndownResponse | undefined;
+  sprintDetail: SprintDetailResponse | undefined;
+  velocity: VelocityComparisonResponse | undefined;
 }

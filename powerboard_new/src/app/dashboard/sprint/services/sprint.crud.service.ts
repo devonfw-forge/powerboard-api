@@ -44,13 +44,9 @@ export class SprintCrudService extends TypeOrmCrudService<Sprint> {
       .limit(2)
       .getRawMany();
 
-    // const result = await this.sprintRepository.query(
-    //   ' select s.id,s.sprint_number,s.start_date, s.end_date ,st.status, ss.id, ss.date_time, smt.name, ssd.value from sprint s INNER JOIN sprint_status st ON st.id = s.status INNER JOIN sprint_snapshot ss ON ss.sprint_id = s.id INNER JOIN sprint_snapshot_metric ssd ON ssd.snapshot_id = ss.id LEFT JOIN sprint_metric smt ON smt.id = ssd.metric_id where s.team_id =' +
-    //   teamId +
-    //   ' and s.status = 2 order by ss.date_time desc limit(2)',
-    // );
-    console.log('sprint detail response ***************************************');
-    console.log(sprintDetail);
+ 
+    // console.log('sprint detail response ***************************************');
+    // console.log(sprintDetail);
     if (sprintDetail[0] == null) {
       return undefined;
     } else {
@@ -97,13 +93,8 @@ export class SprintCrudService extends TypeOrmCrudService<Sprint> {
       .limit(2)
       .getRawMany();
 
-    // const result = await this.sprintRepository.query(
-    //   ' select s.id,s.sprint_number,s.start_date, s.end_date ,st.status,sw.work_unit, ss.id, ss.date_time, smt.name, ssd.value from sprint s INNER JOIN sprint_status st ON st.id = s.status  INNER JOIN sprint_work_unit sw ON sw.id = s.work_unit INNER JOIN sprint_snapshot ss ON ss.sprint_id = s.id INNER JOIN sprint_snapshot_metric ssd ON ssd.snapshot_id = ss.id LEFT JOIN sprint_metric smt ON smt.id = ssd.metric_id where s.team_id =' +
-    //   teamId +
-    //   ' and s.status = 2 order by ss.date_time desc limit(2)',
-    // );
-    console.log('Get Burndown ***************************');
-    console.log(sprintForBurndown);
+    // console.log('Get Burndown ***************************');
+    // console.log(sprintForBurndown);
     if (sprintForBurndown[0] == null) {
       return undefined;
     } else {
@@ -203,8 +194,8 @@ export class SprintCrudService extends TypeOrmCrudService<Sprint> {
       .limit(2)
       .getRawMany();
 
-    console.log('Get Velocity Comparison ****************************************');
-    console.log(sprintMetricsResponse);
+    // console.log('Get Velocity Comparison ****************************************');
+    // console.log(sprintMetricsResponse);
     if(sprintMetricsResponse==null){
       return undefined;
     }
@@ -226,8 +217,8 @@ else{
       .andWhere('ssm.metric_id=:metric_id', { metric_id: '11155bf2-ada5-495c-8019-8d7ab76d488e' })
       .orderBy('sprint.id')
       .getRawMany();
-    console.log('Previous sprint completed ***********************');
-    console.log(previousSprintCompleted);
+    // console.log('Previous sprint completed ***********************');
+    // console.log(previousSprintCompleted);
      if(previousSprintCompleted.length==0 ||previousSprintCompleted==null){
        console.log('ho gya')
        return undefined;

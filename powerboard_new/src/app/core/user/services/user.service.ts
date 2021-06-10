@@ -1,22 +1,23 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { User } from '../model/entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { TypeOrmCrudService } from '@nestjsx/crud-typeorm';
-import { roles } from '../../auth/model/roles.enum';
 import { compare, genSalt, hash } from 'bcrypt';
 import { UserTeam } from '../model/entities/user_team.entity';
 import { UserDTO } from '../model/dto/UserDTO';
 import { TeamsMemberResponse } from '../../../shared/interfaces/teamMemberResponse';
-import { UpdateRole } from 'src/app/shared/interfaces/updateRole.interface';
-import { accessRole } from '../../auth/model/access_role.enum';
 import { ChangePasswordDTO } from '../../auth/model/ChangePasswordDTO';
+import { UserRole } from '../model/entities/user_role.entity';
+import { AddGuestDTO } from '../model/dto/AddGuestDTO';
 var generator = require('generate-password');
 @Injectable()
 export class UserService extends TypeOrmCrudService<User> {
+ 
   constructor(
     @InjectRepository(User) private readonly userRepository: Repository<User>,
     @InjectRepository(UserTeam) private readonly userTeamRepository: Repository<UserTeam>,
+    @InjectRepository(UserRole) private readonly userRoleRepository: Repository<UserRole>,
   ) {
     super(userRepository);
   }
@@ -37,7 +38,7 @@ export class UserService extends TypeOrmCrudService<User> {
   async registerUser(userDTO: UserDTO): Promise<User> {
     const actualUser = await this.findUser(userDTO.username);
     if (actualUser) {
-      return this.addTeamsToUser(actualUser, userDTO);
+      return this.addUserToOtherTeam(actualUser, userDTO);
     }
     var password = generator.generate({
       length: 6,
@@ -52,20 +53,15 @@ export class UserService extends TypeOrmCrudService<User> {
     user.username = userDTO.username;
     user.password = hashPass;
     user.email = userDTO.email;
-    user.role = roles.USER;
     const result = await this.userRepository.save(user);
 
     if (result) {
       let userTeam = new UserTeam();
       userTeam.user = result;
-      userTeam.team = userDTO.teamId;
-      console.log(userTeam.team.id);
-      userTeam.accessRole = userDTO.accessRole;
-      const output = await this.userTeamRepository.save(userTeam);
-      console.log(output);
+      userTeam.role = await this.userRoleRepository.findOne({where:{id:userDTO.role}}) as UserRole
+      userTeam.team = userDTO.team;
+       await this.userTeamRepository.save(userTeam);
     }
-
-    console.log(result);
     return result;
   }
 
@@ -74,15 +70,43 @@ export class UserService extends TypeOrmCrudService<User> {
    * @param {User, UserDTO} .Takes as input
    * @return {UserTeam} UserTeam as response
    */
-  async addTeamsToUser(actualUser: User | undefined, userDTO: UserDTO): Promise<any> {
+  async addUserToOtherTeam(actualUser: User | undefined, userDTO: UserDTO): Promise<any> {
     let userTeam = new UserTeam();
-    userTeam.team = userDTO.teamId;
-    userTeam.accessRole = userDTO.accessRole;
+    userTeam.team = userDTO.team;
+    userTeam.role = await this.userRoleRepository.findOne({where:{id:userDTO.role}}) as UserRole
     userTeam.user = actualUser!;
     const output = await this.userTeamRepository.save(userTeam);
     return output;
   }
+  
+  async addGuest(guest: AddGuestDTO): Promise<User> {
+    const actualUser = await this.findUser(guest.username);
+    if (actualUser) {
+      throw new BadRequestException("user already exists");
+    }
+    var password = generator.generate({
+      length: 6,
+      numbers: true,
+    });
+    console.log(password);
+    const salt = await genSalt(12);
+    const hashPass = await hash(password, salt);
+    let user = new User();
+    user.username = guest.username;
+    user.password = hashPass;
+    user.email = guest.email;
+    const result = await this.userRepository.save(user);
 
+    if (result) {
+      let userTeam = new UserTeam();
+      userTeam.user = result;
+      userTeam.role = await this.userRoleRepository.findOne({where:{id:guest.role}}) as UserRole
+      const output = await this.userTeamRepository.save(userTeam);
+      console.log('Guessst Aa gye')
+      console.log(output);
+    }
+    return result;
+  }
   /**
    * deleteUserFromTeamById method will delete user , and system admin can do so
    * @param {userteamId} .Takes userTeamId as input
@@ -106,7 +130,7 @@ export class UserService extends TypeOrmCrudService<User> {
       teamsMemberResponse.userTeamId = result[i].id;
       teamsMemberResponse.userName = result[i].user.username;
       teamsMemberResponse.email = result[i].user.email;
-      teamsMemberResponse.accessRole = result[i].accessRole;
+     // teamsMemberResponse.accessRole = result[i].accessRole;
       teamMemberList.push(teamsMemberResponse);
 
       teamsMemberResponse = {} as TeamsMemberResponse;
@@ -114,13 +138,13 @@ export class UserService extends TypeOrmCrudService<User> {
     return teamMemberList;
   }
 
-  async updateUserRole(updateRoleDTO: UpdateRole): Promise<boolean> {
+  async updateUserRole(updateRoleDTO: any): Promise<boolean> {
     let result = (await this.userTeamRepository.findOne({ where: { id: updateRoleDTO.userTeamId } })) as UserTeam;
     let userTeam = new UserTeam();
     let output: boolean;
     if (result) {
       userTeam.id = result.id;
-      userTeam.accessRole = updateRoleDTO.accessRole;
+     // userTeam.accessRole = updateRoleDTO.accessRole;
       const exist = await this.userTeamRepository.save(userTeam);
       if (exist) {
         output = true;
@@ -138,15 +162,42 @@ export class UserService extends TypeOrmCrudService<User> {
     return this.userTeamRepository.find({ where: { user: id } });
   }
 
-  async getAccessRole(userId: string, teamId: string): Promise<accessRole> {
-    const output = await this.userTeamRepository.findOne({ where: { user: userId, team: teamId } });
-    if (!output) {
-      return accessRole.NOT_MEMBER_NOR_ADMIN;
-    } else {
-      return output.accessRole;
+  async getTeamPrivileges(userId: string, teamId: string): Promise<any> {
+    const output = await this.userTeamRepository.findOne({ where: { user: userId, team: teamId } }) as UserTeam;
+    let privilegeArray :string[]=[] ,i;
+    if(output){
+     for (i = 0; i <output?.role.privilege.length; i++) {
+      privilegeArray.push(output?.role.privilege[i].privilegeName)
+      }
+       return privilegeArray;
+    }
+    else{
+      const output1 = await this.userTeamRepository.findOne({ where: { user: userId } }) as UserTeam;
+      if(output1.role.roleName=='system_admin'){
+        for (i = 0; i <output1?.role.privilege.length; i++) {
+          privilegeArray.push(output1?.role.privilege[i].privilegeName)
+          }
+          return privilegeArray
+      }
+      else{
+      const output = await this.userRoleRepository.findOne({where:{roleName:'guest_user'}}) as UserRole
+      for (i = 0; i <output?.privilege.length; i++) {
+        privilegeArray.push(output.privilege[i].privilegeName)
+        }
+         return privilegeArray;
+      }
     }
   }
 
+  async getAllPrivileges(userId: string): Promise<string[]> {
+    const output = await this.userTeamRepository.findOne({ where: { user: userId } }) as UserTeam;
+    let privilegeArray :string[]=[] ,i;
+    if(output){
+     for (i = 0; i <output?.role.privilege.length; i++) {
+      privilegeArray.push(output?.role.privilege[i].privilegeName)}
+    }
+       return privilegeArray;
+  }
   async changePassword(changePassword: ChangePasswordDTO): Promise<any> {
     const output = await this.userRepository.findOne({ where: { id: changePassword.userId } });
     const user = new User();
@@ -162,8 +213,13 @@ export class UserService extends TypeOrmCrudService<User> {
       throw new NotFoundException('User not found');
     }
   }
-  async myRole(userId: string): Promise<any> {
-    const output = await this.userRepository.findOne({ where: { id: userId } });
-    return output?.role;
+ 
+  async isAdminOrGuest(userId:string):Promise<boolean>{
+    const output = await this.userTeamRepository.findOne({ where: { user: userId } }) as UserTeam;
+    if(output.role.roleName=='system_admin'||output.role.roleName=='guest_user')
+    {
+      return true;
+    }
+    return false;
   }
 }

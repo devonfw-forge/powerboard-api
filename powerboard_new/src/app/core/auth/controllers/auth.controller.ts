@@ -6,6 +6,7 @@ import { GetUser } from '../decorators/get-user.decorator';
 import { LoginDTO } from '../model/LoginDTO';
 import { UserDTO } from '../../user/model/dto/UserDTO';
 import { ChangePasswordDTO } from '../model/ChangePasswordDTO';
+import { AddGuestDTO } from '../../user/model/dto/AddGuestDTO';
 
 @Controller('auth')
 export class AuthController {
@@ -33,6 +34,19 @@ export class AuthController {
   async changePassword(@Body() changePassword:ChangePasswordDTO):Promise<any>{
     return await this.authService.changePassword(changePassword);
   }
+
+   //Add the user
+   @Post('add-guest')
+   async addGuestUser(@Body() guest: AddGuestDTO): Promise<User> {
+     try {
+       const added = await this.authService.addGuest(guest);
+       return added;
+     } catch (e) {
+       throw new BadRequestException(e.message);
+     }
+   }
+
+
   @Get('currentuser')
   @UseGuards(AuthGuard())
   currentUser(@GetUser() user: User): User {

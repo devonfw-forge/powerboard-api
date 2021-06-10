@@ -13,28 +13,23 @@ import { BurndownResponse } from '../../dashboard/sprint/model/dto/BurndownRespo
 import { VelocityComparisonResponse } from '../../dashboard/sprint/model/dto/VelocityComparisonResponse';
 import { SprintCrudService } from '../../dashboard/sprint/services/sprint.crud.service';
 import { DashBoardResponse } from '../model/dto/DashBoardResponse';
-
 import { Team } from '../model/entities/team.entity';
 import { DailyMeetingResponse } from '../../daily-links/model/dto/DailyMeetingResponse';
 import { DailyMeetingCrudService } from '../../daily-links/services/daily-meeting.crud.service';
 import { TeamLinksCrudService } from '../../team-links/services/team-links.crud.service';
 import { ImagesCrudService } from '../../multimedia/images/services/images.crud.service';
 import { VideosCrudService } from '../../multimedia/videos/services/videos.crud.service';
-import { ElectronBoardResponse } from '../model/dto/ElectronBoardResponse';
 import { TeamLinkResponse } from '../../team-links/model/dto/TeamLinkResponse';
 import { ImageResponse } from '../../multimedia/images/model/dto/ImageResponse';
 import { VideoResponse } from '../../multimedia/videos/model/dto/VideoResponse';
-import { VisibilityCrudService } from '../../visibility/services/visibility.crud.service';
-import { VisibilityResponse } from '../../visibility/model/dto/VisibilityResponse';
-
 import { ViewTeamsResponse } from '../model/dto/ViewTeamsResponse';
 import { AddTeam } from 'src/app/shared/interfaces/addTeam.interface';
 import { ADCenter } from '../../dashboard/ad-center/model/entities/ad-center.entity';
 import { TeamsInADC } from '../model/dto/TeamsInADC';
 import { PowerboardResponse } from '../model/dto/PowerboardResponse';
 import { UserTeamDTO } from '../model/dto/UserTeamDTO';
-import { UserService } from 'src/app/core/user/services/user.service';
 import { MyCenter } from '../model/dto/MyCenter';
+import { UserService } from 'src/app/core/user/services/user.service';
 
 @Injectable()
 export class TeamCrudService extends TypeOrmCrudService<Team> {
@@ -50,40 +45,44 @@ export class TeamCrudService extends TypeOrmCrudService<Team> {
     private readonly imageService: ImagesCrudService,
     private readonly videoService: VideosCrudService,
     private readonly userService: UserService,
-    private readonly visibleService: VisibilityCrudService,
   ) {
     super(teamRepository);
   }
 
   powerboardResponse: PowerboardResponse = {} as PowerboardResponse;
   dash: DashBoardResponse = {} as DashBoardResponse;
-  electron_response: ElectronBoardResponse = {} as ElectronBoardResponse;
   /**
    * getPowerboardByUserId method will retrieve all KPI's +breadcrumb + dump_BU
    * @param {userId} userId Takes userId as input
    * @return {LoginResponse} Dashboard + Electron board as well as breadcrumb and dumb BU List
    */
   async getPowerboardByTeamId(userTeam: UserTeamDTO): Promise<PowerboardResponse> {
-    // const users: User = (await this.userRepository.findOne({ where: { id: userId } })) as User;
-
-    // if (users) {
+   
     const teamId = userTeam.teamId;
     const userId = userTeam.userId;
+
     const teams: Team = (await this.teamRepository.findOne({ where: { id: teamId } })) as Team;
     this.powerboardResponse.team_id = teams.id;
     this.powerboardResponse.team_name = teams.name;
     this.powerboardResponse.center = teams.ad_center.name;
     this.powerboardResponse.team_code = teams.teamCode;
     this.powerboardResponse.logo = teams.logo;
-    const accessRole = await this.userService.getAccessRole(userId, teamId);
-    this.powerboardResponse.accessRole = accessRole;
+    const privilegeList= await this.userService.getTeamPrivileges(userId, teamId);
+  
+   const isAdminOrGuest =await this.userService.isAdminOrGuest(userId);
+   if(privilegeList.includes('view_dashboard')){
     this.dash = await this.getDashboardByTeamId(teams.id);
     this.powerboardResponse.dashboard = this.dash;
-    const myRole = await this.userService.myRole(userId);
-    console.log(myRole);
-    this.electron_response = await this.getElectronBoardByTeamId(teams.id, myRole ,accessRole);
-    this.powerboardResponse.electron_response = this.electron_response;
-
+   }
+    this.powerboardResponse= await this.getOtherComponentsDetailByTeamId(teams.id, privilegeList,this.powerboardResponse);
+    if(isAdminOrGuest)
+    {
+      this.powerboardResponse.privileges=[]
+    }
+    else{
+      this.powerboardResponse.privileges = privilegeList;
+    }
+    
     return this.powerboardResponse;
     // } else {
     //   throw new NotFoundException('userId not found');
@@ -99,26 +98,24 @@ export class TeamCrudService extends TypeOrmCrudService<Team> {
     this.dash.teamId = teamId;
 
     const codeQuality: CodeQualityResponse | undefined = await this.codequalityService.getCodeQualitySnapshot(teamId);
-    this.dash.codeQualityResponse = codeQuality;
+    this.dash.codeQuality= codeQuality;
 
     const clientStatus: ClientStatusResponse | undefined = await this.clientStatusService.getClientFeedback(teamId);
-    this.dash.clientStatusResponse = clientStatus;
+    this.dash.clientStatus= clientStatus;
 
     const teamSpirit: TeamSpiritResponse | undefined = await this.teamSpiritService.getTeamSpirit(teamId);
-    this.dash.teamSpiritResponse = teamSpirit;
+    this.dash.teamSpirit = teamSpirit;
 
     const burndown: BurndownResponse | undefined = await this.sprintService.getBurndown(teamId);
-    this.dash.burndownResponse = burndown;
+    this.dash.burndown = burndown;
 
     const sprintDetail: SprintDetailResponse | undefined = await this.sprintService.getSprintDetailResponse(teamId);
-    this.dash.sprintDetailResponse = sprintDetail;
+    this.dash.sprintDetail = sprintDetail;
     const velocityComparisonDTO:
       | VelocityComparisonResponse
       | undefined = await this.sprintService.getVelocityComparison(teamId);
-    this.dash.velocityResponse = velocityComparisonDTO;
-    console.log(this.dash);
+    this.dash.velocity = velocityComparisonDTO;
     this.dash.teamStatus = this.fetchStatus(this.dash);
-    console.log(this.dash.teamStatus);
     return this.dash;
   }
 
@@ -164,14 +161,14 @@ export class TeamCrudService extends TypeOrmCrudService<Team> {
    * @return {number} number as status value
    */
   fetchStatus(dashboard: DashBoardResponse): number | undefined {
-    if (dashboard?.clientStatusResponse == null) {
+    if (dashboard?.clientStatus == null) {
       return undefined;
     } else {
       let statusResult;
-      const codeQualityStatus = dashboard!.codeQualityResponse!.status;
-      const teamSpiritStatus = dashboard!.teamSpiritResponse!.teamSpiritRating;
-      const clientStatus = dashboard!.clientStatusResponse!.clientSatisfactionRating;
-      const burndownStatus = dashboard!.burndownResponse!.burndownStatus;
+      const codeQualityStatus = dashboard!.codeQuality!.status;
+      const teamSpiritStatus = dashboard!.teamSpirit!.teamSpiritRating;
+      const clientStatus = dashboard!.clientStatus!.clientSatisfactionRating;
+      const burndownStatus = dashboard!.burndown!.burndownStatus;
       if (
         clientStatus >= 6 &&
         teamSpiritStatus >= 6 &&
@@ -193,30 +190,27 @@ export class TeamCrudService extends TypeOrmCrudService<Team> {
     }
   }
 
-  board: ElectronBoardResponse = {} as ElectronBoardResponse;
-  async getElectronBoardByTeamId(teamId: string,myRole:number , accessRole:number): Promise<ElectronBoardResponse> {
+
+  async getOtherComponentsDetailByTeamId(teamId: string, privilegeList:string[],powerboardResponse:PowerboardResponse): Promise<PowerboardResponse> {
     
+    if(privilegeList.includes('view_meeting_links')){
     const dailyMeeting: DailyMeetingResponse[] = await this.dailyMeetingService.getDailyLinks(teamId);
-  
-    const teamLink: TeamLinkResponse[] | undefined = await this.teamLinkService.getTeamLinks(teamId);
-    if(myRole==0 && accessRole==2){
-      this.board.dailyMeetingResponse = [];
-      this.board.teamLinkResponse = [];
-    }
-    else{
-      this.board.dailyMeetingResponse = dailyMeeting;
-      this.board.teamLinkResponse = teamLink;
+    powerboardResponse.meetingLinks = dailyMeeting;
     }
 
+    if(privilegeList.includes('view_team_links')){
+    const teamLink: TeamLinkResponse[] | undefined = await this.teamLinkService.getTeamLinks(teamId);
+     powerboardResponse.teamLinks = teamLink;
+    }
+
+    if(privilegeList.includes('view_multimedia')){
     const images: ImageResponse[] | undefined = await this.imageService.getPathOfImage(teamId);
-    this.board.imageResponse = images;
+    powerboardResponse.images = images;
 
     const videos: VideoResponse[] | undefined = await this.videoService.getPathOfVideos(teamId);
-    this.board.videoResponse = videos;
-
-    const visible: VisibilityResponse | undefined = await this.visibleService.getVisiblilityForTeam(teamId);
-    this.board.visibleResponse = visible;
-    return this.board;
+    powerboardResponse.videos = videos;
+    }
+    return powerboardResponse;
   }
 
   /**
@@ -231,7 +225,7 @@ export class TeamCrudService extends TypeOrmCrudService<Team> {
       console.log('team exists');
     } else {
       let team = new Team();
-      team.name = addteam.name;
+      team.name = addteam.teamName;
       team.teamCode = addteam.teamCode;
       team.projectKey = addteam.projectKey;
       console.log(team.teamCode);
@@ -263,7 +257,7 @@ export class TeamCrudService extends TypeOrmCrudService<Team> {
     for (i = 0; i < teamList.length; i++) {
       viewTeamsResponse.teamId = teamList[i].id;
       viewTeamsResponse.teamName = teamList[i].name;
-      viewTeamsResponse.projectCode = teamList[i].teamCode;
+      viewTeamsResponse.teamCode = teamList[i].teamCode;
       viewTeamsResponse.adCenter = teamList[i].ad_center.name;
       viewteamList.push(viewTeamsResponse);
       viewTeamsResponse = {} as ViewTeamsResponse;
@@ -283,7 +277,7 @@ export class TeamCrudService extends TypeOrmCrudService<Team> {
     if (result) {
       team.id = result.id;
     }
-    team.name = updateTeam.name;
+    team.name = updateTeam.teamName;
     team.teamCode = updateTeam.teamCode;
     team.projectKey = updateTeam.projectKey;
     team.logo = updateTeam.logo!;

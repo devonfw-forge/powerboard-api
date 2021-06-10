@@ -31,6 +31,7 @@ export class DailyMeetingCrudService extends TypeOrmCrudService<DailyMeeting> {
     for (i = 0; i < result.length; i++) {
       this.meetingResponse.dailyMeetingId = result[i].id;
       this.meetingResponse.type = result[i].type;
+      this.meetingResponse.title= result[i].title
       this.meetingResponse.links = result[i].dailyMeetingLink;
       dailyMeetingArray.push(this.meetingResponse);
       this.meetingResponse = {} as DailyMeetingResponse;
@@ -42,8 +43,16 @@ export class DailyMeetingCrudService extends TypeOrmCrudService<DailyMeeting> {
   async createDailyMeeting(meetingDTO: DailyMeetingDTO): Promise<DailyMeeting> {
     let daily = new DailyMeeting();
     daily.type = meetingDTO.type;
+    daily.title = meetingDTO.title;
     daily.dailyMeetingLink = meetingDTO.links;
     daily.team = meetingDTO.teamId;
     return await this.dailyLinkRepository.save(daily);
+  }
+
+    /**
+   * deleteMeetingById method will delete the link of team
+   */
+  async deleteDailyMeetingById(dailyMeetingId: string): Promise<any> {
+    return await this.dailyLinkRepository.delete(dailyMeetingId);
   }
 }

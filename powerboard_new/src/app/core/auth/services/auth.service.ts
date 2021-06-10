@@ -12,10 +12,11 @@ import { LoginResponse } from '../model/LoginResponse';
 import { ADCenterCrudService } from '../../../dashboard/ad-center/services/ad-center.crud.service';
 import { DashBoardResponse } from '../../../teams/model/dto/DashBoardResponse';
 import { ChangePasswordDTO } from '../model/ChangePasswordDTO';
+import { AddGuestDTO } from '../../user/model/dto/AddGuestDTO';
+import { UserTeam } from '../../user/model/entities/user_team.entity';
 
 @Injectable()
 export class AuthService {
-  
   constructor(
     private readonly userService: UserService,
     private readonly teamService: TeamCrudService,
@@ -55,43 +56,86 @@ export class AuthService {
    */
 
   async login(user: LoginDTO): Promise<any> {
-    let loginResponse: LoginResponse = {} as LoginResponse;
     const payload = await this.validateUser(user.username!, user.password!);
     if (payload) {
       const accessToken = await this.signIn(user.username, user.password);
       const userTeam = await this.userService.findUserTeamsByUserId(payload.id);
-      let teamsDTOArray = [], i;
-      if (userTeam.length >= 1) {
-        let teamsWithinUser: MyProject = {} as MyProject;
-
-        for (i = 0; i < userTeam.length; i++) {
-          teamsWithinUser.teamId = userTeam[i].team.id;
-          teamsWithinUser.teamName = userTeam[i].team.name;
-          this.dash = (await this.teamService.getDashboardByTeamId(userTeam[i].team.id)) as DashBoardResponse;
-          teamsWithinUser.teamStatus= this.teamService.fetchStatus(this.dash);
-          teamsDTOArray.push(teamsWithinUser);
-          teamsWithinUser = {} as MyProject;
+      if (userTeam[0].team == null) {
+        if (userTeam[0].role.roleName == 'system_admin') {
+               return this.systemLogin(userTeam[0],accessToken)
+        } else {
+          return this.guestLogin(userTeam[0], accessToken);
         }
-        let teamId = teamsDTOArray[0].teamId;
-        loginResponse.userId = payload.id;
-        loginResponse.role= payload.role
-        loginResponse.isPasswordChanged = payload.isPasswordChanged;
-        loginResponse.My_Center = await this.teamService.myCenter(teamId)
-        loginResponse.My_Team = teamsDTOArray;
-        loginResponse.Teams_In_ADC = await this.teamService.viewTeamsInADC(teamId);
-        loginResponse.ADC_List = await this.centerService.getAllCenters();
-        return { loginResponse, accessToken };
+      } else {
+        return this.teamMemberTeamAdminLogin(userTeam, accessToken, payload);
       }
     } else {
       throw new UnauthorizedException('Wrong username or password');
     }
   }
 
+  async guestLogin(userTeam: UserTeam, accessToken: string) {
+    let loginResponse: LoginResponse = {} as LoginResponse;
+
+    loginResponse.userId = userTeam.user.id;
+    loginResponse.isPasswordChanged = userTeam.user.isPasswordChanged;
+    loginResponse.My_Center = undefined;
+    loginResponse.My_Team = [];
+    loginResponse.ADC_List = await this.centerService.getAllCenters();
+    loginResponse.privileges = await this.userService.getAllPrivileges(userTeam.user.id);
+    loginResponse.Teams_In_ADC = await this.teamService.getTeamsByCenterId(loginResponse.ADC_List[0].centerId);
+    return { loginResponse, accessToken };
+  }
+
+  async systemLogin(userTeam: UserTeam, accessToken: string) {
+    let loginResponse: LoginResponse = {} as LoginResponse;
+
+    loginResponse.userId = userTeam.user.id;
+    loginResponse.isPasswordChanged = userTeam.user.isPasswordChanged;
+    loginResponse.My_Center = undefined;
+    loginResponse.My_Team = [];
+    loginResponse.ADC_List = await this.centerService.getAllCenters();
+    loginResponse.Teams_In_ADC = await this.teamService.getTeamsByCenterId(loginResponse.ADC_List[0].centerId);
+    loginResponse.privileges = await this.userService.getAllPrivileges(userTeam.user.id);
+    return { loginResponse, accessToken };
+  }
+
+  async teamMemberTeamAdminLogin(userTeam: UserTeam[], accessToken: string, payload: User) {
+    let loginResponse: LoginResponse = {} as LoginResponse;
+    let teamsDTOArray = [],
+      i;
+    if (userTeam.length >= 1) {
+      let teamsWithinUser: MyProject = {} as MyProject;
+
+      for (i = 0; i < userTeam.length; i++) {
+        teamsWithinUser.teamId = userTeam[i].team.id;
+        teamsWithinUser.teamName = userTeam[i].team.name;
+        teamsWithinUser.myRole = userTeam[i].role.roleName;
+        this.dash = (await this.teamService.getDashboardByTeamId(userTeam[i].team.id)) as DashBoardResponse;
+        teamsWithinUser.teamStatus = this.teamService.fetchStatus(this.dash);
+        teamsDTOArray.push(teamsWithinUser);
+        teamsWithinUser = {} as MyProject;
+      }
+      let teamId = teamsDTOArray[0].teamId;
+      loginResponse.userId = payload.id;
+      loginResponse.isPasswordChanged = payload.isPasswordChanged;
+      loginResponse.My_Center = await this.teamService.myCenter(teamId);
+      loginResponse.My_Team = teamsDTOArray;
+      loginResponse.Teams_In_ADC = await this.teamService.viewTeamsInADC(teamId);
+      loginResponse.ADC_List = await this.centerService.getAllCenters();
+      loginResponse.privileges= [];
+      return { loginResponse, accessToken };
+    }
+  }
   //Further call to UserService
   register(user: UserDTO): Promise<User> {
     return this.userService.registerUser(user);
   }
-  async changePassword(changePassword: ChangePasswordDTO):Promise<any> {
-   return await this.userService.changePassword(changePassword)
+
+  addGuest(guest: AddGuestDTO): Promise<User> {
+    return this.userService.addGuest(guest);
+  }
+  async changePassword(changePassword: ChangePasswordDTO): Promise<any> {
+    return await this.userService.changePassword(changePassword);
   }
 }

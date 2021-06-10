@@ -1,8 +1,9 @@
 import { BaseEntity } from '../../../../shared/model/entities/base-entity.entity';
-import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
-import { accessRole } from 'src/app/core/auth/model/access_role.enum';
+import { Entity, JoinColumn, ManyToOne } from 'typeorm';
 import { User } from './user.entity';
 import { Team } from '../../../../teams/model/entities/team.entity';
+import { UserRole } from './user_role.entity';
+
 @Entity('user_team')
 export class UserTeam extends BaseEntity {
   @ManyToOne(() => User, user => user.userTeam, { eager: true, nullable: true })
@@ -13,9 +14,8 @@ export class UserTeam extends BaseEntity {
   @JoinColumn({ name: 'team_Id' })
   team!: Team;
 
-  @Column('int', { name: 'access_role', nullable: true, default: accessRole.TEAM_MEMBER })
-  accessRole!: number;
+  @ManyToOne(() => UserRole, { eager: true })
+  @JoinColumn({ name: 'user_role_id', referencedColumnName: 'id' })
+  role!: UserRole;
 
-  @Column({ nullable: true, default: true })
-  isActive!: boolean;
 }

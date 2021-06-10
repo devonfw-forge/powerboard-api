@@ -4,8 +4,11 @@ import { BaseEntity } from '../../../shared/model/entities/base-entity.entity';
 
 @Entity()
 export class DailyMeeting extends BaseEntity {
-  @Column('varchar', { length: 255, nullable: false })
+  @Column('varchar', { length: 255, nullable: true })
   type!: string;
+
+  @Column('varchar', { length: 255, nullable: false })
+  title!: string;
 
   @Column('varchar', { name: 'daily_meeting_link', length: 5000, nullable: false })
   dailyMeetingLink!: string;

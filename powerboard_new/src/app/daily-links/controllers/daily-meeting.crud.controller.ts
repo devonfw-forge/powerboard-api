@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
 import { Crud } from '@nestjsx/crud';
 import { CrudType } from '@devon4node/common/serializer';
 import { DailyMeetingCrudService } from '../services/daily-meeting.crud.service';
@@ -19,6 +19,11 @@ export class DailyMeetingCrudController {
   @Get('teamId/:id')
   async getDailyMeeting(@Param('id') teamId: string): Promise<any> {
     return await this.dailyMeetingService.getDailyLinks(teamId);
+  }
+
+  @Delete('delete/:id')
+  async deleteDailyMeetingById(@Param('id') dailyMeetingId: string): Promise<any> {
+    return await this.dailyMeetingService.deleteDailyMeetingById(dailyMeetingId);
   }
 
   @Post('teamId/create')

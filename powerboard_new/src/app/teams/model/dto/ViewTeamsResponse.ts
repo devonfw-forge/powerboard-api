@@ -1,6 +1,6 @@
 export interface ViewTeamsResponse {
   teamId: string;
   teamName: string;
-  projectCode: string;
+  teamCode: string;
   adCenter: string;
 }

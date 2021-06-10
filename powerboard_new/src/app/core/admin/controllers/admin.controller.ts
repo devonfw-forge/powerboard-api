@@ -1,5 +1,4 @@
 import {  Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
-import { UpdateRole } from '../../../shared/interfaces/updateRole.interface';
 import { AddTeam } from '../../../shared/interfaces/addTeam.interface';
 import { AdminService } from '../services/admin.service';
 
@@ -50,7 +49,8 @@ export class AdminController {
 
    //Updating the role of user by system admin
    @Put('update/accessRole')
-   async updateUserRole(@Body() updateRole: UpdateRole):Promise<boolean>{
+   async updateUserRole(@Body() updateRole: any):Promise<boolean>{
       return await this.adminService.updateUserRole(updateRole);
    }
+
 }
