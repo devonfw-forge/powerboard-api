@@ -10,10 +10,11 @@ import { TeamsMemberResponse } from '../../../shared/interfaces/teamMemberRespon
 import { ChangePasswordDTO } from '../../auth/model/ChangePasswordDTO';
 import { UserRole } from '../model/entities/user_role.entity';
 import { AddGuestDTO } from '../model/dto/AddGuestDTO';
+import { UpdateUserRoleDTO } from '../model/dto/UpdateUserRoleDTO';
+import { UserRolesDTO } from '../model/dto/UserRolesDTO';
 var generator = require('generate-password');
 @Injectable()
 export class UserService extends TypeOrmCrudService<User> {
- 
   constructor(
     @InjectRepository(User) private readonly userRepository: Repository<User>,
     @InjectRepository(UserTeam) private readonly userTeamRepository: Repository<UserTeam>,
@@ -58,9 +59,9 @@ export class UserService extends TypeOrmCrudService<User> {
     if (result) {
       let userTeam = new UserTeam();
       userTeam.user = result;
-      userTeam.role = await this.userRoleRepository.findOne({where:{id:userDTO.role}}) as UserRole
+      userTeam.role = (await this.userRoleRepository.findOne({ where: { id: userDTO.role } })) as UserRole;
       userTeam.team = userDTO.team;
-       await this.userTeamRepository.save(userTeam);
+      await this.userTeamRepository.save(userTeam);
     }
     return result;
   }
@@ -73,16 +74,16 @@ export class UserService extends TypeOrmCrudService<User> {
   async addUserToOtherTeam(actualUser: User | undefined, userDTO: UserDTO): Promise<any> {
     let userTeam = new UserTeam();
     userTeam.team = userDTO.team;
-    userTeam.role = await this.userRoleRepository.findOne({where:{id:userDTO.role}}) as UserRole
+    userTeam.role = (await this.userRoleRepository.findOne({ where: { id: userDTO.role } })) as UserRole;
     userTeam.user = actualUser!;
     const output = await this.userTeamRepository.save(userTeam);
     return output;
   }
-  
+
   async addGuest(guest: AddGuestDTO): Promise<User> {
     const actualUser = await this.findUser(guest.username);
     if (actualUser) {
-      throw new BadRequestException("user already exists");
+      throw new BadRequestException('user already exists');
     }
     var password = generator.generate({
       length: 6,
@@ -100,9 +101,9 @@ export class UserService extends TypeOrmCrudService<User> {
     if (result) {
       let userTeam = new UserTeam();
       userTeam.user = result;
-      userTeam.role = await this.userRoleRepository.findOne({where:{id:guest.role}}) as UserRole
+      userTeam.role = (await this.userRoleRepository.findOne({ where: { id: guest.role } })) as UserRole;
       const output = await this.userTeamRepository.save(userTeam);
-      console.log('Guessst Aa gye')
+      console.log('Guessst Aa gye');
       console.log(output);
     }
     return result;
@@ -130,7 +131,7 @@ export class UserService extends TypeOrmCrudService<User> {
       teamsMemberResponse.userTeamId = result[i].id;
       teamsMemberResponse.userName = result[i].user.username;
       teamsMemberResponse.email = result[i].user.email;
-     // teamsMemberResponse.accessRole = result[i].accessRole;
+      // teamsMemberResponse.accessRole = result[i].accessRole;
       teamMemberList.push(teamsMemberResponse);
 
       teamsMemberResponse = {} as TeamsMemberResponse;
@@ -138,13 +139,16 @@ export class UserService extends TypeOrmCrudService<User> {
     return teamMemberList;
   }
 
-  async updateUserRole(updateRoleDTO: any): Promise<boolean> {
-    let result = (await this.userTeamRepository.findOne({ where: { id: updateRoleDTO.userTeamId } })) as UserTeam;
+  async updateUserRole(updateRoleDTO: UpdateUserRoleDTO): Promise<boolean> {
+    let result = (await this.userTeamRepository.findOne({
+      where: { user: updateRoleDTO.userId, team: updateRoleDTO.teamId },
+    })) as UserTeam;
     let userTeam = new UserTeam();
     let output: boolean;
     if (result) {
       userTeam.id = result.id;
-     // userTeam.accessRole = updateRoleDTO.accessRole;
+      // userTeam.accessRole = updateRoleDTO.accessRole;
+      userTeam.role = (await this.userRoleRepository.findOne({ where: { id: updateRoleDTO.roleId } })) as UserRole;
       const exist = await this.userTeamRepository.save(userTeam);
       if (exist) {
         output = true;
@@ -162,41 +166,44 @@ export class UserService extends TypeOrmCrudService<User> {
     return this.userTeamRepository.find({ where: { user: id } });
   }
 
-  async getTeamPrivileges(userId: string, teamId: string): Promise<any> {
-    const output = await this.userTeamRepository.findOne({ where: { user: userId, team: teamId } }) as UserTeam;
-    let privilegeArray :string[]=[] ,i;
-    if(output){
-     for (i = 0; i <output?.role.privilege.length; i++) {
-      privilegeArray.push(output?.role.privilege[i].privilegeName)
-      }
-       return privilegeArray;
-    }
-    else{
-      const output1 = await this.userTeamRepository.findOne({ where: { user: userId } }) as UserTeam;
-      if(output1.role.roleName=='system_admin'){
-        for (i = 0; i <output1?.role.privilege.length; i++) {
-          privilegeArray.push(output1?.role.privilege[i].privilegeName)
-          }
-          return privilegeArray
-      }
-      else{
-      const output = await this.userRoleRepository.findOne({where:{roleName:'guest_user'}}) as UserRole
-      for (i = 0; i <output?.privilege.length; i++) {
-        privilegeArray.push(output.privilege[i].privilegeName)
+  async getTeamPrivileges(userId: string, teamId: string, isAdminOrGuest: boolean): Promise<any> {
+    if (isAdminOrGuest) {
+      console.log('guest ->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>');
+      return this.getAllPrivileges(userId);
+    } else {
+      const output = (await this.userTeamRepository.findOne({ where: { user: userId, team: teamId } })) as UserTeam;
+      let privilegeArray: string[] = [],
+        i;
+      if (output) {
+        return this.getPrivilegesList(output);
+      } else {
+        const output = (await this.userRoleRepository.findOne({ where: { roleName: 'guest_user' } })) as UserRole;
+        for (i = 0; i < output?.privilege.length; i++) {
+          privilegeArray.push(output.privilege[i].privilegeName);
         }
-         return privilegeArray;
+        return privilegeArray;
       }
     }
+    // }
+  }
+
+  getPrivilegesList(userTeam: UserTeam) {
+    let privilegeArray: string[] = [],
+      i;
+    for (i = 0; i < userTeam?.role.privilege.length; i++) {
+      privilegeArray.push(userTeam?.role.privilege[i].privilegeName);
+    }
+
+    return privilegeArray;
   }
 
   async getAllPrivileges(userId: string): Promise<string[]> {
-    const output = await this.userTeamRepository.findOne({ where: { user: userId } }) as UserTeam;
-    let privilegeArray :string[]=[] ,i;
-    if(output){
-     for (i = 0; i <output?.role.privilege.length; i++) {
-      privilegeArray.push(output?.role.privilege[i].privilegeName)}
+    const userTeam = (await this.userTeamRepository.findOne({ where: { user: userId } })) as UserTeam;
+    if (userTeam) {
+      return this.getPrivilegesList(userTeam);
+    } else {
+      throw new BadRequestException("user team does'nt find");
     }
-       return privilegeArray;
   }
   async changePassword(changePassword: ChangePasswordDTO): Promise<any> {
     const output = await this.userRepository.findOne({ where: { id: changePassword.userId } });
@@ -213,13 +220,25 @@ export class UserService extends TypeOrmCrudService<User> {
       throw new NotFoundException('User not found');
     }
   }
- 
-  async isAdminOrGuest(userId:string):Promise<boolean>{
-    const output = await this.userTeamRepository.findOne({ where: { user: userId } }) as UserTeam;
-    if(output.role.roleName=='system_admin'||output.role.roleName=='guest_user')
-    {
+
+  async isAdminOrGuest(userId: string): Promise<boolean> {
+    const output = (await this.userTeamRepository.findOne({ where: { user: userId } })) as UserTeam;
+    if (output.role.roleName == 'system_admin' || output.role.roleName == 'guest_user') {
       return true;
     }
     return false;
+  }
+
+  async getAllUserRoles(): Promise<UserRolesDTO[]> {
+    const roles = await this.userRoleRepository.find();
+    let rolesList = [],
+      i;
+    for (i = 0; i < roles!.length; i++) {
+      let userRole: UserRolesDTO = {} as UserRolesDTO;
+      userRole.roleId = roles[i]!.id;
+      userRole.roleName = roles[i]!.roleName;
+      rolesList.push(userRole);
+    }
+    return rolesList;
   }
 }

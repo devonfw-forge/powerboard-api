@@ -57,7 +57,6 @@ export class TeamCrudService extends TypeOrmCrudService<Team> {
    * @return {LoginResponse} Dashboard + Electron board as well as breadcrumb and dumb BU List
    */
   async getPowerboardByTeamId(userTeam: UserTeamDTO): Promise<PowerboardResponse> {
-   
     const teamId = userTeam.teamId;
     const userId = userTeam.userId;
 
@@ -67,22 +66,26 @@ export class TeamCrudService extends TypeOrmCrudService<Team> {
     this.powerboardResponse.center = teams.ad_center.name;
     this.powerboardResponse.team_code = teams.teamCode;
     this.powerboardResponse.logo = teams.logo;
-    const privilegeList= await this.userService.getTeamPrivileges(userId, teamId);
-  
-   const isAdminOrGuest =await this.userService.isAdminOrGuest(userId);
-   if(privilegeList.includes('view_dashboard')){
-    this.dash = await this.getDashboardByTeamId(teams.id);
-    this.powerboardResponse.dashboard = this.dash;
-   }
-    this.powerboardResponse= await this.getOtherComponentsDetailByTeamId(teams.id, privilegeList,this.powerboardResponse);
-    if(isAdminOrGuest)
-    {
-      this.powerboardResponse.privileges=[]
+    const isAdminOrGuest = await this.userService.isAdminOrGuest(userId);
+    const privilegeList = await this.userService.getTeamPrivileges(userId, teamId, isAdminOrGuest);
+    console.log(privilegeList);
+    console.log('->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>');
+
+    if (privilegeList.includes('view_dashboard')) {
+      this.dash = await this.getDashboardByTeamId(teams.id);
+      this.powerboardResponse.dashboard = this.dash;
     }
-    else{
+    this.powerboardResponse = await this.getOtherComponentsDetailByTeamId(
+      teams.id,
+      privilegeList,
+      this.powerboardResponse,
+    );
+    if (isAdminOrGuest) {
+      this.powerboardResponse.privileges = [];
+    } else {
       this.powerboardResponse.privileges = privilegeList;
     }
-    
+
     return this.powerboardResponse;
     // } else {
     //   throw new NotFoundException('userId not found');
@@ -98,10 +101,10 @@ export class TeamCrudService extends TypeOrmCrudService<Team> {
     this.dash.teamId = teamId;
 
     const codeQuality: CodeQualityResponse | undefined = await this.codequalityService.getCodeQualitySnapshot(teamId);
-    this.dash.codeQuality= codeQuality;
+    this.dash.codeQuality = codeQuality;
 
     const clientStatus: ClientStatusResponse | undefined = await this.clientStatusService.getClientFeedback(teamId);
-    this.dash.clientStatus= clientStatus;
+    this.dash.clientStatus = clientStatus;
 
     const teamSpirit: TeamSpiritResponse | undefined = await this.teamSpiritService.getTeamSpirit(teamId);
     this.dash.teamSpirit = teamSpirit;
@@ -190,25 +193,27 @@ export class TeamCrudService extends TypeOrmCrudService<Team> {
     }
   }
 
-
-  async getOtherComponentsDetailByTeamId(teamId: string, privilegeList:string[],powerboardResponse:PowerboardResponse): Promise<PowerboardResponse> {
-    
-    if(privilegeList.includes('view_meeting_links')){
-    const dailyMeeting: DailyMeetingResponse[] = await this.dailyMeetingService.getDailyLinks(teamId);
-    powerboardResponse.meetingLinks = dailyMeeting;
+  async getOtherComponentsDetailByTeamId(
+    teamId: string,
+    privilegeList: string[],
+    powerboardResponse: PowerboardResponse,
+  ): Promise<PowerboardResponse> {
+    if (privilegeList.includes('view_meeting_links')) {
+      const dailyMeeting: DailyMeetingResponse[] = await this.dailyMeetingService.getDailyLinks(teamId);
+      powerboardResponse.meetingLinks = dailyMeeting;
     }
 
-    if(privilegeList.includes('view_team_links')){
-    const teamLink: TeamLinkResponse[] | undefined = await this.teamLinkService.getTeamLinks(teamId);
-     powerboardResponse.teamLinks = teamLink;
+    if (privilegeList.includes('view_team_links')) {
+      const teamLink: TeamLinkResponse[] | undefined = await this.teamLinkService.getTeamLinks(teamId);
+      powerboardResponse.teamLinks = teamLink;
     }
 
-    if(privilegeList.includes('view_multimedia')){
-    const images: ImageResponse[] | undefined = await this.imageService.getPathOfImage(teamId);
-    powerboardResponse.images = images;
+    if (privilegeList.includes('view_multimedia')) {
+      const images: ImageResponse[] | undefined = await this.imageService.getPathOfImage(teamId);
+      powerboardResponse.images = images;
 
-    const videos: VideoResponse[] | undefined = await this.videoService.getPathOfVideos(teamId);
-    powerboardResponse.videos = videos;
+      const videos: VideoResponse[] | undefined = await this.videoService.getPathOfVideos(teamId);
+      powerboardResponse.videos = videos;
     }
     return powerboardResponse;
   }
@@ -289,7 +294,8 @@ export class TeamCrudService extends TypeOrmCrudService<Team> {
     const result = await this.teamRepository.findOne({ where: { id: teamId } });
     const teamList = await this.teamRepository.find({ where: { ad_center: result?.ad_center } });
     let viewTeamsInADC: TeamsInADC = {} as TeamsInADC;
-    let adcTeamList = [],i
+    let adcTeamList = [],
+      i;
     for (i = 0; i < teamList.length; i++) {
       viewTeamsInADC.teamId = teamList[i].id;
       viewTeamsInADC.teamName = teamList[i].name;
@@ -301,11 +307,11 @@ export class TeamCrudService extends TypeOrmCrudService<Team> {
     return adcTeamList;
   }
 
-  async myCenter(teamId:string):Promise<MyCenter>{
+  async myCenter(teamId: string): Promise<MyCenter> {
     const result = await this.teamRepository.findOne({ where: { id: teamId } });
     let myCenter: MyCenter = {} as MyCenter;
     myCenter.centerId = result?.ad_center.id!;
-    myCenter.centerName= result?.ad_center.name!
+    myCenter.centerName = result?.ad_center.name!;
     return myCenter;
   }
 }

@@ -4,6 +4,8 @@ import { AddTeam } from '../../../shared/interfaces/addTeam.interface';
 import { UserService } from '../../user/services/user.service';
 import { TeamSpiritCrudService } from '../../../dashboard/team-spirit-integration/services/team-spirit.crud.service';
 
+import { UserRolesDTO } from '../../user/model/dto/UserRolesDTO';
+
 @Injectable()
 export class AdminService {
   constructor(
@@ -58,6 +60,10 @@ export class AdminService {
    */
   updateUserRole(updateRole: any): boolean | PromiseLike<boolean> {
     return this.userService.updateUserRole(updateRole);
+  }
+
+  getAllUserRoles(): Promise<UserRolesDTO[]> {
+    return this.userService.getAllUserRoles();
   }
 
   /**
