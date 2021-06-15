@@ -67,6 +67,8 @@ export class TeamCrudService extends TypeOrmCrudService<Team> {
     this.powerboardResponse.team_code = teams.teamCode;
     this.powerboardResponse.logo = teams.logo;
     const isAdminOrGuest = await this.userService.isAdminOrGuest(userId);
+    console.log(isAdminOrGuest);
+    console.log('->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>');
     const privilegeList = await this.userService.getTeamPrivileges(userId, teamId, isAdminOrGuest);
     console.log(privilegeList);
     console.log('->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>');
@@ -198,13 +200,19 @@ export class TeamCrudService extends TypeOrmCrudService<Team> {
     powerboardResponse: PowerboardResponse,
   ): Promise<PowerboardResponse> {
     if (privilegeList.includes('view_meeting_links')) {
+      console.log('llllllllllllllllllllllllllllllllllllll');
       const dailyMeeting: DailyMeetingResponse[] = await this.dailyMeetingService.getDailyLinks(teamId);
       powerboardResponse.meetingLinks = dailyMeeting;
+    } else {
+      console.log('mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm');
+      powerboardResponse.meetingLinks = [];
     }
 
     if (privilegeList.includes('view_team_links')) {
       const teamLink: TeamLinkResponse[] | undefined = await this.teamLinkService.getTeamLinks(teamId);
       powerboardResponse.teamLinks = teamLink;
+    } else {
+      powerboardResponse.teamLinks = [];
     }
 
     const images: ImageResponse[] | undefined = await this.imageService.getPathOfImage(teamId);

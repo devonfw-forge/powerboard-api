@@ -1,7 +1,7 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
-export class InsertData1623310398553 implements MigrationInterface {
-  name = 'InsertData1623310398553';
+export class InsertData1623764624798 implements MigrationInterface {
+  name = 'InsertData1623764624798';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(
@@ -143,6 +143,13 @@ export class InsertData1623310398553 implements MigrationInterface {
     await queryRunner.query(
       `INSERT INTO "team_spirit" ("id","team_spirit_rating", "sprint_id") VALUES ('20113bf8-ada5-495c-8019-8d7ab76d488e', 7, '20455bf8-ada5-495c-8019-8d7ab76d488e');`,
     );
+    await queryRunner.query(
+      `INSERT INTO "team_spirit_median" ("id", "survey_median","start_date","end_date","survey_code","team_name") VALUES ('70013bf8-ada5-495c-8019-8d7ab76d488e', 3,'2021-05-15','2021-05-25' ,'AZR32' ,'Diamler Devops');`,
+    );
+
+    await queryRunner.query(
+      `INSERT INTO "team_spirit_median" ("id", "survey_median","start_date","end_date","survey_code","team_name") VALUES ('70023bf8-ada5-495c-8019-8d7ab76d488e', 7,'2021-06-10','2021-06-15' ,'AZ4r52' ,'Diamler Devops');`,
+    );
 
     await queryRunner.query(
       `INSERT INTO "client_status" ("id","client_rating", "sprintId") VALUES ('20111bf8-ada5-495c-8019-8d7ab76d488e', 8,'20355bf8-ada5-495c-8019-8d7ab76d488e');`,
@@ -264,16 +271,13 @@ export class InsertData1623310398553 implements MigrationInterface {
 
     //Here we are adding privileges
     await queryRunner.query(
-      `INSERT INTO "privileges"("id", "privilege_name","privilege_description") Values('80011dfd-43e9-4cc4-8257-a6ba5c70e34d','view_dashboard','For seeing all kpis' );`,
+      `INSERT INTO "privileges"("id", "privilege_name","privilege_description") Values('80011dfd-43e9-4cc4-8257-a6ba5c70e34d','add_team_admin','For admin to determine role' );`,
     );
     await queryRunner.query(
       `INSERT INTO "privileges"("id", "privilege_name","privilege_description") Values('80021dfd-43e9-4cc4-8257-a6ba5c70e34d','view_meeting_links','For viewing meetings' );`,
     );
     await queryRunner.query(
       `INSERT INTO "privileges"("id", "privilege_name","privilege_description") Values('80031dfd-43e9-4cc4-8257-a6ba5c70e34d','view_team_links' ,'For viewing team links');`,
-    );
-    await queryRunner.query(
-      `INSERT INTO "privileges"("id", "privilege_name","privilege_description") Values('80041dfd-43e9-4cc4-8257-a6ba5c70e34d','view_multimedia' ,'For view of images and videos');`,
     );
     await queryRunner.query(
       `INSERT INTO "privileges"("id", "privilege_name","privilege_description") Values('80051dfd-43e9-4cc4-8257-a6ba5c70e34d','team_configuration','For configuring the team' );`,
@@ -308,30 +312,19 @@ export class InsertData1623310398553 implements MigrationInterface {
     //Here we relate roleId to PrivilegeId
     //for team member and their respective permission id
     await queryRunner.query(
-      `INSERT INTO "user_role_privilege"("role_id", "privilege_id") Values('555f1dfd-43e9-4cc4-8257-a6ba5c70e34d','80011dfd-43e9-4cc4-8257-a6ba5c70e34d');`,
-    );
-    await queryRunner.query(
       `INSERT INTO "user_role_privilege"("role_id", "privilege_id") Values('555f1dfd-43e9-4cc4-8257-a6ba5c70e34d','80021dfd-43e9-4cc4-8257-a6ba5c70e34d');`,
     );
     await queryRunner.query(
       `INSERT INTO "user_role_privilege"("role_id", "privilege_id") Values('555f1dfd-43e9-4cc4-8257-a6ba5c70e34d','80031dfd-43e9-4cc4-8257-a6ba5c70e34d');`,
     );
-    await queryRunner.query(
-      `INSERT INTO "user_role_privilege"("role_id", "privilege_id") Values('555f1dfd-43e9-4cc4-8257-a6ba5c70e34d','80041dfd-43e9-4cc4-8257-a6ba5c70e34d');`,
-    );
 
     //For team admin , and respective permission id
-    await queryRunner.query(
-      `INSERT INTO "user_role_privilege"("role_id", "privilege_id") Values('556f1dfd-43e9-4cc4-8257-a6ba5c70e34d','80011dfd-43e9-4cc4-8257-a6ba5c70e34d');`,
-    );
+
     await queryRunner.query(
       `INSERT INTO "user_role_privilege"("role_id", "privilege_id") Values('556f1dfd-43e9-4cc4-8257-a6ba5c70e34d','80021dfd-43e9-4cc4-8257-a6ba5c70e34d');`,
     );
     await queryRunner.query(
       `INSERT INTO "user_role_privilege"("role_id", "privilege_id") Values('556f1dfd-43e9-4cc4-8257-a6ba5c70e34d','80031dfd-43e9-4cc4-8257-a6ba5c70e34d');`,
-    );
-    await queryRunner.query(
-      `INSERT INTO "user_role_privilege"("role_id", "privilege_id") Values('556f1dfd-43e9-4cc4-8257-a6ba5c70e34d','80041dfd-43e9-4cc4-8257-a6ba5c70e34d');`,
     );
     await queryRunner.query(
       `INSERT INTO "user_role_privilege"("role_id", "privilege_id") Values('556f1dfd-43e9-4cc4-8257-a6ba5c70e34d','80051dfd-43e9-4cc4-8257-a6ba5c70e34d');`,
@@ -354,9 +347,6 @@ export class InsertData1623310398553 implements MigrationInterface {
     );
     await queryRunner.query(
       `INSERT INTO "user_role_privilege"("role_id", "privilege_id") Values('557f1dfd-43e9-4cc4-8257-a6ba5c70e34d','80031dfd-43e9-4cc4-8257-a6ba5c70e34d');`,
-    );
-    await queryRunner.query(
-      `INSERT INTO "user_role_privilege"("role_id", "privilege_id") Values('557f1dfd-43e9-4cc4-8257-a6ba5c70e34d','80041dfd-43e9-4cc4-8257-a6ba5c70e34d');`,
     );
     await queryRunner.query(
       `INSERT INTO "user_role_privilege"("role_id", "privilege_id") Values('557f1dfd-43e9-4cc4-8257-a6ba5c70e34d','80051dfd-43e9-4cc4-8257-a6ba5c70e34d');`,
@@ -390,12 +380,6 @@ export class InsertData1623310398553 implements MigrationInterface {
     );
 
     //For guest user , and respective permission id
-    await queryRunner.query(
-      `INSERT INTO "user_role_privilege"("role_id", "privilege_id") Values('558f1dfd-43e9-4cc4-8257-a6ba5c70e34d','80011dfd-43e9-4cc4-8257-a6ba5c70e34d');`,
-    );
-    await queryRunner.query(
-      `INSERT INTO "user_role_privilege"("role_id", "privilege_id") Values('558f1dfd-43e9-4cc4-8257-a6ba5c70e34d','80041dfd-43e9-4cc4-8257-a6ba5c70e34d');`,
-    );
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
@@ -406,6 +390,7 @@ export class InsertData1623310398553 implements MigrationInterface {
     await queryRunner.query(`ALTER TABLE "videos" DROP CONSTRAINT "FK_d20b5471e94253b5c2f194016b7"`);
     await queryRunner.query(`ALTER TABLE "images" DROP CONSTRAINT "FK_ad3659fcd491b5a0bb65af47b5f"`);
     await queryRunner.query(`ALTER TABLE "team_spirit" DROP CONSTRAINT "FK_c258101a9e329fc1cf1ca460195"`);
+    await queryRunner.query(`ALTER TABLE "team_spirit_median" DROP CONSTRAINT "FK_103f28512266352104e3edea624"`);
     await queryRunner.query(`ALTER TABLE "sprint_snapshot_metric" DROP CONSTRAINT "FK_32ee1ecd7212edf6dad1a86ee6a"`);
     await queryRunner.query(`ALTER TABLE "sprint_snapshot_metric" DROP CONSTRAINT "FK_ea96cf0fa988134725f6ad0984b"`);
     await queryRunner.query(`ALTER TABLE "sprint_snapshot" DROP CONSTRAINT "FK_fb748d58ef594e8505aa9970d98"`);
@@ -428,6 +413,7 @@ export class InsertData1623310398553 implements MigrationInterface {
     await queryRunner.query(`DROP TABLE "videos"`);
     await queryRunner.query(`DROP TABLE "images"`);
     await queryRunner.query(`DROP TABLE "team_spirit"`);
+    await queryRunner.query(`DROP TABLE "team_spirit_median"`);
     await queryRunner.query(`DROP TABLE "sprint_snapshot_metric"`);
     await queryRunner.query(`DROP TABLE "sprint_snapshot"`);
     await queryRunner.query(`DROP TABLE "sprint_metric"`);

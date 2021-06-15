@@ -31,8 +31,8 @@ export class VideosCrudService extends TypeOrmCrudService<Videos> {
    */
   async getPathOfVideos(teamId: string): Promise<VideoResponse[] | undefined> {
     const result = await this.videoRepository.find({ where: { team: teamId } });
-    console.log('Videos**********************');
-    console.log(result);
+    // console.log('Videos**********************');
+    // console.log(result);
     if (result == null) {
       return undefined;
     } else {

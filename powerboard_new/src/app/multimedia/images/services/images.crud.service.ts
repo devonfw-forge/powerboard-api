@@ -34,8 +34,8 @@ export class ImagesCrudService extends TypeOrmCrudService<Images> {
     if (result == null) {
       return undefined;
     }
-    console.log('Images*******************');
-    console.log(result);
+    // console.log('Images*******************');
+    // console.log(result);
     let i = 0;
     let dailyMeetingArray = [];
     for (i = 0; i < result.length; i++) {

@@ -5,7 +5,7 @@ import { ADCenter } from '../../../dashboard/ad-center/model/entities/ad-center.
 
 @Entity()
 export class Team extends BaseEntity {
-  @Column('varchar', { length: 255, nullable: false })
+  @Column('varchar', { length: 255, unique: true, nullable: false })
   name!: string;
 
   @Column('varchar', { name: 'team_code', length: 255, nullable: false, unique: true })
