@@ -71,10 +71,9 @@ export class TeamCrudService extends TypeOrmCrudService<Team> {
     console.log(privilegeList);
     console.log('->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>');
 
-    if (privilegeList.includes('view_dashboard')) {
-      this.dash = await this.getDashboardByTeamId(teams.id);
-      this.powerboardResponse.dashboard = this.dash;
-    }
+    this.dash = await this.getDashboardByTeamId(teams.id);
+    this.powerboardResponse.dashboard = this.dash;
+
     this.powerboardResponse = await this.getOtherComponentsDetailByTeamId(
       teams.id,
       privilegeList,
@@ -208,13 +207,12 @@ export class TeamCrudService extends TypeOrmCrudService<Team> {
       powerboardResponse.teamLinks = teamLink;
     }
 
-    if (privilegeList.includes('view_multimedia')) {
-      const images: ImageResponse[] | undefined = await this.imageService.getPathOfImage(teamId);
-      powerboardResponse.images = images;
+    const images: ImageResponse[] | undefined = await this.imageService.getPathOfImage(teamId);
+    powerboardResponse.images = images;
 
-      const videos: VideoResponse[] | undefined = await this.videoService.getPathOfVideos(teamId);
-      powerboardResponse.videos = videos;
-    }
+    const videos: VideoResponse[] | undefined = await this.videoService.getPathOfVideos(teamId);
+    powerboardResponse.videos = videos;
+
     return powerboardResponse;
   }
 
