@@ -1,7 +1,7 @@
-import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Delete, Get, Param, Post, Put, Response } from '@nestjs/common';
 import { AddTeam } from '../../../shared/interfaces/addTeam.interface';
 import { UserRolesDTO } from '../../user/model/dto/UserRolesDTO';
-
+import { Response as eResponse } from 'express';
 import { AdminService } from '../services/admin.service';
 
 @Controller('admin')
@@ -50,8 +50,13 @@ export class AdminController {
 
   //Updating the role of user by system admin
   @Put('update/userRole')
-  async updateUserRole(@Body() updateRole: any): Promise<boolean> {
-    return await this.adminService.updateUserRole(updateRole);
+  async updateUserRole(@Body() updateRole: any, @Response() res: eResponse): Promise<void> {
+    const result = await this.adminService.updateUserRole(updateRole);
+    if (result) {
+      res.status(200).send();
+    } else {
+      throw new BadRequestException('UserId & TeamId combination not found');
+    }
   }
 
   //get all the available user roles

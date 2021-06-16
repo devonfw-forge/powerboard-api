@@ -61,7 +61,7 @@ export class AuthService {
       const accessToken = await this.signIn(user.username, user.password);
       const userTeam = await this.userService.findUserTeamsByUserId(payload.id);
       if (userTeam[0].team == null) {
-        return this.systemAndGuestLogin(userTeam[0], accessToken);
+        return this.systemAdminGuestUserLogin(userTeam[0], accessToken);
       } else {
         return this.teamMemberTeamAdminLogin(userTeam, accessToken, payload);
       }
@@ -71,9 +71,9 @@ export class AuthService {
   }
 
   /**
-   * systemAndGuestLogin method will return LoginResponse for system and guest login
+   * systemAdminGuestUserLogin method will return LoginResponse for system admin and guest user login
    */
-  async systemAndGuestLogin(userTeam: UserTeam, accessToken: string) {
+  async systemAdminGuestUserLogin(userTeam: UserTeam, accessToken: string) {
     let loginResponse: LoginResponse = {} as LoginResponse;
     loginResponse.userId = userTeam.user.id;
     loginResponse.isPasswordChanged = userTeam.user.isPasswordChanged;

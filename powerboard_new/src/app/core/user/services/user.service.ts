@@ -122,13 +122,16 @@ export class UserService extends TypeOrmCrudService<User> {
    * @param {teamId} .Takes teamId as input
    * @return {TeamsMemberResponse[]} .Return array of team member as response
    */
-  async getAllMemberOfTeam(teamId: any) {
+  async getAllMemberOfTeam(teamId: string) {
     const result = (await this.userTeamRepository.find({ where: { team: teamId } })) as UserTeam[];
     let teamsMemberResponse: TeamsMemberResponse = {} as TeamsMemberResponse;
     let teamMemberList = [],
       i;
     for (i = 0; i < result.length; i++) {
       teamsMemberResponse.userTeamId = result[i].id;
+      teamsMemberResponse.userId = result[i].user.id;
+      teamsMemberResponse.teamId = result[i].team.id;
+      teamsMemberResponse.roleId = result[i].role.id;
       teamsMemberResponse.userName = result[i].user.username;
       teamsMemberResponse.email = result[i].user.email;
       // teamsMemberResponse.accessRole = result[i].accessRole;
