@@ -4,9 +4,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { TeamSpiritCrudService } from './services/team-spirit.crud.service';
 import { TeamSpiritCrudController } from './controllers/team-spirit.crud.controller';
 import { Sprint } from '../sprint/model/entities/sprint.entity';
+import { Team } from '../../teams/model/entities/team.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([TeamSpirit, Sprint]),HttpModule],
+  imports: [TypeOrmModule.forFeature([TeamSpirit, Sprint, Team]), HttpModule],
   providers: [TeamSpiritCrudService],
   controllers: [TeamSpiritCrudController],
   exports: [TeamSpiritCrudService],
