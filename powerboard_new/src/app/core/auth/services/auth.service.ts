@@ -49,7 +49,7 @@ export class AuthService {
   }
 
   /**
-   * login method response is dynamic , means one 1 user -1 team , it will return LoginResponse
+   * login method response is dynamic  , it will return LoginResponse
    * 1-n , it will return list of teams
    * @param {LoginDTO} .Takes loginDTO as input (username and password)
    * @return {any}
@@ -61,35 +61,20 @@ export class AuthService {
       const accessToken = await this.signIn(user.username, user.password);
       const userTeam = await this.userService.findUserTeamsByUserId(payload.id);
       if (userTeam[0].team == null) {
-        if (userTeam[0].role.roleName == 'system_admin') {
-               return this.systemLogin(userTeam[0],accessToken)
-        } else {
-          return this.guestLogin(userTeam[0], accessToken);
-        }
+        return this.systemAndGuestLogin(userTeam[0], accessToken);
       } else {
         return this.teamMemberTeamAdminLogin(userTeam, accessToken, payload);
       }
     } else {
-      throw new UnauthorizedException('Wrong username or password');
+      throw new UnauthorizedException('Wrong username or password, Please try again');
     }
   }
 
-  async guestLogin(userTeam: UserTeam, accessToken: string) {
+  /**
+   * systemAndGuestLogin method will return LoginResponse for system and guest login
+   */
+  async systemAndGuestLogin(userTeam: UserTeam, accessToken: string) {
     let loginResponse: LoginResponse = {} as LoginResponse;
-
-    loginResponse.userId = userTeam.user.id;
-    loginResponse.isPasswordChanged = userTeam.user.isPasswordChanged;
-    loginResponse.My_Center = undefined;
-    loginResponse.My_Team = [];
-    loginResponse.ADC_List = await this.centerService.getAllCenters();
-    loginResponse.privileges = await this.userService.getAllPrivileges(userTeam.user.id);
-    loginResponse.Teams_In_ADC = await this.teamService.getTeamsByCenterId(loginResponse.ADC_List[0].centerId);
-    return { loginResponse, accessToken };
-  }
-
-  async systemLogin(userTeam: UserTeam, accessToken: string) {
-    let loginResponse: LoginResponse = {} as LoginResponse;
-
     loginResponse.userId = userTeam.user.id;
     loginResponse.isPasswordChanged = userTeam.user.isPasswordChanged;
     loginResponse.My_Center = undefined;
@@ -100,13 +85,14 @@ export class AuthService {
     return { loginResponse, accessToken };
   }
 
+  /**
+   * teamMemberTeamAdminLogin method will return LoginResponse for team member and team admin login
+   */
   async teamMemberTeamAdminLogin(userTeam: UserTeam[], accessToken: string, payload: User) {
-    let loginResponse: LoginResponse = {} as LoginResponse;
     let teamsDTOArray = [],
       i;
     if (userTeam.length >= 1) {
       let teamsWithinUser: MyProject = {} as MyProject;
-
       for (i = 0; i < userTeam.length; i++) {
         teamsWithinUser.teamId = userTeam[i].team.id;
         teamsWithinUser.teamName = userTeam[i].team.name;
@@ -117,21 +103,35 @@ export class AuthService {
         teamsWithinUser = {} as MyProject;
       }
       let teamId = teamsDTOArray[0].teamId;
-      loginResponse.userId = payload.id;
-      loginResponse.isPasswordChanged = payload.isPasswordChanged;
-      loginResponse.My_Center = await this.teamService.myCenter(teamId);
-      loginResponse.My_Team = teamsDTOArray;
-      loginResponse.Teams_In_ADC = await this.teamService.viewTeamsInADC(teamId);
-      loginResponse.ADC_List = await this.centerService.getAllCenters();
-      loginResponse.privileges= [];
+      const loginResponse = await this.loginDetailsForTeamMemberAdmin(teamId, teamsDTOArray, payload);
       return { loginResponse, accessToken };
     }
   }
-  //Further call to UserService
+  /**
+   * loginDetailsForTeamMemberAdmin method will return LoginResponse for team member and team admin login
+   */
+  async loginDetailsForTeamMemberAdmin(teamId: string, teamsDTOArray: MyProject[], payload: User) {
+    let loginResponse: LoginResponse = {} as LoginResponse;
+    loginResponse.userId = payload.id;
+    loginResponse.isPasswordChanged = payload.isPasswordChanged;
+    loginResponse.My_Center = await this.teamService.myCenter(teamId);
+    loginResponse.My_Team = teamsDTOArray;
+    loginResponse.Teams_In_ADC = await this.teamService.viewTeamsInADC(teamId);
+    loginResponse.ADC_List = await this.centerService.getAllCenters();
+    loginResponse.privileges = [];
+    return loginResponse;
+  }
+
+  /**
+   * register method will add the user except guest user
+   */
   register(user: UserDTO): Promise<User> {
     return this.userService.registerUser(user);
   }
 
+  /**
+   * addGuest method will add the guest in powerboard
+   */
   addGuest(guest: AddGuestDTO): Promise<User> {
     return this.userService.addGuest(guest);
   }

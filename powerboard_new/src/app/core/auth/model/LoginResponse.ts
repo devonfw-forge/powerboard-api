@@ -5,10 +5,10 @@ import { MyProject } from '../../user/model/dto/my_project.interface';
 
 export interface LoginResponse {
   userId: string;
-  isPasswordChanged:boolean;
-  My_Center:MyCenter|undefined;
-  My_Team?: MyProject[] | undefined;
-  Teams_In_ADC: TeamsInADC[] | undefined;
-  ADC_List: ViewCentersResponse[] | undefined;
-  privileges:string[]
+  isPasswordChanged: boolean;
+  My_Center: MyCenter | undefined;
+  My_Team?: MyProject[];
+  Teams_In_ADC: TeamsInADC[];
+  ADC_List: ViewCentersResponse[];
+  privileges: string[];
 }

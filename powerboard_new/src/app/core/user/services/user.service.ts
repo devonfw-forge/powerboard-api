@@ -202,7 +202,7 @@ export class UserService extends TypeOrmCrudService<User> {
     if (userTeam) {
       return this.getPrivilegesList(userTeam);
     } else {
-      throw new BadRequestException("user team does'nt find");
+      throw new NotFoundException('privileges not found');
     }
   }
   async changePassword(changePassword: ChangePasswordDTO): Promise<any> {
