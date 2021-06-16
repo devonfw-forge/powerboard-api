@@ -18,10 +18,21 @@ import { diskStorage } from 'multer';
 import { v4 as uuidv4 } from 'uuid';
 import path = require('path');
 import { join } from 'path';
-
+//import fs from 'fs';
 export const storage = {
   storage: diskStorage({
-    destination: './uploads/profileimages',
+    // destination: './uploads/profileimages',
+    destination: (req, file, cb) => {
+      const id = req.params.teamId;
+      console.log(file);
+      console.log('Inside Destination');
+      console.log(req.params.teamId);
+      const path = `./uploads/multimedia/${id}/images`;
+      //  fs.mkdir(path)
+      //fs.mkdirSync(path, { recursive: true })
+      console.log('This is path  ' + path);
+      return cb(null, path);
+    },
     filename: (req, file, cb) => {
       console.log(req);
       const filename: string = path.parse(file.originalname).name.replace(/\s/g, '') + uuidv4();

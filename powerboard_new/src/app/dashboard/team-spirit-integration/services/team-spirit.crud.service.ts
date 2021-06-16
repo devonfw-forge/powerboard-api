@@ -159,50 +159,26 @@ export class TeamSpiritCrudService extends TypeOrmCrudService<TeamSpirit> {
   }
 
   //add a team to the team spirit
-  async addProjectToTeamSpirit(projectName: string): Promise<any> {
-    // const team = await this.http.get(this.newTeamSpiritEndpointURL + 'team/' + projectName, { headers: { Authorization: 'Bearer ' + this.config.headers.Authorization.token } })
-    //   .toPromise()
-    //   .then(resp => {
-    //     console.log("Finding the team")
-    //     console.log(resp.data)
-    //     return resp.data
-    //   });
-    // if (team) {
-    //   return "Team " + projectName + " already exists"
-    // }
-
-    console.log('Adding the project to Team Spirit');
-    let projectDTO = new TeamDTO();
-    projectDTO.name = projectName;
-    projectDTO.frequencey = 0;
-    projectDTO.num_mumbers = 0;
-    projectDTO.startDate = '';
-    console.log(this.config.headers.Authorization);
-    const createdTeam = await this.http
-      .post(this.newTeamSpiritEndpointURL + 'team/create', projectDTO, {
-        headers: { Authorization: 'Bearer ' + this.config.headers.Authorization.token },
-      })
-      .toPromise()
-      .then(resp => {
-        console.log(resp.data);
-        return resp.data;
-      })
-      .catch(error => {
-        console.log(error.response);
-      });
-    // .post(this.newTeamSpiritEndpointURL + 'team/create', projectDTO, {
-    //   headers:
-    //   {
-    //     'Content-Type': 'application/json',
-    //     'Authorization': 'Bearer ' + this.config.headers.Authorization.token
-    //   }
-    // })
-    //.post(this.newTeamSpiritEndpointURL + 'team/create', projectDTO, { headers: this.config.headers })
-
-    // .catch(error => {
-    //   return error.response;
-    // });
-    return createdTeam;
+  async addTeamToTeamSpirit(team: TeamDTO): Promise<any> {
+    const teamExisted = await this.getTeam(team.name);
+    if (teamExisted) {
+      return 'Team ' + team.name + ' already exists';
+    } else {
+      const createdTeam = await this.http
+        .post(this.newTeamSpiritEndpointURL + 'team/create', team, {
+          headers: { Authorization: 'Bearer ' + this.config.headers.Authorization.token },
+        })
+        .toPromise()
+        .then(resp => {
+          console.log(resp.data);
+          return resp.data;
+        });
+      // .catch(error => {
+      //   console.log(error.response.data);
+      //   return error.response.data;
+      // });
+      return createdTeam;
+    }
   }
 
   //update configuration of a team
@@ -214,15 +190,10 @@ export class TeamSpiritCrudService extends TypeOrmCrudService<TeamSpirit> {
     //   return "Team " + projectName + " does not exist."
     // }
     //else {
-    console.log('Inside Update Team Spirit Configuration');
-    let teamDTO = new TeamDTO();
-    teamDTO.num_mumbers = newGroup.num_mumbers;
-    teamDTO.name = projectName;
-    teamDTO.startDate = newGroup.startDate;
-    teamDTO.frequencey = newGroup.frequencey;
+    newGroup.name = projectName;
     console.log(this.config.headers.Authorization.token);
     return await this.http
-      .put(this.newTeamSpiritEndpointURL + 'team/' + JSON.stringify(projectName), teamDTO, {
+      .put(this.newTeamSpiritEndpointURL + 'team/' + projectName, newGroup, {
         headers: { Authorization: 'Bearer ' + this.config.headers.Authorization.token },
       })
       //return this.http.put(this.newTeamSpiritEndpointURL + 'team/' + projectName, teamDTO, { headers: { Authorization: 'Bearer ' + this.config.headers.Authorization } })
@@ -241,9 +212,6 @@ export class TeamSpiritCrudService extends TypeOrmCrudService<TeamSpirit> {
       .toPromise()
       .then(resp => {
         return resp.data;
-      })
-      .catch(error => {
-        return error.response;
       });
   }
 
@@ -304,5 +272,17 @@ export class TeamSpiritCrudService extends TypeOrmCrudService<TeamSpirit> {
 
     //console.log(allSurveyResult);
     return allSurveyResult;
+  }
+
+  async getAllTeams(): Promise<any> {
+    const allTeams = await this.http
+      .get(this.newTeamSpiritEndpointURL + 'teams', {
+        headers: { Authorization: 'Bearer ' + this.config.headers.Authorization.token },
+      })
+      .toPromise()
+      .then(resp => {
+        return resp.data;
+      });
+    return allTeams;
   }
 }

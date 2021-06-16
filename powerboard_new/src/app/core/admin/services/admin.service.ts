@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { TeamCrudService } from '../../../teams/services/team.crud.service';
 import { AddTeam } from '../../../shared/interfaces/addTeam.interface';
 import { UserService } from '../../user/services/user.service';
-import { TeamSpiritCrudService } from '../../../dashboard/team-spirit-integration/services/team-spirit.crud.service';
+//import { TeamSpiritCrudService } from '../../../dashboard/team-spirit-integration/services/team-spirit.crud.service';
 
 import { UserRolesDTO } from '../../user/model/dto/UserRolesDTO';
 
@@ -11,8 +11,8 @@ export class AdminService {
   constructor(
     private readonly teamService: TeamCrudService,
     private readonly userService: UserService,
-    private readonly teamSpiritService: TeamSpiritCrudService,
-  ) {}
+  ) //private readonly teamSpiritService: TeamSpiritCrudService,
+  {}
 
   /**
    * addTeamByAdmin method will add team , and system admin can do so
@@ -22,7 +22,7 @@ export class AdminService {
   async addTeamByAdmin(addTeam: AddTeam): Promise<any> {
     const result = await this.teamService.addTeam(addTeam);
     if (result) {
-      this.teamSpiritService.addProjectToTeamSpirit(addTeam.teamName);
+      // this.teamSpiritService.addTeamToTeamSpirit(addTeam.teamName);
     }
   }
 

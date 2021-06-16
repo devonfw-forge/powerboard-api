@@ -17,17 +17,6 @@ import { TeamSpiritUserDTO } from '../model/dto/TeamSpiritUserDTO';
 export class TeamSpiritCrudController {
   constructor(public teamSpiritService: TeamSpiritCrudService) {}
 
-  // @Get('/gauge')
-  // //@UseGuards(AuthGuard('jwt'))
-  // async getTeamSpiritValidation(@Res() res: any) {
-  //   return res.status(HttpStatus.OK).json('[{}]');
-  // }
-
-  @Get('config')
-  checkingConfig() {
-    return this.teamSpiritService.checkingConfig();
-  }
-
   @Post('/login')
   async loginToTeamSpirit(@Body() userDTO: TeamSpiritUserDTO): Promise<string> {
     console.log(userDTO.Email + ' ' + userDTO.Password);
@@ -46,30 +35,35 @@ export class TeamSpiritCrudController {
     return await this.teamSpiritService.addUserToTeam(userDTO, teamName);
   }
 
-  @Post('create/:projectName')
-  async addProjectToTeamSpirit(@Param('projectName') projectName: string): Promise<any> {
-    return await this.teamSpiritService.addProjectToTeamSpirit(projectName);
+  @Post('/create')
+  async addTeamToTeamSpirit(@Body() team: TeamDTO): Promise<any> {
+    return await this.teamSpiritService.addTeamToTeamSpirit(team);
   }
 
-  @Get('getTeam/:teamName')
+  @Get('/getTeam/:teamName')
   async getTeam(@Param('teamName') teamName: string): Promise<any> {
     return await this.teamSpiritService.getTeam(teamName);
   }
 
-  @Get('surveyResult/:projectName')
+  @Get('/surveyResult/:projectName')
   async getTeamSpiritFromSurvery(@Param('projectName') projectName: string): Promise<any> {
     const teamSpirit = await this.teamSpiritService.getTeamSpiritFromSurvey(projectName);
     return teamSpirit;
   }
 
-  @Put('updateTeam/:projectName')
+  @Put('/updateTeam/:projectName')
   async updateTeamSpiritConfiguration(@Body() newGroup: TeamDTO, @Param('projectName') projectName: string) {
     const updatedTeamSpirit = await this.teamSpiritService.updateTeamSpiritConfiguration(newGroup, projectName);
     return updatedTeamSpirit;
   }
 
-  @Get('getAllSurveyResult')
+  @Get('/getAllSurveyResult')
   async getAllSurvey(): Promise<any> {
     return await this.teamSpiritService.getAllSurveyResult();
+  }
+
+  @Get('/getAllTeams')
+  async getAllTeams(): Promise<any> {
+    return await this.teamSpiritService.getAllTeams();
   }
 }
