@@ -10,8 +10,13 @@ export class AdminController {
 
   //Adding team by System Admin
   @Post('team/addTeam')
-  async addTeam(@Body() addTeam: AddTeam): Promise<any> {
-    await this.adminService.addTeamByAdmin(addTeam);
+  async addTeam(@Body() addTeam: AddTeam, @Response() res: eResponse): Promise<any> {
+    const result = await this.adminService.addTeamByAdmin(addTeam);
+    if (result) {
+      res.status(201).send('successfully added the team');
+    } else {
+      throw new BadRequestException('Your request cannot be processed, Sorry for inconvenience');
+    }
   }
 
   //Deleting the team , system admin can do it

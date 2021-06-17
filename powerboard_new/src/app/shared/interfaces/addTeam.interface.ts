@@ -8,5 +8,5 @@ export interface AddTeam {
   ad_center: ADCenter;
   member_number?: number;
   frequency?: number;
-  start_date: string;
+  start_date?: string;
 }

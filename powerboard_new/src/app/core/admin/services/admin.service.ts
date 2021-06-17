@@ -10,9 +10,8 @@ import { UserRolesDTO } from '../../user/model/dto/UserRolesDTO';
 export class AdminService {
   constructor(
     private readonly teamService: TeamCrudService,
-    private readonly userService: UserService,
-  ) //private readonly teamSpiritService: TeamSpiritCrudService,
-  {}
+    private readonly userService: UserService, //private readonly teamSpiritService: TeamSpiritCrudService,
+  ) {}
 
   /**
    * addTeamByAdmin method will add team , and system admin can do so
@@ -24,6 +23,7 @@ export class AdminService {
     if (result) {
       // this.teamSpiritService.addTeamToTeamSpirit(addTeam.teamName);
     }
+    return result;
   }
 
   /**

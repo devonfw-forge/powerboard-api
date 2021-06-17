@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { TypeOrmCrudService } from '@nestjsx/crud-typeorm';
 import { ClientStatusResponse } from '../../dashboard/client-status/model/dto/ClientStatusResponse';
@@ -53,29 +53,34 @@ export class TeamCrudService extends TypeOrmCrudService<Team> {
   dash: DashBoardResponse = {} as DashBoardResponse;
   /**
    * getPowerboardByUserId method will retrieve all KPI's +breadcrumb + dump_BU
-   * @param {userId} userId Takes userId as input
-   * @return {LoginResponse} Dashboard + Electron board as well as breadcrumb and dumb BU List
+   * @param {userId,teamId} userId and TeamIdTakes userId as input
+   * @return {PowerboardResponse} Dashboard + Electron board as well as breadcrumb and dumb BU List
    */
   async getPowerboardByTeamId(userTeam: UserTeamDTO): Promise<PowerboardResponse> {
     const teamId = userTeam.teamId;
     const userId = userTeam.userId;
-
     const teams: Team = (await this.teamRepository.findOne({ where: { id: teamId } })) as Team;
+    if (!teams) {
+      throw new NotFoundException('Team not found');
+    }
+    const isAdminOrGuest = await this.userService.isAdminOrGuest(userId);
+    const privilegeList = await this.userService.getTeamPrivileges(userId, teamId, isAdminOrGuest);
+    return this.getPowerboardResponseForTeam(teams, privilegeList, isAdminOrGuest);
+  }
+  /**
+   * getPowerboardResponseForTeam method will return powerboard response realted to team
+   */
+  async getPowerboardResponseForTeam(
+    teams: Team,
+    privilegeList: string[],
+    isAdminOrGuest: boolean,
+  ): Promise<PowerboardResponse> {
     this.powerboardResponse.team_id = teams.id;
     this.powerboardResponse.team_name = teams.name;
     this.powerboardResponse.center = teams.ad_center.name;
     this.powerboardResponse.team_code = teams.teamCode;
     this.powerboardResponse.logo = teams.logo;
-    const isAdminOrGuest = await this.userService.isAdminOrGuest(userId);
-    console.log(isAdminOrGuest);
-    console.log('->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>');
-    const privilegeList = await this.userService.getTeamPrivileges(userId, teamId, isAdminOrGuest);
-    console.log(privilegeList);
-    console.log('->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>');
-
-    this.dash = await this.getDashboardByTeamId(teams.id);
-    this.powerboardResponse.dashboard = this.dash;
-
+    this.powerboardResponse.dashboard = await this.getDashboardByTeamId(teams.id);
     this.powerboardResponse = await this.getOtherComponentsDetailByTeamId(
       teams.id,
       privilegeList,
@@ -86,11 +91,7 @@ export class TeamCrudService extends TypeOrmCrudService<Team> {
     } else {
       this.powerboardResponse.privileges = privilegeList;
     }
-
     return this.powerboardResponse;
-    // } else {
-    //   throw new NotFoundException('userId not found');
-    // }
   }
 
   /**
@@ -200,21 +201,17 @@ export class TeamCrudService extends TypeOrmCrudService<Team> {
     powerboardResponse: PowerboardResponse,
   ): Promise<PowerboardResponse> {
     if (privilegeList.includes('view_meeting_links')) {
-      console.log('llllllllllllllllllllllllllllllllllllll');
       const dailyMeeting: DailyMeetingResponse[] = await this.dailyMeetingService.getDailyLinks(teamId);
       powerboardResponse.meetingLinks = dailyMeeting;
     } else {
-      console.log('mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm');
       powerboardResponse.meetingLinks = [];
     }
-
     if (privilegeList.includes('view_team_links')) {
       const teamLink: TeamLinkResponse[] | undefined = await this.teamLinkService.getTeamLinks(teamId);
       powerboardResponse.teamLinks = teamLink;
     } else {
       powerboardResponse.teamLinks = [];
     }
-
     const images: ImageResponse[] | undefined = await this.imageService.getPathOfImage(teamId);
     powerboardResponse.images = images;
 
@@ -233,7 +230,7 @@ export class TeamCrudService extends TypeOrmCrudService<Team> {
     const value = addteam.teamCode;
     const result = await this.teamRepository.findOne({ where: { teamCode: value } });
     if (result != null) {
-      console.log('team exists');
+      throw new BadRequestException('team already exists');
     } else {
       let team = new Team();
       team.name = addteam.teamName;
