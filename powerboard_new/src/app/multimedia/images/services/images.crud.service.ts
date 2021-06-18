@@ -29,22 +29,20 @@ export class ImagesCrudService extends TypeOrmCrudService<Images> {
    * @param {teamId} .Takes teamId as input
    * @return {TeamLinks} ImageResponse[] as response for that team
    */
-  async getPathOfImage(teamId: string): Promise<ImageResponse[] | undefined> {
+  async getImagesForTeam(teamId: string): Promise<ImageResponse[]> {
+    let imageArray = [] as ImageResponse[],
+      i;
     const result = await this.imageRepository.find({ where: { team: teamId } });
     if (result == null) {
-      return undefined;
+      return imageArray;
     }
-    // console.log('Images*******************');
-    // console.log(result);
-    let i = 0;
-    let dailyMeetingArray = [];
     for (i = 0; i < result.length; i++) {
       this.imageResponse.ImageId = result[i].id;
       this.imageResponse.ImagePath = result[i].image;
-      dailyMeetingArray.push(this.imageResponse);
+      imageArray.push(this.imageResponse);
       this.imageResponse = {} as ImageResponse;
     }
-    return dailyMeetingArray;
+    return imageArray;
   }
 
   /**

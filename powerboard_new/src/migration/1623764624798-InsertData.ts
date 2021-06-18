@@ -38,6 +38,9 @@ export class InsertData1623764624798 implements MigrationInterface {
       `INSERT INTO "daily_meeting" ("id", "type","title", "daily_meeting_link" ,"daily_team_id") VALUES ('43000bf7-ada7-495c-8019-8d7ab76d490e' ,'TEAMS','Stand Up','https://teams.microsoft.com/l/meetup-join/19%3ameeting_NjY3MzIyNmYtZTg1YS00MzBjLTk0NmUtMTk4MWE0OWJjNjhl%40thread.v2/0?context=%7b%22Tid%22%3a%2276a2ae5a-9f00-4f6b-95ed-5d33d77c4d61%22%2c%22Oid%22%3a%22d6dd7c98-546f-4dcb-9c39-39c8eeff8a24%22%7d','46455bf7-ada7-495c-8019-8d7ab76d488e');`,
     );
     await queryRunner.query(
+      `INSERT INTO "daily_meeting" ("id", "type","title", "daily_meeting_link" ,"daily_team_id") VALUES ('43001bf7-ada7-495c-8019-8d7ab76d490e' ,'TEAMS','Stand Up','https://teams.microsoft.com/l/meetup-join/19%3ameeting_NjY3MzIyNmYtZTg1YS00MzBjLTk0NmUtMTk4MWE0OWJjNjhl%40thread.v2/0?context=%7b%22Tid%22%3a%2276a2ae5a-9f00-4f6b-95ed-5d33d77c4d61%22%2c%22Oid%22%3a%22d6dd7c98-546f-4dcb-9c39-39c8eeff8a24%22%7d','46455bf7-ada7-495c-8019-8d7ab76d490e');`,
+    );
+    await queryRunner.query(
       `INSERT INTO "team_links" ("id", "title", "link" ,"team_id") VALUES ('51055bf7-ada6-495c-8019-8d7ab76d488e','Jira Cloud','https://powerboard-capgemini.atlassian.net/jira/software/projects/DUM/boards/3','46455bf7-ada7-495c-8019-8d7ab76d488e');`,
     );
     await queryRunner.query(
@@ -45,43 +48,48 @@ export class InsertData1623764624798 implements MigrationInterface {
     );
 
     await queryRunner.query(
-      `INSERT INTO "images" ("id", "image", "image_team_id") VALUES ('cf959b61-58b1-4985-92e5-4d5f9f5afa87' ,'uploads\\profileimages\\chara5ac33c9-e152-4522-9ce5-e902fe5f2d1c.jpg','46455bf7-ada7-495c-8019-8d7ab76d488e');`,
-    );
-    await queryRunner.query(
-      `INSERT INTO "images" ("id", "image", "image_team_id") VALUES ('117ae945-4803-427c-aeb4-410081c88f88' ,'uploads\\profileimages\\france-capgeminife447381-c7fb-4f7a-a02a-e0e727cd7393.jpg','46455bf7-ada7-495c-8019-8d7ab76d488e');`,
-    );
-    await queryRunner.query(
-      `INSERT INTO "images" ("id", "image", "image_team_id") VALUES ('e732a995-4c70-4ef3-ab71-041f458d0d83' ,'uploads\\profileimages\\altrandd662280-77f7-4884-98c1-03e42dbee263.jpg','46455bf7-ada7-495c-8019-8d7ab76d488e');`,
-    );
-    await queryRunner.query(
-      `INSERT INTO "images" ("id", "image", "image_team_id") VALUES ('6da523cf-b1ba-4731-8da7-0d989a4f00f4' ,'uploads\\profileimages\\bannered66c18c-a4de-4da6-8cb9-005cddc9087e.jpg','46455bf7-ada7-495c-8019-8d7ab76d488e');`,
-    );
-    await queryRunner.query(
-      `INSERT INTO "images" ("id", "image", "image_team_id") VALUES ('9494e8ed-e68a-432e-86ea-e37495fd23d0' ,'uploads\\profileimages\\Capgeminif3ddc40c-2f8d-4f7b-beee-f5bc8388239f.jpg','46455bf7-ada7-495c-8019-8d7ab76d488e');`,
-    );
-    await queryRunner.query(
-      `INSERT INTO "images" ("id", "image", "image_team_id") VALUES ('181d444b-b42c-4f7f-9834-0603e8b328b0' ,'uploads\\profileimages\\manyata_collage2c648b45-37c1-448d-a85d-3a4de68f941b.jpg','46455bf7-ada7-495c-8019-8d7ab76d488e');`,
+      `INSERT INTO "team_links" ("id", "title", "link" ,"team_id") VALUES ('51055bf9-ada5-495c-8019-8d7ab76d488e' ,'GitHub','https://github.com/devonfw-forge/powerboard-api/blob/develop-0.0.1/','46455bf7-ada7-495c-8019-8d7ab76d490e');`,
     );
 
     await queryRunner.query(
-      `INSERT INTO "images" ("id", "image", "image_team_id") VALUES ('3fd1997b-348f-48d0-91e4-d954fb1bd5ef' ,'uploads\\profileimages\\skybaeb6aaa-5d3e-4b1f-b4f5-72eb569afbd9.jpg','46455bf7-ada7-495c-8019-8d7ab76d488e');`,
+      `INSERT INTO "images" ("id", "image", "image_team_id") VALUES ('aaad19f7-1b66-44aa-a443-4fcdd173f385' ,'bannerd8a32383-b767-44e7-b48c-d15fbecc9a49.jpg','46455bf7-ada7-495c-8019-8d7ab76d488e');`,
     );
     await queryRunner.query(
-      `INSERT INTO "images" ("id", "image", "image_team_id") VALUES ('23dee64a-5382-4405-934a-680d98e97429' ,'uploads\\profileimages\\Winner57dbf7ec-fb7c-4246-a82b-b7439eadad6f.jpeg','46455bf7-ada7-495c-8019-8d7ab76d488e');`,
+      `INSERT INTO "images" ("id", "image", "image_team_id") VALUES ('89cbb47b-5454-440d-a0e8-98b681ed6f83' ,'Capgeminie399d4d7-5119-4c2b-b238-4275d2f7c5da.jpg','46455bf7-ada7-495c-8019-8d7ab76d488e');`,
+    );
+    await queryRunner.query(
+      `INSERT INTO "images" ("id", "image", "image_team_id") VALUES ('fbf8ea11-62a2-433a-936f-9fddfb90b1c6' ,'chare72e95bb-b552-425a-a051-b7dfc69efa0b.jpg','46455bf7-ada7-495c-8019-8d7ab76d488e');`,
+    );
+    await queryRunner.query(
+      `INSERT INTO "images" ("id", "image", "image_team_id") VALUES ('dc6a6a55-23f9-4edf-90e5-a18c6b07a0be' ,'dataf74b26af-7a68-42c9-94b8-b4ebc378dce1.jpg','46455bf7-ada7-495c-8019-8d7ab76d488e');`,
+    );
+    await queryRunner.query(
+      `INSERT INTO "images" ("id", "image", "image_team_id") VALUES ('8c4f8d5d-b3b7-4efb-868e-4336474094b3' ,'france-capgeminic4ba8e67-c56d-446d-814e-9ab149521959.jpg','46455bf7-ada7-495c-8019-8d7ab76d488e');`,
     );
 
     await queryRunner.query(
-      `INSERT INTO "videos" ("id", "content", "video_team_id") VALUES ('5121e15a-2d3d-44d8-9d4d-4c2a50dc426c' ,'uploads\\videos\\CapgeminiPurposeaf737d4e-a121-4781-b49a-86575b2886d3.mp4','46455bf7-ada7-495c-8019-8d7ab76d488e');`,
+      `INSERT INTO "images" ("id", "image", "image_team_id") VALUES ('73eaf00a-f1fe-4573-8cbb-324499c39431' ,'altrand72e3352-0353-4e5f-8fa3-5a25444f0c62.jpg','46455bf7-ada7-495c-8019-8d7ab76d490e');`,
     );
     await queryRunner.query(
-      `INSERT INTO "videos" ("id", "content", "video_team_id") VALUES ('d0bdc9da-0092-43fc-a9cb-220a63992b77','uploads\\videos\\CapgeminiValues9a20518c-e2d5-46a9-9c5d-9b5c72f66174.mp4','46455bf7-ada7-495c-8019-8d7ab76d488e');`,
+      `INSERT INTO "images" ("id", "image", "image_team_id") VALUES ('b76075b9-744b-46d8-adce-ed94efbdc91d' ,'manyata_collagedbd58693-3e4a-4e88-9b98-35db5f8b5582.jpg','46455bf7-ada7-495c-8019-8d7ab76d490e');`,
     );
     await queryRunner.query(
-      `INSERT INTO "videos" ("id", "content", "video_team_id") VALUES ('458e5d53-9513-4009-af1d-f5c06ba97839','uploads\\videos\\Capgemini_GetTheFutureYouWant18c0092d-d55f-4b6e-a191-ea25306e01d7.mp4','46455bf7-ada7-495c-8019-8d7ab76d488e');`,
+      `INSERT INTO "images" ("id", "image", "image_team_id") VALUES ('df6f2d70-cd9e-48dd-8040-e15fe0cd9e4d' ,'media-handler5eb3609d-b8ab-4c2d-abb0-0d434076c4e9.jpg','46455bf7-ada7-495c-8019-8d7ab76d490e');`,
+    );
+
+    await queryRunner.query(
+      `INSERT INTO "videos" ("id", "content", "video_team_id") VALUES ('79b90a96-bd52-4fab-9b8f-e119cf4e66ab' ,'CapgeminiPurpose1c42fff2-6884-40bd-a8f0-489552af140f.mp4','46455bf7-ada7-495c-8019-8d7ab76d488e');`,
     );
     await queryRunner.query(
-      `INSERT INTO "videos" ("id", "content", "video_team_id") VALUES ('716d642a-fbb8-4bae-9550-d05eeb77f2d9','uploads\\videos\\Servicesaaf35ae4-f5d3-4521-8abd-787dd9d218c9.mp4','46455bf7-ada7-495c-8019-8d7ab76d488e');`,
+      `INSERT INTO "videos" ("id", "content", "video_team_id") VALUES ('0176b6eb-6336-4efc-9710-edfc4af25a31' ,'CapgeminiValues499f846a-780c-4a9a-86c9-99d3055f7d1e.mp4','46455bf7-ada7-495c-8019-8d7ab76d488e');`,
     );
+    await queryRunner.query(
+      `INSERT INTO "videos" ("id", "content", "video_team_id") VALUES ('30b230a3-ad4f-4c3b-bfd1-1df1565cca55' ,'Capgemini_GetTheFutureYouWant8dac72f9-be9d-43ef-b94e-4f6fc3a076d6.mp4','46455bf7-ada7-495c-8019-8d7ab76d490e');`,
+    );
+    await queryRunner.query(
+      `INSERT INTO "videos" ("id", "content", "video_team_id") VALUES ('ced443de-abb9-43e5-8643-a8908bfe3462' ,'Servicesef81820c-6674-42ea-80e1-dc4513bbad52.mp4','46455bf7-ada7-495c-8019-8d7ab76d490e');`,
+    );
+
     await queryRunner.query(
       `INSERT INTO "visibility" ("id", "daily_meeting", "team_link","images","videos","visibility_team_id") VALUES ('52455bf8-ada5-495c-8019-8d7ab76d488e',true, true, true, true,'46455bf7-ada7-495c-8019-8d7ab76d488e');`,
     );
@@ -381,7 +389,6 @@ export class InsertData1623764624798 implements MigrationInterface {
 
     //For guest user , and respective permission id
   }
-
   public async down(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(`ALTER TABLE "user_role_privilege" DROP CONSTRAINT "FK_97a74e8a9913478806bd9258dea"`);
     await queryRunner.query(`ALTER TABLE "user_role_privilege" DROP CONSTRAINT "FK_b5953b98d1159f75a3156d071a9"`);

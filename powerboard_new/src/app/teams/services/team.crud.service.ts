@@ -212,10 +212,10 @@ export class TeamCrudService extends TypeOrmCrudService<Team> {
     } else {
       powerboardResponse.teamLinks = [];
     }
-    const images: ImageResponse[] | undefined = await this.imageService.getPathOfImage(teamId);
+    const images: ImageResponse[] | undefined = await this.imageService.getImagesForTeam(teamId);
     powerboardResponse.images = images;
 
-    const videos: VideoResponse[] | undefined = await this.videoService.getPathOfVideos(teamId);
+    const videos: VideoResponse[] | undefined = await this.videoService.getVideosForTeam(teamId);
     powerboardResponse.videos = videos;
 
     return powerboardResponse;

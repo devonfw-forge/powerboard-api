@@ -29,15 +29,13 @@ export class VideosCrudService extends TypeOrmCrudService<Videos> {
    * @param {teamId} .Takes teamId as input
    * @return {VideoResponse[]} VideoResponse[] as response for that team
    */
-  async getPathOfVideos(teamId: string): Promise<VideoResponse[] | undefined> {
+  async getVideosForTeam(teamId: string): Promise<VideoResponse[]> {
+    let videoResponseArray = [] as VideoResponse[],
+      i;
     const result = await this.videoRepository.find({ where: { team: teamId } });
-    // console.log('Videos**********************');
-    // console.log(result);
     if (result == null) {
-      return undefined;
+      return videoResponseArray;
     } else {
-      let i = 0;
-      let videoResponseArray = [];
       for (i = 0; i < result.length; i++) {
         this.videoResponse.videoId = result[i].id;
         this.videoResponse.videoPath = result[i].content;
