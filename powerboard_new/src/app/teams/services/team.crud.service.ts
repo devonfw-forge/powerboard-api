@@ -317,4 +317,8 @@ export class TeamCrudService extends TypeOrmCrudService<Team> {
     myCenter.centerName = result?.ad_center.name!;
     return myCenter;
   }
+
+  async findTeamById(teamId: string): Promise<Team> {
+    return (await this.teamRepository.findOne(teamId)) as Team;
+  }
 }
