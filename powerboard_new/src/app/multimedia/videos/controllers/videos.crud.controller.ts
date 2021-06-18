@@ -1,4 +1,14 @@
-import { Controller, Delete, Get, Param, Post, UploadedFile, UseInterceptors } from '@nestjs/common';
+import {
+  BadRequestException,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Response,
+  UploadedFile,
+  UseInterceptors,
+} from '@nestjs/common';
 import { Crud } from '@nestjsx/crud';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { CrudType } from '@devon4node/common/serializer';
@@ -9,6 +19,7 @@ import { v4 as uuidv4 } from 'uuid';
 import path = require('path');
 // import { join } from 'path';
 import { VideoResponse } from '../model/dto/VideoResponse';
+import { Response as eResponse } from 'express';
 
 const fs_1 = require('fs');
 export const storage = {
@@ -43,10 +54,18 @@ export class VideosCrudController {
 
   @Post('uploadVideo/:teamId')
   @UseInterceptors(FileInterceptor('file', storage))
-  async uploadVideo(@UploadedFile() file: Express.Multer.File, @Param('teamId') teamId: string): Promise<Object> {
+  async uploadVideo(
+    @UploadedFile() file: Express.Multer.File,
+    @Param('teamId') teamId: string,
+    @Response() res: eResponse,
+  ): Promise<any> {
     console.log(file);
     const result = this.videoService.setVideoPath(file.filename, teamId);
-    return result;
+    if (result) {
+      res.status(201).send();
+    } else {
+      throw new BadRequestException('Your request cannot be processed, Sorry for inconvenience');
+    }
   }
 
   @Get('getAllVideos/:teamId')

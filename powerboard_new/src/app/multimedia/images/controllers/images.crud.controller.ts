@@ -1,4 +1,14 @@
-import { Controller, Delete, Get, Param, Post, UploadedFile, UseInterceptors } from '@nestjs/common';
+import {
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  UploadedFile,
+  UseInterceptors,
+  Response,
+  BadRequestException,
+} from '@nestjs/common';
 import { Crud } from '@nestjsx/crud';
 import { CrudType } from '@devon4node/common/serializer';
 import { Images } from '../model/entities/image.entity';
@@ -8,6 +18,7 @@ import { diskStorage } from 'multer';
 import { v4 as uuidv4 } from 'uuid';
 import path = require('path');
 import { ImageResponse } from '../model/dto/ImageResponse';
+import { Response as eResponse } from 'express';
 // import { join } from 'path';
 const fs_1 = require('fs');
 export const storage = {
@@ -41,11 +52,19 @@ export class ImagesCrudController {
 
   @Post('uploadImage/:teamId')
   @UseInterceptors(FileInterceptor('file', storage))
-  async uploadImage(@UploadedFile() file: Express.Multer.File, @Param('teamId') teamId: string): Promise<Object> {
+  async uploadImage(
+    @UploadedFile() file: Express.Multer.File,
+    @Param('teamId') teamId: string,
+    @Response() res: eResponse,
+  ): Promise<any> {
     console.log(file);
     const result = this.imageService.setImagePath(file.filename, teamId);
-    //const result = this.imageService.setImagePath(file.path, teamId);
-    return result;
+
+    if (result) {
+      res.status(201).send();
+    } else {
+      throw new BadRequestException('Your request cannot be processed, Sorry for inconvenience');
+    }
   }
   // @Get('imagename/:imagename')
   // async findProfileImage(@Param('imagename') imagename: any, @Res() res: any): Promise<Object> {

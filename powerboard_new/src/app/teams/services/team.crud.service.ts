@@ -207,15 +207,15 @@ export class TeamCrudService extends TypeOrmCrudService<Team> {
       powerboardResponse.meetingLinks = [];
     }
     if (privilegeList.includes('view_team_links')) {
-      const teamLink: TeamLinkResponse[] | undefined = await this.teamLinkService.getTeamLinks(teamId);
+      const teamLink: TeamLinkResponse[] = await this.teamLinkService.getTeamLinks(teamId);
       powerboardResponse.teamLinks = teamLink;
     } else {
       powerboardResponse.teamLinks = [];
     }
-    const images: ImageResponse[] | undefined = await this.imageService.getImagesForTeam(teamId);
+    const images: ImageResponse[] = await this.imageService.getImagesForTeam(teamId);
     powerboardResponse.images = images;
 
-    const videos: VideoResponse[] | undefined = await this.videoService.getVideosForTeam(teamId);
+    const videos: VideoResponse[] = await this.videoService.getVideosForTeam(teamId);
     powerboardResponse.videos = videos;
 
     return powerboardResponse;
