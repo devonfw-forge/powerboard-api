@@ -100,24 +100,6 @@ export class TeamSpiritCrudService extends TypeOrmCrudService<TeamSpirit> {
     console.log('This is headers Authorization' + this.config.headers.Authorization);
     return this.config.headers.Authorization;
   }
-  // async loginToTeamSpirit(teamSpiritUserDTO: TeamSpiritUserDTO): Promise<any> {
-  //   console.log(teamSpiritUserDTO.Email + " " + teamSpiritUserDTO.Password);
-  //   console.log('Inside Login of Team Spirit');
-  //   this.accessTokenForTeamSpirit = await this.http.post(this.newTeamSpiritEndpointURL + 'login', teamSpiritUserDTO).toPromise()
-  //     .then(resp => {
-  //       console.log("This is the token in then  " + resp.data.token);
-  //       return resp.data;
-  //     });
-  //   this.setAxiosToken(this.accessTokenForTeamSpirit);
-  //   console.log('Set Axios Token')
-  //   console.log(this.setAxiosToken);
-  //   return this.accessTokenForTeamSpirit;
-  // }
-
-  // headers: any = {
-  //   'Content-type': 'application/json',
-  //   'Authorization': 'Bearer ' + this.accessTokenForTeamSpirit
-  // }
 
   setAxiosToken = (token: any) => {
     this.config.headers.Authorization = `Bearer ${token}`;
@@ -131,6 +113,17 @@ export class TeamSpiritCrudService extends TypeOrmCrudService<TeamSpirit> {
     console.log(this.config);
     console.log(this.config.headers.Authorization);
     return this.config;
+  }
+
+  async getTeam(teamName: string): Promise<any> {
+    return await this.http
+      .get(this.newTeamSpiritEndpointURL + 'team/' + teamName, {
+        headers: { Authorization: 'Bearer ' + this.config.headers.Authorization.token },
+      })
+      .toPromise()
+      .then(resp => {
+        return resp.data;
+      });
   }
 
   //To get the result of team's survey
@@ -160,9 +153,9 @@ export class TeamSpiritCrudService extends TypeOrmCrudService<TeamSpirit> {
 
   //add a team to the team spirit
   async addTeamToTeamSpirit(team: TeamDTO): Promise<any> {
-    const teamExisted = await this.getTeam(team.name);
+    const teamExisted = await this.getTeam(team.Name);
     if (teamExisted) {
-      return 'Team ' + team.name + ' already exists';
+      return 'Team ' + team.Name + ' already exists';
     } else {
       const createdTeam = await this.http
         .post(this.newTeamSpiritEndpointURL + 'team/create', team, {
@@ -182,53 +175,85 @@ export class TeamSpiritCrudService extends TypeOrmCrudService<TeamSpirit> {
   }
 
   //update configuration of a team
-  async updateTeamSpiritConfiguration(newGroup: TeamDTO, projectName: string): Promise<any> {
-    // const team = this.http.get(this.newTeamSpiritEndpointURL + 'team/' + projectName, { headers: { Authorization: 'Bearer ' + this.config.headers.Authorization.token } })
-    //   .toPromise()
-    //   .then(resp => { return resp.data });
-    // if (!team) {
-    //   return "Team " + projectName + " does not exist."
-    // }
-    //else {
-    newGroup.name = projectName;
-    console.log(this.config.headers.Authorization.token);
+  async updateTeamConfiguration(updatedTeam: TeamDTO, teamName: string): Promise<any> {
+    const team: TeamDTO = await this.getTeam(teamName);
+    if (!team) {
+      return 'Team ' + teamName + ' does not exist.';
+    } else {
+      console.log(this.config.headers.Authorization.token);
+      // const StartDateForSurvey = new Date(updatedTeam.StartDate!);
+      // console.log(StartDateForSurvey);
+      // const EndDate = new Date();
+      // EndDate.setDate(StartDateForSurvey.getDate() + updatedTeam.Frequency!);
+      // const EndDateForSurvey = EndDate.toString();
+      // console.log("This is end Date")
+      // console.log(EndDate);
+      // console.log(EndDateForSurvey);
+
+      // const survey = {
+      //   StartDate: updatedTeam.StartDate!,
+      //   EndDate: EndDateForSurvey,
+      //   Median: 0,
+      //   Note: [],
+      //   TeamName: teamName
+      // }
+
+      team.Name = teamName;
+      team.Frequency = updatedTeam.Frequency;
+      team.Num_mumbers = updatedTeam.Num_mumbers;
+      team.StartDate = updatedTeam.StartDate;
+
+      console.log('Updated team****************');
+      console.log(team);
+      return await this.http
+        .put(this.newTeamSpiritEndpointURL + 'team/' + teamName, team, {
+          headers: { Authorization: 'Bearer ' + this.config.headers.Authorization.token },
+        })
+        //return this.http.put(this.newTeamSpiritEndpointURL + 'team/' + projectName, teamDTO, { headers: { Authorization: 'Bearer ' + this.config.headers.Authorization } })
+        .toPromise()
+        .then(resp => {
+          console.log(resp.data);
+          return resp.data;
+        });
+    }
+  }
+
+  async createUser(userDTO: TeamSpiritUserDTO): Promise<any> {
     return await this.http
-      .put(this.newTeamSpiritEndpointURL + 'team/' + projectName, newGroup, {
+      .post(this.newTeamSpiritEndpointURL + 'user/create', userDTO, {
         headers: { Authorization: 'Bearer ' + this.config.headers.Authorization.token },
       })
-      //return this.http.put(this.newTeamSpiritEndpointURL + 'team/' + projectName, teamDTO, { headers: { Authorization: 'Bearer ' + this.config.headers.Authorization } })
       .toPromise()
       .then(resp => {
-        console.log(resp.data);
         return resp.data;
       });
   }
 
-  async getTeam(teamName: string): Promise<any> {
-    return await this.http
-      .get(this.newTeamSpiritEndpointURL + 'team/' + teamName, {
+  async addUserToTeam(userDTO: TeamSpiritUserDTO, teamName: string): Promise<any> {
+    userDTO.RoleID = 2;
+    userDTO.Role = {
+      Id: 2,
+      Name: 'Team Leader',
+    };
+    const user = {
+      RoleID: userDTO.RoleID,
+      Full_Name: userDTO.Full_Name,
+      Email: userDTO.Email,
+      Password: userDTO.Password,
+      Role: userDTO.Role,
+    };
+    const team = await this.getTeam(teamName);
+    team.Users.push(user);
+
+    const updatedTeam = await this.http
+      .put(this.newTeamSpiritEndpointURL + 'team/' + teamName, team, {
         headers: { Authorization: 'Bearer ' + this.config.headers.Authorization.token },
       })
       .toPromise()
       .then(resp => {
         return resp.data;
       });
-  }
-
-  async addUserToTeam(userDTO: TeamSpiritUserDTO, teamName: string) {
-    // const team= await this.http.get(this.newTeamSpiritEndpointURL + 'team/' + teamName, { headers: { Authorization: 'Bearer ' + this.config.headers.Authorization.token } })
-    // .toPromise()
-    // .then(resp => {
-    //   return resp.data;
-    // })
-    // .catch(error => {
-    //   return error.response;
-    // })
-    let teamDTO = new TeamDTO();
-    teamDTO.users!.push(userDTO);
-    return await this.http.put(this.newTeamSpiritEndpointURL + 'team/' + teamName, teamDTO, {
-      headers: { Authorization: 'Bearer ' + this.config.headers.Authorization.token },
-    });
+    return updatedTeam;
   }
 
   async registerUser(userDTO: TeamSpiritUserDTO) {
@@ -284,5 +309,17 @@ export class TeamSpiritCrudService extends TypeOrmCrudService<TeamSpirit> {
         return resp.data;
       });
     return allTeams;
+  }
+
+  async getAllUsers(): Promise<any> {
+    const allUsers = await this.http
+      .get(this.newTeamSpiritEndpointURL + 'users', {
+        headers: { Authorization: 'Bearer ' + this.config.headers.Authorization.token },
+      })
+      .toPromise()
+      .then(resp => {
+        return resp.data;
+      });
+    return allUsers;
   }
 }

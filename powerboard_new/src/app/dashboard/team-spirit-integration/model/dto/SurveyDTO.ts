@@ -2,11 +2,11 @@ import { NotesDTO } from './NotesDTO';
 
 export class SurveyDTO {
   TeamName!: string;
-  code!: string;
-  endDate!: string;
-  median?: number;
-  note?: NotesDTO[];
-  startDate?: string;
+  Code?: string;
+  EndDate!: string;
+  Median?: number;
+  Note?: NotesDTO[];
+  StartDate?: string;
 }
 
 //"surveys": [

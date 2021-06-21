@@ -2,12 +2,12 @@ import { SurveyDTO } from './SurveyDTO';
 import { TeamSpiritUserDTO } from './TeamSpiritUserDTO';
 
 export class TeamDTO {
-  frequencey?: number;
-  name!: string;
-  num_mumbers?: number;
-  startDate?: string;
-  surveys?: SurveyDTO;
-  users?: TeamSpiritUserDTO[];
+  Frequency?: number;
+  Name!: string;
+  Num_mumbers?: number;
+  StartDate?: string;
+  Surveys?: SurveyDTO[];
+  Users?: TeamSpiritUserDTO[];
 }
 
 // "frequency": 0,

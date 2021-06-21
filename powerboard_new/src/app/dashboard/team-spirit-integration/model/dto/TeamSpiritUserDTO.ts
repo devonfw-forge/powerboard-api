@@ -2,11 +2,11 @@ import { TeamSpiritRolesDTO } from './TeamSpiritRolesDTO';
 import { TeamDTO } from './TeamDTO';
 
 export class TeamSpiritUserDTO {
-  roleID?: number;
+  RoleID?: number;
   Email?: string;
-  full_name?: string;
-  id?: number;
+  Full_Name?: string;
+  Id?: number;
   Password?: string;
-  role?: TeamSpiritRolesDTO;
-  teams?: TeamDTO[];
+  Role?: TeamSpiritRolesDTO;
+  Teams?: TeamDTO[];
 }

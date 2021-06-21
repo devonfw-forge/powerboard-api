@@ -30,12 +30,17 @@ export class TeamSpiritCrudController {
     return await this.teamSpiritService.registerUser(userDTO);
   }
 
-  @Post('/addUserToTeam')
-  async addUserToTeam(@Body() userDTO: TeamSpiritUserDTO, teamName: string): Promise<any> {
+  @Put('/addUserToTeam/:teamName')
+  async addUserToTeam(@Param('teamName') teamName: string, @Body() userDTO: TeamSpiritUserDTO): Promise<any> {
     return await this.teamSpiritService.addUserToTeam(userDTO, teamName);
   }
 
-  @Post('/create')
+  @Post('user/create')
+  async createUser(@Body() userDto: TeamSpiritUserDTO): Promise<any> {
+    return await this.teamSpiritService.createUser(userDto);
+  }
+
+  @Post('team/create')
   async addTeamToTeamSpirit(@Body() team: TeamDTO): Promise<any> {
     return await this.teamSpiritService.addTeamToTeamSpirit(team);
   }
@@ -45,17 +50,24 @@ export class TeamSpiritCrudController {
     return await this.teamSpiritService.getTeam(teamName);
   }
 
-  @Get('/surveyResult/:projectName')
-  async getTeamSpiritFromSurvery(@Param('projectName') projectName: string): Promise<any> {
-    const teamSpirit = await this.teamSpiritService.getTeamSpiritFromSurvey(projectName);
+  @Get('/surveyResult/:teamName')
+  async getTeamSpiritFromSurvery(@Param('teamName') teamName: string): Promise<any> {
+    const teamSpirit = await this.teamSpiritService.getTeamSpiritFromSurvey(teamName);
     return teamSpirit;
   }
 
-  @Put('/updateTeam/:projectName')
-  async updateTeamSpiritConfiguration(@Body() newGroup: TeamDTO, @Param('projectName') projectName: string) {
-    const updatedTeamSpirit = await this.teamSpiritService.updateTeamSpiritConfiguration(newGroup, projectName);
+  @Put('/updateTeam/:teamName')
+  async updateTeamConfiguration(@Body() updatedTeam: TeamDTO, @Param('teamName') teamName: string) {
+    console.log(updatedTeam);
+    const updatedTeamSpirit = await this.teamSpiritService.updateTeamConfiguration(updatedTeam, teamName);
     return updatedTeamSpirit;
   }
+  // @Put('/updateTeam')
+  // async updateTeamConfiguration(@Body() updatedTeam: TeamDTO) {
+  //   console.log(updatedTeam);
+  //   const updatedTeamSpirit = await this.teamSpiritService.updateTeamConfiguration(updatedTeam);
+  //   return updatedTeamSpirit;
+  // }
 
   @Get('/getAllSurveyResult')
   async getAllSurvey(): Promise<any> {
@@ -65,5 +77,10 @@ export class TeamSpiritCrudController {
   @Get('/getAllTeams')
   async getAllTeams(): Promise<any> {
     return await this.teamSpiritService.getAllTeams();
+  }
+
+  @Get('/getAllUsers')
+  async getAllUsers(): Promise<any> {
+    return await this.teamSpiritService.getAllUsers();
   }
 }
