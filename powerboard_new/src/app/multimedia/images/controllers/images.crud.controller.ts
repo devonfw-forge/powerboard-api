@@ -56,10 +56,9 @@ export class ImagesCrudController {
     @UploadedFile() file: Express.Multer.File,
     @Param('teamId') teamId: string,
     @Response() res: eResponse,
-  ): Promise<any> {
+  ): Promise<void> {
     console.log(file);
-    const result = this.imageService.setImagePath(file.filename, teamId);
-
+    const result = await this.imageService.setImagePath(file.filename, teamId);
     if (result) {
       res.status(201).send();
     } else {

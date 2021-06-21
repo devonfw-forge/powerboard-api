@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { forwardRef, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { TypeOrmCrudService } from '@nestjsx/crud-typeorm';
 import { Repository } from 'typeorm';
@@ -10,7 +10,8 @@ import { Videos } from '../model/entities/videos.entity';
 export class VideosCrudService extends TypeOrmCrudService<Videos> {
   constructor(
     @InjectRepository(Videos) private readonly videoRepository: Repository<Videos>,
-    private readonly teamService: TeamCrudService,
+    @Inject(forwardRef(() => TeamCrudService))
+    private teamService: TeamCrudService,
   ) {
     super(videoRepository);
   }
@@ -26,10 +27,11 @@ export class VideosCrudService extends TypeOrmCrudService<Videos> {
     videos.content = path;
     videos.team = teamId;
     const team = await this.teamService.findTeamById(teamId);
-    if (team) {
+    if (!team) {
       throw new NotFoundException('Team Not Found');
+    } else {
+      return await this.videoRepository.save(videos);
     }
-    return await this.videoRepository.save(videos);
   }
 
   /**

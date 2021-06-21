@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { forwardRef, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { TypeOrmCrudService } from '@nestjsx/crud-typeorm';
 import { Repository } from 'typeorm';
@@ -10,7 +10,8 @@ import { Images } from '../model/entities/image.entity';
 export class ImagesCrudService extends TypeOrmCrudService<Images> {
   constructor(
     @InjectRepository(Images) private readonly imageRepository: Repository<Images>,
-    private readonly teamService: TeamCrudService,
+    @Inject(forwardRef(() => TeamCrudService))
+    private teamService: TeamCrudService,
   ) {
     super(imageRepository);
   }
@@ -26,10 +27,14 @@ export class ImagesCrudService extends TypeOrmCrudService<Images> {
     image.image = path;
     image.team = teamId;
     const team = await this.teamService.findTeamById(teamId);
-    if (team) {
+    console.log('ssssssssss');
+    console.log(team);
+    if (!team) {
+      console.log('lllllllllllllllllllllllllllllllll');
       throw new NotFoundException('Team Not Found');
+    } else {
+      return await this.imageRepository.save(image);
     }
-    return await this.imageRepository.save(image);
   }
 
   /**
