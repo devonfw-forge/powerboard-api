@@ -324,12 +324,14 @@ export class TeamCrudService extends TypeOrmCrudService<Team> {
     return (await this.teamRepository.findOne(teamId)) as Team;
   }
 
-  async updateLogo(path: string, teamId: string) {
+  async updateLogo(path: string, teamId: string): Promise<Team> {
     const team = await this.findTeamById(teamId);
-    // if(!team){
-
-    // }
-    console.log(path);
-    return team; //incomplete
+    if (!team) {
+      throw new NotFoundException('Team Not Found');
+    }
+    let teamOBJ = new Team();
+    teamOBJ.id = team.id;
+    teamOBJ.logo = path;
+    return this.teamRepository.save(teamOBJ);
   }
 }
