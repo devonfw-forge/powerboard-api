@@ -11,9 +11,9 @@ export class AdminController {
   //Adding team by System Admin
   @Post('team/addTeam')
   async addTeam(@Body() addTeam: AddTeam, @Response() res: eResponse): Promise<any> {
-    const result = await this.adminService.addTeamByAdmin(addTeam);
+    const result = await this.adminService.addTeam(addTeam);
     if (result) {
-      res.status(201).send('successfully added the team');
+      res.status(201).send('Team successfully Registered');
     } else {
       throw new BadRequestException('Your request cannot be processed, Sorry for inconvenience');
     }

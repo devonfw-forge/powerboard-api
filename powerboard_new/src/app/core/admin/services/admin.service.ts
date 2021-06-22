@@ -5,6 +5,7 @@ import { UserService } from '../../user/services/user.service';
 //import { TeamSpiritCrudService } from '../../../dashboard/team-spirit-integration/services/team-spirit.crud.service';
 
 import { UserRolesDTO } from '../../user/model/dto/UserRolesDTO';
+import { Team } from '../../../teams/model/entities/team.entity';
 
 @Injectable()
 export class AdminService {
@@ -18,11 +19,8 @@ export class AdminService {
    * @param {AddTeam} .Takes AddTeam as input
    * @return {Team} Created Team as response
    */
-  async addTeamByAdmin(addTeam: AddTeam): Promise<any> {
+  async addTeam(addTeam: AddTeam): Promise<Team> {
     const result = await this.teamService.addTeam(addTeam);
-    if (result) {
-      // this.teamSpiritService.addTeamToTeamSpirit(addTeam.teamName);
-    }
     return result;
   }
 

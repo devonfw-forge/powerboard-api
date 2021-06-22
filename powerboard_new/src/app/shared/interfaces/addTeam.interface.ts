@@ -4,7 +4,7 @@ export interface AddTeam {
   teamName: string;
   teamCode: string;
   projectKey: string;
-  logo?: string;
+  // logo?: string;
   ad_center: ADCenter;
   member_number?: number;
   frequency?: number;

@@ -33,6 +33,8 @@ import { UserService } from 'src/app/core/user/services/user.service';
 import { TeamLinkResponse } from '../../team-links/model/dto/TeamLinkResponse';
 import { TeamSpiritResponse } from '../../dashboard/team-spirit-integration/model/dto/TeamSpiritResponse';
 import { TeamSpiritCrudService } from '../../dashboard/team-spirit-integration/services/team-spirit.crud.service';
+import { TeamSpiritUserDTO } from '../../dashboard/team-spirit-integration/model/dto/TeamSpiritUserDTO';
+import { TeamDTO } from '../../dashboard/team-spirit-integration/model/dto/TeamDTO';
 
 @Injectable()
 export class TeamCrudService extends TypeOrmCrudService<Team> {
@@ -176,19 +178,19 @@ export class TeamCrudService extends TypeOrmCrudService<Team> {
     } else {
       let statusResult;
       const codeQualityStatus = dashboard!.codeQuality!.status;
-      const teamSpiritStatus = dashboard!.teamSpirit!.teamSpiritRating;
+      //const teamSpiritStatus = dashboard!.teamSpirit!.teamSpiritRating;
       const clientStatus = dashboard!.clientStatus!.clientSatisfactionRating;
       const burndownStatus = dashboard!.burndown!.burndownStatus;
       if (
         clientStatus >= 6 &&
-        teamSpiritStatus >= 6 &&
+        //teamSpiritStatus >= 6 &&
         codeQualityStatus == 'PASSED' &&
         burndownStatus == 'Ahead Time'
       ) {
         statusResult = 2;
       } else if (
         clientStatus < 6 &&
-        teamSpiritStatus < 6 &&
+        //teamSpiritStatus < 6 &&
         codeQualityStatus == 'FAILED' &&
         burndownStatus == 'Behind Time'
       ) {
@@ -231,20 +233,37 @@ export class TeamCrudService extends TypeOrmCrudService<Team> {
    * @param {AddTeamDTO} .Takes AddTeamDTO as input
    * @return {Team} Created Team as response
    */
-  async addTeam(addteam: AddTeam): Promise<any> {
-    const value = addteam.teamCode;
-    const result = await this.teamRepository.findOne({ where: { teamCode: value } });
+  async addTeam(addteam: AddTeam): Promise<Team> {
+    const teamCode = addteam.teamCode;
+    const result = await this.teamRepository.findOne({ where: { teamCode: teamCode } });
     if (result != null) {
-      throw new BadRequestException('team already exists');
+      throw new BadRequestException('team already registered');
     } else {
-      let team = new Team();
-      team.name = addteam.teamName;
-      team.teamCode = addteam.teamCode;
-      team.projectKey = addteam.projectKey;
-      console.log(team.teamCode);
-      team.logo = addteam.logo!;
-      team.ad_center = addteam.ad_center;
-      return await this.teamRepository.save(team);
+      let teamSpiritUserDTO = {} as TeamSpiritUserDTO;
+      teamSpiritUserDTO.Email = 'adminTeamSpirit@capgemini.com';
+      teamSpiritUserDTO.Password = 'TeamSpiritAdmin!';
+      const token = await this.teamSpiritService.loginToTeamSpirit(teamSpiritUserDTO);
+      if (token) {
+        let teamDTO = new TeamDTO();
+        teamDTO.Frequency = addteam.frequency;
+        teamDTO.Name = addteam.teamName;
+        teamDTO.Num_mumbers = addteam.member_number;
+        teamDTO.StartDate = addteam.start_date;
+
+        const output = await this.teamSpiritService.addTeamToTeamSpirit(teamDTO);
+        if (!output) {
+          throw new BadRequestException('Team Not saved in Team Spirit App');
+        } else {
+          let team = new Team();
+          team.name = addteam.teamName;
+          team.teamCode = addteam.teamCode;
+          team.projectKey = addteam.projectKey;
+          team.ad_center = addteam.ad_center;
+          return await this.teamRepository.save(team);
+        }
+      } else {
+        throw new NotFoundException('Team Not Found in Team Spirit App');
+      }
     }
   }
 
@@ -293,7 +312,6 @@ export class TeamCrudService extends TypeOrmCrudService<Team> {
     team.name = updateTeam.teamName;
     team.teamCode = updateTeam.teamCode;
     team.projectKey = updateTeam.projectKey;
-    team.logo = updateTeam.logo!;
     team.ad_center = updateTeam.ad_center;
     return await this.teamRepository.save(team);
   }
@@ -325,5 +343,16 @@ export class TeamCrudService extends TypeOrmCrudService<Team> {
 
   async findTeamById(teamId: string): Promise<Team> {
     return (await this.teamRepository.findOne(teamId)) as Team;
+  }
+
+  async updateLogo(path: string, teamId: string): Promise<Team> {
+    const team = await this.findTeamById(teamId);
+    if (!team) {
+      throw new NotFoundException('Team Not Found');
+    }
+    let teamOBJ = new Team();
+    teamOBJ.id = team.id;
+    teamOBJ.logo = path;
+    return this.teamRepository.save(teamOBJ);
   }
 }
