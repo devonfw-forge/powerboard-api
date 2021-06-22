@@ -123,20 +123,21 @@ export class TeamSpiritCrudService extends TypeOrmCrudService<TeamSpiritMedian> 
   //update configuration of a team
   async updateTeamConfiguration(updatedTeam: TeamDTO, teamName: string): Promise<any> {
     const team: TeamDTO = await this.getTeam(teamName);
-    if (!team) {
-      return 'Team ' + teamName + ' does not exist.';
-    } else {
-      console.log(this.config.headers.Authorization.token);
+    // console.log("Team to be updated")
+    // console.log(team);
+    // if (team) {
+    // console.log(this.config.headers.Authorization.token);
+    // let team = new TeamDTO();
+    // // team.Name = teamName;
+    // team.Frequency = updatedTeam.Frequency;
+    // team.Num_mumbers = updatedTeam.Num_mumbers;
+    // team.StartDate = updatedTeam.StartDate;
 
-      team.Name = teamName;
-      team.Frequency = updatedTeam.Frequency;
-      team.Num_mumbers = updatedTeam.Num_mumbers;
-      team.StartDate = updatedTeam.StartDate;
-
-      console.log('Updated team****************');
-      console.log(team);
+    // console.log('Updated team****************');
+    // console.log(team);
+    if (team) {
       return await this.http
-        .put(this.newTeamSpiritEndpointURL + 'team/' + teamName, team, {
+        .put(this.newTeamSpiritEndpointURL + 'team/' + teamName, updatedTeam, {
           headers: { Authorization: 'Bearer ' + this.config.headers.Authorization.token },
         })
         //return this.http.put(this.newTeamSpiritEndpointURL + 'team/' + projectName, teamDTO, { headers: { Authorization: 'Bearer ' + this.config.headers.Authorization } })
@@ -145,6 +146,8 @@ export class TeamSpiritCrudService extends TypeOrmCrudService<TeamSpiritMedian> 
           console.log(resp.data);
           return resp.data;
         });
+    } else {
+      return 'Team ' + teamName + ' does not exist.';
     }
   }
 
