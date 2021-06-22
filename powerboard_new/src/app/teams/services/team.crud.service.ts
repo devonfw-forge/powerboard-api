@@ -33,6 +33,8 @@ import { UserService } from 'src/app/core/user/services/user.service';
 import { TeamLinkResponse } from '../../team-links/model/dto/TeamLinkResponse';
 import { TeamSpiritResponse } from '../../dashboard/team-spirit-integration/model/dto/TeamSpiritResponse';
 import { TeamSpiritCrudService } from '../../dashboard/team-spirit-integration/services/team-spirit.crud.service';
+import { TeamSpiritUserDTO } from '../../dashboard/team-spirit-integration/model/dto/TeamSpiritUserDTO';
+import { TeamDTO } from '../../dashboard/team-spirit-integration/model/dto/TeamDTO';
 
 @Injectable()
 export class TeamCrudService extends TypeOrmCrudService<Team> {
@@ -237,12 +239,31 @@ export class TeamCrudService extends TypeOrmCrudService<Team> {
     if (result != null) {
       throw new BadRequestException('team already registered');
     } else {
-      let team = new Team();
-      team.name = addteam.teamName;
-      team.teamCode = addteam.teamCode;
-      team.projectKey = addteam.projectKey;
-      team.ad_center = addteam.ad_center;
-      return await this.teamRepository.save(team);
+      let teamSpiritUserDTO = {} as TeamSpiritUserDTO;
+      teamSpiritUserDTO.Email = 'adminTeamSpirit@capgemini.com';
+      teamSpiritUserDTO.Password = 'TeamSpiritAdmin!';
+      const token = await this.teamSpiritService.loginToTeamSpirit(teamSpiritUserDTO);
+      if (token) {
+        let teamDTO = new TeamDTO();
+        teamDTO.Frequency = addteam.frequency;
+        teamDTO.Name = addteam.teamName;
+        teamDTO.Num_mumbers = addteam.member_number;
+        teamDTO.StartDate = addteam.start_date;
+
+        const output = await this.teamSpiritService.addTeamToTeamSpirit(teamDTO);
+        if (!output) {
+          throw new BadRequestException('Team Not saved in Team Spirit App');
+        } else {
+          let team = new Team();
+          team.name = addteam.teamName;
+          team.teamCode = addteam.teamCode;
+          team.projectKey = addteam.projectKey;
+          team.ad_center = addteam.ad_center;
+          return await this.teamRepository.save(team);
+        }
+      } else {
+        throw new NotFoundException('Team Not Found in Team Spirit App');
+      }
     }
   }
 

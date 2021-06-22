@@ -107,7 +107,7 @@ export class TeamSpiritCrudService extends TypeOrmCrudService<TeamSpiritMedian> 
   //add a team to the team spirit
   async addTeamToTeamSpirit(team: TeamDTO): Promise<any> {
     console.log('Inside Creating team');
-    console.log(team);
+    // console.log(team);
     // const teamExisted: TeamDTO = await this.getTeam(team.Name);
     // console.log("Team Existed");
     // console.log(teamExisted);
@@ -121,11 +121,11 @@ export class TeamSpiritCrudService extends TypeOrmCrudService<TeamSpiritMedian> 
       .toPromise()
       .then(resp => {
         console.log(resp.data);
-        return resp.data;
+        return true;
       })
       .catch(error => {
         console.log(error.response.data);
-        return error.response.data;
+        return false;
       });
     return createdTeam;
     //}
