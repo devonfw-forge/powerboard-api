@@ -2,6 +2,7 @@ import { forwardRef, Inject, Injectable, NotFoundException } from '@nestjs/commo
 import { InjectRepository } from '@nestjs/typeorm';
 import { TypeOrmCrudService } from '@nestjsx/crud-typeorm';
 import { Repository } from 'typeorm';
+import { Team } from '../../../teams/model/entities/team.entity';
 import { TeamCrudService } from '../../../teams/services/team.crud.service';
 import { ImageResponse } from '../model/dto/ImageResponse';
 import { Images } from '../model/entities/image.entity';
@@ -35,6 +36,10 @@ export class ImagesCrudService extends TypeOrmCrudService<Images> {
     } else {
       return await this.imageRepository.save(image);
     }
+  }
+
+  async setLogoPath(path: string, teamId: string): Promise<Team> {
+    return this.teamService.updateLogo(path, teamId);
   }
 
   /**

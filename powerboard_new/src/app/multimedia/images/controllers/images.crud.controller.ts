@@ -40,6 +40,26 @@ export const storage = {
     },
   }),
 };
+
+export const logoStorage = {
+  storage: diskStorage({
+    destination: (req, file, cb) => {
+      const id = req.params.teamId;
+      console.log(file);
+      console.log(req.params);
+      const path = `./uploads/multimedia/${id}/logo`;
+      fs_1.mkdirSync(path, { recursive: true });
+      return cb(null, path);
+    },
+
+    filename: (req, file, cb) => {
+      console.log(req);
+      const filename: string = path.parse(file.originalname).name.replace(/\s/g, '') + uuidv4();
+      const extension: string = path.parse(file.originalname).ext;
+      cb(null, `${filename}${extension}`);
+    },
+  }),
+};
 @Crud({
   model: {
     type: Images,
@@ -59,6 +79,22 @@ export class ImagesCrudController {
   ): Promise<void> {
     console.log(file);
     const result = await this.imageService.setImagePath(file.filename, teamId);
+    if (result) {
+      res.status(201).send();
+    } else {
+      throw new BadRequestException('Your request cannot be processed, Sorry for inconvenience');
+    }
+  }
+
+  @Post('uploadLogo/:teamId')
+  @UseInterceptors(FileInterceptor('file', logoStorage))
+  async uploadLogo(
+    @UploadedFile() file: Express.Multer.File,
+    @Param('teamId') teamId: string,
+    @Response() res: eResponse,
+  ): Promise<void> {
+    console.log(file);
+    const result = await this.imageService.setLogoPath(file.filename, teamId);
     if (result) {
       res.status(201).send();
     } else {

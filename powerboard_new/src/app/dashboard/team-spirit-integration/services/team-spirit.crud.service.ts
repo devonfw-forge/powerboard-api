@@ -79,8 +79,11 @@ export class TeamSpiritCrudService extends TypeOrmCrudService<TeamSpiritMedian> 
       .getOne()) as TeamSpiritMedian;
     console.log('This is surveyMedian from DB');
     console.log(surveyResult);
-
-    return surveyResult.surveyMedian;
+    if (surveyResult) {
+      return surveyResult.surveyMedian;
+    } else {
+      return undefined;
+    }
   }
 
   // const surveyResult = await this.http

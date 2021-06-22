@@ -176,19 +176,19 @@ export class TeamCrudService extends TypeOrmCrudService<Team> {
     } else {
       let statusResult;
       const codeQualityStatus = dashboard!.codeQuality!.status;
-      const teamSpiritStatus = dashboard!.teamSpirit!.teamSpiritRating;
+      //const teamSpiritStatus = dashboard!.teamSpirit!.teamSpiritRating;
       const clientStatus = dashboard!.clientStatus!.clientSatisfactionRating;
       const burndownStatus = dashboard!.burndown!.burndownStatus;
       if (
         clientStatus >= 6 &&
-        teamSpiritStatus >= 6 &&
+        //teamSpiritStatus >= 6 &&
         codeQualityStatus == 'PASSED' &&
         burndownStatus == 'Ahead Time'
       ) {
         statusResult = 2;
       } else if (
         clientStatus < 6 &&
-        teamSpiritStatus < 6 &&
+        //teamSpiritStatus < 6 &&
         codeQualityStatus == 'FAILED' &&
         burndownStatus == 'Behind Time'
       ) {
@@ -231,18 +231,16 @@ export class TeamCrudService extends TypeOrmCrudService<Team> {
    * @param {AddTeamDTO} .Takes AddTeamDTO as input
    * @return {Team} Created Team as response
    */
-  async addTeam(addteam: AddTeam): Promise<any> {
-    const value = addteam.teamCode;
-    const result = await this.teamRepository.findOne({ where: { teamCode: value } });
+  async addTeam(addteam: AddTeam): Promise<Team> {
+    const teamCode = addteam.teamCode;
+    const result = await this.teamRepository.findOne({ where: { teamCode: teamCode } });
     if (result != null) {
-      throw new BadRequestException('team already exists');
+      throw new BadRequestException('team already registered');
     } else {
       let team = new Team();
       team.name = addteam.teamName;
       team.teamCode = addteam.teamCode;
       team.projectKey = addteam.projectKey;
-      console.log(team.teamCode);
-      team.logo = addteam.logo!;
       team.ad_center = addteam.ad_center;
       return await this.teamRepository.save(team);
     }
@@ -293,7 +291,6 @@ export class TeamCrudService extends TypeOrmCrudService<Team> {
     team.name = updateTeam.teamName;
     team.teamCode = updateTeam.teamCode;
     team.projectKey = updateTeam.projectKey;
-    team.logo = updateTeam.logo!;
     team.ad_center = updateTeam.ad_center;
     return await this.teamRepository.save(team);
   }
@@ -325,5 +322,14 @@ export class TeamCrudService extends TypeOrmCrudService<Team> {
 
   async findTeamById(teamId: string): Promise<Team> {
     return (await this.teamRepository.findOne(teamId)) as Team;
+  }
+
+  async updateLogo(path: string, teamId: string) {
+    const team = await this.findTeamById(teamId);
+    // if(!team){
+
+    // }
+    console.log(path);
+    return team; //incomplete
   }
 }
