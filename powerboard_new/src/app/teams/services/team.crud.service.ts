@@ -6,8 +6,8 @@ import { ClientStatusCrudService } from '../../dashboard/client-status/services/
 import { CodeQualityResponse } from '../../dashboard/code-quality-snapshot/model/dto/CodeQualityResponse';
 import { CodeQualitySnapshotCrudService } from '../../dashboard/code-quality-snapshot/services/code-quality-snapshot.crud.service';
 import { SprintDetailResponse } from '../../dashboard/sprint/model/dto/SprintDetailResponse';
-import { TeamSpiritResponse } from '../../dashboard/team-spirit-integration/model/dto/TeamSpiritResponse';
-import { TeamSpiritCrudService } from '../../dashboard/team-spirit-integration/services/team-spirit.crud.service';
+//import { TeamSpiritResponse } from '../../dashboard/team-spirit-integration/model/dto/TeamSpiritResponse';
+//import { TeamSpiritCrudService } from '../../dashboard/team-spirit-integration/services/team-spirit.crud.service';
 import { Repository } from 'typeorm';
 import { BurndownResponse } from '../../dashboard/sprint/model/dto/BurndownResponse';
 import { VelocityComparisonResponse } from '../../dashboard/sprint/model/dto/VelocityComparisonResponse';
@@ -19,7 +19,7 @@ import { DailyMeetingCrudService } from '../../daily-links/services/daily-meetin
 import { TeamLinksCrudService } from '../../team-links/services/team-links.crud.service';
 import { ImagesCrudService } from '../../multimedia/images/services/images.crud.service';
 import { VideosCrudService } from '../../multimedia/videos/services/videos.crud.service';
-import { TeamLinkResponse } from '../../team-links/model/dto/TeamLinkResponse';
+//import { TeamLinkResponse } from '../../team-links/model/dto/TeamLinkResponse';
 import { ImageResponse } from '../../multimedia/images/model/dto/ImageResponse';
 import { VideoResponse } from '../../multimedia/videos/model/dto/VideoResponse';
 import { ViewTeamsResponse } from '../model/dto/ViewTeamsResponse';
@@ -30,6 +30,9 @@ import { PowerboardResponse } from '../model/dto/PowerboardResponse';
 import { UserTeamDTO } from '../model/dto/UserTeamDTO';
 import { MyCenter } from '../model/dto/MyCenter';
 import { UserService } from 'src/app/core/user/services/user.service';
+import { TeamLinkResponse } from '../../team-links/model/dto/TeamLinkResponse';
+import { TeamSpiritResponse } from '../../dashboard/team-spirit-integration/model/dto/TeamSpiritResponse';
+import { TeamSpiritCrudService } from '../../dashboard/team-spirit-integration/services/team-spirit.crud.service';
 
 @Injectable()
 export class TeamCrudService extends TypeOrmCrudService<Team> {
@@ -102,13 +105,15 @@ export class TeamCrudService extends TypeOrmCrudService<Team> {
   async getDashboardByTeamId(teamId: string): Promise<DashBoardResponse> {
     this.dash.teamId = teamId;
 
+    const team = await this.teamRepository.findOne(teamId);
+
     const codeQuality: CodeQualityResponse | undefined = await this.codequalityService.getCodeQualitySnapshot(teamId);
     this.dash.codeQuality = codeQuality;
 
     const clientStatus: ClientStatusResponse | undefined = await this.clientStatusService.getClientFeedback(teamId);
     this.dash.clientStatus = clientStatus;
 
-    const teamSpirit: TeamSpiritResponse | undefined = await this.teamSpiritService.getTeamSpirit(teamId);
+    const teamSpirit: TeamSpiritResponse | undefined = await this.teamSpiritService.getTeamSpiritFromSurvey(team!.name);
     this.dash.teamSpirit = teamSpirit;
 
     const burndown: BurndownResponse | undefined = await this.sprintService.getBurndown(teamId);

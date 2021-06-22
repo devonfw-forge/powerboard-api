@@ -152,11 +152,11 @@ export class InsertData1624341559430 implements MigrationInterface {
       `INSERT INTO "team_spirit" ("id","team_spirit_rating", "sprint_id") VALUES ('20113bf8-ada5-495c-8019-8d7ab76d488e', 7, '20455bf8-ada5-495c-8019-8d7ab76d488e');`,
     );
     await queryRunner.query(
-      `INSERT INTO "team_spirit_median" ("id", "survey_median","start_date","end_date","survey_code","team_name") VALUES ('70013bf8-ada5-495c-8019-8d7ab76d488e', 3,'2021-05-15','2021-05-25' ,'AZR32' ,'Diamler Devops');`,
+      `INSERT INTO "team_spirit_median" ("id", "survey_median","start_date","end_date","survey_code","team_name") VALUES ('70013bf8-ada5-495c-8019-8d7ab76d488e', 3,'2021-05-15 14:15:36','2021-05-25 14:15:30' ,'AZR32' ,'Diamler Devops');`,
     );
 
     await queryRunner.query(
-      `INSERT INTO "team_spirit_median" ("id", "survey_median","start_date","end_date","survey_code","team_name") VALUES ('70023bf8-ada5-495c-8019-8d7ab76d488e', 7,'2021-06-10','2021-06-15' ,'AZ4r52' ,'Diamler Devops');`,
+      `INSERT INTO "team_spirit_median" ("id", "survey_median","start_date","end_date","survey_code","team_name") VALUES ('70023bf8-ada5-495c-8019-8d7ab76d488e', 7,'2021-06-22 13:20:34','2021-07-02 13:25:40' ,'AZ4r52' ,'Diamler Devops');`,
     );
 
     await queryRunner.query(
