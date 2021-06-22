@@ -1,5 +1,3 @@
-export interface TeamSpiritResponse
-{
-    teamSpiritRating: number;
-    sprintNumber:number;
+export class TeamSpiritResponse {
+  teamSpiritRating!: number;
 }

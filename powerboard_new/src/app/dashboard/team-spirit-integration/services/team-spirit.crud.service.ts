@@ -69,21 +69,30 @@ export class TeamSpiritCrudService extends TypeOrmCrudService<TeamSpiritMedian> 
 
   //To get the result of team's survey
   async getTeamSpiritFromSurvey(teamName: string): Promise<any> {
-    console.log('Inside GETTEAMSPIRIT');
-    console.log('Config iside getTeamSpiritFromSurvey');
     const surveyResult = (await this.teamSpiritRepository
       .createQueryBuilder('team_spirit_median')
       .where('team_spirit_median.team_name=:team_name', { team_name: teamName })
       .orderBy('team_spirit_median.start_date', 'DESC')
       .limit(1)
       .getOne()) as TeamSpiritMedian;
-    console.log('This is surveyMedian from DB');
+
     console.log(surveyResult);
+    // if (surveyResult) {
+    //   return surveyResult.surveyMedian;
+    // } else {
+    //   return undefined;
+    // }
+
+    let teamSpiritResponse = new TeamSpiritResponse();
     if (surveyResult) {
-      return surveyResult.surveyMedian;
+      teamSpiritResponse.teamSpiritRating = surveyResult.surveyMedian;
+
+      return teamSpiritResponse;
     } else {
       return undefined;
     }
+
+    //return teamSpiritResponse;
   }
 
   // const surveyResult = await this.http
@@ -97,25 +106,29 @@ export class TeamSpiritCrudService extends TypeOrmCrudService<TeamSpiritMedian> 
 
   //add a team to the team spirit
   async addTeamToTeamSpirit(team: TeamDTO): Promise<any> {
-    const teamExisted = await this.getTeam(team.Name);
-    if (teamExisted) {
-      return 'Team ' + team.Name + ' already exists';
-    } else {
-      const createdTeam = await this.http
-        .post(this.newTeamSpiritEndpointURL + 'team/create', team, {
-          headers: { Authorization: 'Bearer ' + this.config.headers.Authorization.token },
-        })
-        .toPromise()
-        .then(resp => {
-          console.log(resp.data);
-          return resp.data;
-        });
-      // .catch(error => {
-      //   console.log(error.response.data);
-      //   return error.response.data;
-      // });
-      return createdTeam;
-    }
+    console.log('Inside Creating team');
+    console.log(team);
+    // const teamExisted: TeamDTO = await this.getTeam(team.Name);
+    // console.log("Team Existed");
+    // console.log(teamExisted);
+    // if (teamExisted) {
+    //   return 'Team ' + team.Name + ' already exists';
+    // } else {
+    const createdTeam = await this.http
+      .post(this.newTeamSpiritEndpointURL + 'team/create', team, {
+        headers: { Authorization: 'Bearer ' + this.config.headers.Authorization.token },
+      })
+      .toPromise()
+      .then(resp => {
+        console.log(resp.data);
+        return resp.data;
+      })
+      .catch(error => {
+        console.log(error.response.data);
+        return error.response.data;
+      });
+    return createdTeam;
+    //}
   }
 
   //update configuration of a team
