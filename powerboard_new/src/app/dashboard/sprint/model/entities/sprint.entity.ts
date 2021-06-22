@@ -13,10 +13,10 @@ export class Sprint extends BaseEntity {
   @JoinColumn({ name: 'status', referencedColumnName: 'id' })
   status!: string;
 
-  @Column('date', { nullable: false })
+  @Column('timestamp', { nullable: false })
   start_date!: string;
 
-  @Column('date', { nullable: false })
+  @Column('timestamp', { nullable: false })
   end_date!: string;
 
   @ManyToOne(() => Team, { eager: true })

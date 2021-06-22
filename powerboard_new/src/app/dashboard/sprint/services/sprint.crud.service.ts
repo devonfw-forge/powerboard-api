@@ -44,13 +44,11 @@ export class SprintCrudService extends TypeOrmCrudService<Sprint> {
       .limit(2)
       .getRawMany();
 
- 
     // console.log('sprint detail response ***************************************');
     // console.log(sprintDetail);
     if (sprintDetail[0] == null) {
       return undefined;
     } else {
-   
       var end_date = new Date(sprintDetail[0].sprint_end_date);
       var start_date = new Date(sprintDetail[0].sprint_start_date);
       var currentDate = new Date();
@@ -93,8 +91,8 @@ export class SprintCrudService extends TypeOrmCrudService<Sprint> {
       .limit(2)
       .getRawMany();
 
-    // console.log('Get Burndown ***************************');
-    // console.log(sprintForBurndown);
+    console.log('Get Burndown ***************************');
+    console.log(sprintForBurndown);
     if (sprintForBurndown[0] == null) {
       return undefined;
     } else {
@@ -104,6 +102,8 @@ export class SprintCrudService extends TypeOrmCrudService<Sprint> {
       const diff1 = Math.abs(end_date.getTime() - start_date.getTime());
       const currentDay = Math.ceil(diff / (1000 * 60 * 60 * 24));
       const totalDays = Math.ceil(diff1 / (1000 * 60 * 60 * 24));
+      console.log(start_date + '    ' + end_date);
+      console.log(currentDay + '  ' + totalDays);
       if (sprintForBurndown[0].smt_name == 'Work Committed') {
         return this.calculateBurnDownFirstCase(sprintForBurndown, totalDays, currentDay);
       } else if (sprintForBurndown[0].smt_name == 'Work Completed') {
@@ -176,7 +176,7 @@ export class SprintCrudService extends TypeOrmCrudService<Sprint> {
    * @param {teamId} teamId Takes teamId as input
    * @return {VelocityComparisonResponse} VelocityComparison as response for that team's current sprint
    */
-  async getVelocityComparison(teamId: string): Promise<VelocityComparisonResponse|undefined> {
+  async getVelocityComparison(teamId: string): Promise<VelocityComparisonResponse | undefined> {
     const sprintMetricsResponse = await this.sprintRepository
       .createQueryBuilder('sprint')
       .addSelect('sprint.id', 'sprint_id')
@@ -196,41 +196,37 @@ export class SprintCrudService extends TypeOrmCrudService<Sprint> {
 
     // console.log('Get Velocity Comparison ****************************************');
     // console.log(sprintMetricsResponse);
-    if(sprintMetricsResponse==null){
+    if (sprintMetricsResponse == null) {
       return undefined;
+    } else {
+      const previousSprintCompleted = await this.sprintRepository
+        .createQueryBuilder('sprint')
+        .addSelect('sprint.id', 'sprint_id')
+        .addSelect('st.status', 'st_status')
+        .addSelect('ss.id', 'ss_id')
+        .addSelect('smt.name', 'smt_name')
+        .addSelect('ssm.value', 'ssm_value')
+        .innerJoin(SprintStatus, 'st', 'st.id=sprint.status')
+        .innerJoin(SprintSnapshot, 'ss', 'ss.sprint_id=sprint.id')
+        .innerJoin(SprintSnapshotMetric, 'ssm', 'ssm.snapshot_id=ss.id')
+        .leftJoin(SprintMetric, 'smt', 'smt.id=ssm.metric_id')
+        .where('sprint.team_id =:team_Id', { team_Id: teamId })
+        .andWhere('sprint.status=:status', { status: '11155bf3-ada5-495c-8019-8d7ab76d488e' })
+        .andWhere('ssm.metric_id=:metric_id', { metric_id: '11155bf2-ada5-495c-8019-8d7ab76d488e' })
+        .orderBy('sprint.id')
+        .getRawMany();
+      // console.log('Previous sprint completed ***********************');
+      // console.log(previousSprintCompleted);
+      if (previousSprintCompleted.length == 0 || previousSprintCompleted == null) {
+        console.log('ho gya');
+        return undefined;
+      } else {
+        this.velocityComparisonResponse.Avg = this.getAverageVelocity(previousSprintCompleted);
+        this.velocityComparisonResponse = this.getVelocityData(sprintMetricsResponse);
+        return this.velocityComparisonResponse;
+      }
     }
-  
-else{
-    const previousSprintCompleted = await this.sprintRepository
-      .createQueryBuilder('sprint')
-      .addSelect('sprint.id', 'sprint_id')
-      .addSelect('st.status', 'st_status')
-      .addSelect('ss.id', 'ss_id')
-      .addSelect('smt.name', 'smt_name')
-      .addSelect('ssm.value', 'ssm_value')
-      .innerJoin(SprintStatus, 'st', 'st.id=sprint.status')
-      .innerJoin(SprintSnapshot, 'ss', 'ss.sprint_id=sprint.id')
-      .innerJoin(SprintSnapshotMetric, 'ssm', 'ssm.snapshot_id=ss.id')
-      .leftJoin(SprintMetric, 'smt', 'smt.id=ssm.metric_id')
-      .where('sprint.team_id =:team_Id', { team_Id: teamId })
-      .andWhere('sprint.status=:status', { status: '11155bf3-ada5-495c-8019-8d7ab76d488e' })
-      .andWhere('ssm.metric_id=:metric_id', { metric_id: '11155bf2-ada5-495c-8019-8d7ab76d488e' })
-      .orderBy('sprint.id')
-      .getRawMany();
-    // console.log('Previous sprint completed ***********************');
-    // console.log(previousSprintCompleted);
-     if(previousSprintCompleted.length==0 ||previousSprintCompleted==null){
-       console.log('ho gya')
-       return undefined;
-     }
-     else{
-    this.velocityComparisonResponse.Avg = this.getAverageVelocity(previousSprintCompleted);
-    this.velocityComparisonResponse = this.getVelocityData(sprintMetricsResponse);
-    return this.velocityComparisonResponse;
-     }
   }
-  
-}
 
   /**
    * getAverageVelocity method will calculate the average velocity
