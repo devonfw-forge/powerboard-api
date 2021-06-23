@@ -81,32 +81,43 @@ export class UserService extends TypeOrmCrudService<User> {
   }
 
   async addGuest(guest: AddGuestDTO): Promise<User> {
+    const guestRoleOBJ = (await this.userRoleRepository.findOne({ where: { roleName: 'guest_user' } })) as UserRole;
+
+    if (guest.role != guestRoleOBJ.id) {
+      throw new BadRequestException('User is not guest, Try diffrent method to register diffrent users');
+    }
+
     const actualUser = await this.findUser(guest.username);
     if (actualUser) {
-      throw new BadRequestException('user already exists');
+      throw new BadRequestException('user already registered');
     }
+
     var password = generator.generate({
       length: 6,
       numbers: true,
     });
-    console.log(password);
+
+    console.log('Password ->>>>>>>>>' + password);
     const salt = await genSalt(12);
     const hashPass = await hash(password, salt);
     let user = new User();
     user.username = guest.username;
     user.password = hashPass;
     user.email = guest.email;
-    const result = await this.userRepository.save(user);
+    try {
+      let result = await this.userRepository.save(user);
 
-    if (result) {
-      let userTeam = new UserTeam();
-      userTeam.user = result;
-      userTeam.role = (await this.userRoleRepository.findOne({ where: { id: guest.role } })) as UserRole;
-      const output = await this.userTeamRepository.save(userTeam);
-      console.log('Guessst Aa gye');
-      console.log(output);
+      if (result) {
+        let userTeam = new UserTeam();
+        userTeam.user = result;
+        userTeam.role = guestRoleOBJ;
+        const output = await this.userTeamRepository.save(userTeam);
+        console.log(output);
+      }
+      return result;
+    } catch (e) {
+      throw new BadRequestException(e.message);
     }
-    return result;
   }
   /**
    * deleteUserFromTeamById method will delete user , and system admin can do so
