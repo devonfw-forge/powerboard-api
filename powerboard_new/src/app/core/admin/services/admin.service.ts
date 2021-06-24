@@ -8,6 +8,9 @@ import { UserRolesDTO } from '../../user/model/dto/UserRolesDTO';
 import { Team } from '../../../teams/model/entities/team.entity';
 import { UpdateTeam } from '../../../teams/model/dto/updateTeam.interface';
 import { User } from '../../user/model/entities/user.entity';
+import { DeleteResult } from 'typeorm/query-builder/result/DeleteResult';
+import { TeamsMemberResponse } from '../../../shared/interfaces/teamMemberResponse';
+import { UpdateUserRoleDTO } from '../../user/model/dto/UpdateUserRoleDTO';
 
 @Injectable()
 export class AdminService {
@@ -31,8 +34,8 @@ export class AdminService {
    * @param {AddTeamDTO} .Takes AddTeamDTO as input
    * @return {Team} Created Team as response
    */
-  updateTeam(updateTeam: UpdateTeam): Promise<Team> {
-    return this.teamService.updateTeam(updateTeam);
+  async updateTeam(updateTeam: UpdateTeam): Promise<Team> {
+    return await this.teamService.updateTeam(updateTeam);
   }
 
   /**
@@ -58,12 +61,12 @@ export class AdminService {
    * @param {UpdateRole} .Takes UpdateRole as input
    * @return {boolean} .Return boolean as response
    */
-  updateUserRole(updateRole: any): boolean | PromiseLike<boolean> {
+  updateUserRole(updateRole: UpdateUserRoleDTO): Promise<boolean> {
     return this.userService.updateUserRole(updateRole);
   }
 
-  getAllUserRoles(): Promise<UserRolesDTO[]> {
-    return this.userService.getAllUserRoles();
+  async getAllUserRoles(): Promise<UserRolesDTO[]> {
+    return await this.userService.getAllUserRoles();
   }
 
   /**
@@ -79,11 +82,15 @@ export class AdminService {
    * @param {teamId} .Takes teamId as input
    * @return {TeamsMemberResponse[]} .Return array of team member as response
    */
-  getAllMemberOfTeam(teamId: string) {
-    return this.userService.getAllMemberOfTeam(teamId);
+  async getAllMemberOfTeam(teamId: string): Promise<TeamsMemberResponse[]> {
+    return await this.userService.getAllMemberOfTeam(teamId);
   }
 
-  getAllGuestUsers(): Promise<User[]> {
-    return this.userService.getAllGuestUsers();
+  async getAllGuestUsers(): Promise<User[]> {
+    return await this.userService.getAllGuestUsers();
+  }
+
+  async deleteGuestById(guestId: string): Promise<DeleteResult> {
+    return await this.userService.deleteGuestById(guestId);
   }
 }

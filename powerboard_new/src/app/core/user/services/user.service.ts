@@ -1,5 +1,5 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
-import { Repository } from 'typeorm';
+import { DeleteResult, Repository } from 'typeorm';
 import { User } from '../model/entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { TypeOrmCrudService } from '@nestjsx/crud-typeorm';
@@ -153,7 +153,7 @@ export class UserService extends TypeOrmCrudService<User> {
    * @param {teamId} .Takes teamId as input
    * @return {TeamsMemberResponse[]} .Return array of team member as response
    */
-  async getAllMemberOfTeam(teamId: string) {
+  async getAllMemberOfTeam(teamId: string): Promise<TeamsMemberResponse[]> {
     const result = (await this.userTeamRepository.find({ where: { team: teamId } })) as UserTeam[];
     if (result.length == 0) {
       throw new NotFoundException('Sorry for incovenience');
@@ -183,7 +183,6 @@ export class UserService extends TypeOrmCrudService<User> {
     let output: boolean;
     if (result) {
       userTeam.id = result.id;
-      // userTeam.accessRole = updateRoleDTO.accessRole;
       userTeam.role = (await this.userRoleRepository.findOne({ where: { id: updateRoleDTO.roleId } })) as UserRole;
       const exist = await this.userTeamRepository.save(userTeam);
       if (exist) {
@@ -241,9 +240,8 @@ export class UserService extends TypeOrmCrudService<User> {
       throw new NotFoundException('privileges not found');
     }
   }
-  async userInfoDetail(userId:string):Promise<any>
-  {
-     return await this.userInfoRepository.findOne({where:{userId: userId}}) as UserInfo;
+  async userInfoDetail(userId: string): Promise<any> {
+    return (await this.userInfoRepository.findOne({ where: { userId: userId } })) as UserInfo;
   }
   async changePassword(changePassword: ChangePasswordDTO): Promise<any> {
     const output = await this.userRepository.findOne({ where: { id: changePassword.userId } });
@@ -255,19 +253,17 @@ export class UserService extends TypeOrmCrudService<User> {
       user.password = hashPass;
       //user.isPasswordChanged = true;
       const result = await this.userRepository.save(user);
-      if(result)
-      {
+      if (result) {
         let userInfo = new UserInfo();
-        userInfo.userId =output.id
-           await this.userInfoRepository.save(userInfo)
+        userInfo.userId = output.id;
+        await this.userInfoRepository.save(userInfo);
+      } else {
+        console.log('User Not found');
+        throw new NotFoundException('User not found');
       }
-    else {
-      console.log('User Not found');
-      throw new NotFoundException('User not found');
+      return result;
     }
-    return result;
   }
-}
 
   async isAdminOrGuest(userId: string): Promise<boolean> {
     const output = (await this.userTeamRepository.findOne({ where: { user: userId } })) as UserTeam;
@@ -303,5 +299,13 @@ export class UserService extends TypeOrmCrudService<User> {
       guests[i] = userTeams[i].user;
     }
     return guests;
+  }
+
+  async deleteGuestById(guestId: string): Promise<DeleteResult> {
+    const user = (await this.userRepository.findOne({ where: { id: guestId } })) as User;
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    return await this.userRepository.delete(guestId);
   }
 }

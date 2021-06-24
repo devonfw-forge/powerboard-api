@@ -6,6 +6,8 @@ import { AdminService } from '../services/admin.service';
 import { UpdateTeam } from '../../../teams/model/dto/updateTeam.interface';
 
 import { User } from '../../user/model/entities/user.entity';
+import { TeamsMemberResponse } from '../../../shared/interfaces/teamMemberResponse';
+import { UpdateUserRoleDTO } from '../../user/model/dto/UpdateUserRoleDTO';
 
 @Controller('admin')
 export class AdminController {
@@ -49,9 +51,8 @@ export class AdminController {
 
   //View All Team member of team by SystemADMIN
   @Get('viewAllMemberOfTeam/:teamId')
-  async getAllMemberOfTeam(@Param('teamId') teamId: string): Promise<any> {
+  async getAllMemberOfTeam(@Param('teamId') teamId: string): Promise<TeamsMemberResponse[]> {
     const result = await this.adminService.getAllMemberOfTeam(teamId);
-    console.log(result);
     return result;
   }
 
@@ -66,7 +67,7 @@ export class AdminController {
 
   //Updating the role of user by system admin
   @Put('update/userRole')
-  async updateUserRole(@Body() updateRole: any, @Response() res: eResponse): Promise<void> {
+  async updateUserRole(@Body() updateRole: UpdateUserRoleDTO, @Response() res: eResponse): Promise<void> {
     const result = await this.adminService.updateUserRole(updateRole);
     if (result) {
       res.status(200).send();
@@ -84,5 +85,15 @@ export class AdminController {
   @Get('viewAllGuests')
   async getAllGuestUsers(): Promise<User[]> {
     return await this.adminService.getAllGuestUsers();
+  }
+
+  @Delete('delete/guest/:id')
+  async deleteGuestById(@Param('id') guestId: string, @Response() res: eResponse): Promise<void> {
+    const result = await this.adminService.deleteGuestById(guestId);
+    if (result.affected != null) {
+      res.status(200).send('Guest Successfully Deleted');
+    } else {
+      throw new BadRequestException('Not Deleted');
+    }
   }
 }
