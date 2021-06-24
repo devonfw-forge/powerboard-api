@@ -1,7 +1,7 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
-export class InsertData1624341559430 implements MigrationInterface {
-  name = 'InsertData1624341559430';
+export class InsertData1624522738738 implements MigrationInterface {
+  name = 'InsertData1624522738738';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(
@@ -22,16 +22,19 @@ export class InsertData1624341559430 implements MigrationInterface {
     );
 
     await queryRunner.query(
-      `INSERT INTO "team" ("id","team_code", "logo", "name", "ad_center_id") VALUES ('46455bf7-ada7-495c-8019-8d7ab76d488e' ,'10012345','uploads\\logo\\team_logof1421c16-7ce3-44ad-a94b-5231bcea6887.jpg','Diamler Devops','99055bf7-ada7-495c-8019-8d7ab62d488e');`,
+      `INSERT INTO "team" ("id","team_code", "project_key", "name", "ad_center_id") VALUES ('46455bf7-ada7-495c-8019-8d7ab76d488e' ,'10012345','P12343','Diamler Devops','99055bf7-ada7-495c-8019-8d7ab62d488e');`,
     );
     await queryRunner.query(
-      `INSERT INTO "team" ("id","team_code","logo", "name", "ad_center_id") VALUES ('46455bf7-ada7-495c-8019-8d7ab76d489e' ,'10012346','' ,'Devon Offshore','99055bf7-ada7-495c-8019-8d7ab62d488e');`,
+      `INSERT INTO "team" ("id","team_code","project_key", "name", "ad_center_id") VALUES ('46455bf7-ada7-495c-8019-8d7ab76d489e' ,'10012346','P1212' ,'Devon Offshore','99055bf7-ada7-495c-8019-8d7ab62d488e');`,
     );
     await queryRunner.query(
-      `INSERT INTO "team" ("id", "team_code","logo","name", "ad_center_id" ) VALUES ('46455bf7-ada7-495c-8019-8d7ab76d490e' ,'10012347','', 'K&N','99055bf7-ada7-495c-8019-8d7ab62d488e');`,
+      `INSERT INTO "team" ("id", "team_code","project_key","name", "ad_center_id" ) VALUES ('46455bf7-ada7-495c-8019-8d7ab76d490e' ,'10012347','P87695', 'K&N','99055bf7-ada7-495c-8019-8d7ab62d488e');`,
     );
     await queryRunner.query(
-      `INSERT INTO "team" ("id", "team_code","logo","name", "ad_center_id" ) VALUES ('46455bf7-ada7-495c-8019-8d7ab76d491e' ,'10033347','', 'BMW','98755bf7-ada7-495c-8019-8d7ab62d488e');`,
+      `INSERT INTO "team" ("id", "team_code","project_key","name", "ad_center_id" ) VALUES ('46455bf7-ada7-495c-8019-8d7ab76d491e' ,'10033347','P43567', 'BMW','98755bf7-ada7-495c-8019-8d7ab62d488e');`,
+    );
+    await queryRunner.query(
+      `INSERT INTO "team" ("id", "team_code","project_key","name", "ad_center_id" ) VALUES ('fe4f8120-8a2c-47ad-bad7-86e412e323c1' ,'9900918','P112461', 'Maruti','98955bf7-ada7-495c-8019-8d7ab62d488e');`,
     );
 
     await queryRunner.query(
@@ -246,6 +249,10 @@ export class InsertData1624341559430 implements MigrationInterface {
       `INSERT INTO "user"("id", "username", "password", "email","is_password_changed") Values('e46622d4-8936-4f9f-ac18-696a35d7162e', 'guest' ,'$2b$12$ilSmP0sQ7qD.hmnrUS788OaQhDBn/jv.LyPG162xtrYe9FLyBCUKi','guest@mail.com',true);`,
     );
 
+    await queryRunner.query(
+      `INSERT INTO "user"("id", "username", "password", "email","is_password_changed") Values('7abb7f82-f23b-41e9-8d76-a81db67fed35', 'azhar11' ,'$2b$12$asXrvnlEmktvu8iMQqBT3.QfjHVoGr3dQecf8fzg2hZ3nE8tyNCXW','azhar123@mail.com',false);`,
+    );
+
     //Here role table entry is there
     await queryRunner.query(
       `INSERT INTO "user_role"("id", "role_name") Values('555f1dfd-43e9-4cc4-8257-a6ba5c70e34d','team_member' );`,
@@ -275,6 +282,9 @@ export class InsertData1624341559430 implements MigrationInterface {
     );
     await queryRunner.query(
       `INSERT INTO "user_team"("id" ,"user_Id", "team_Id" ,"user_role_id") Values('764f1dfd-43e9-4cc4-8257-a6ba5c70e33d','11cf1dfd-43e9-4cc4-8257-a6ba5c70e33d','46455bf7-ada7-495c-8019-8d7ab76d490e','556f1dfd-43e9-4cc4-8257-a6ba5c70e34d');`,
+    );
+    await queryRunner.query(
+      `INSERT INTO "user_team"("id" ,"user_Id", "team_Id" ,"user_role_id") Values('2d7fa841-43ad-4da9-ac7f-d34c748a4049','7abb7f82-f23b-41e9-8d76-a81db67fed35','fe4f8120-8a2c-47ad-bad7-86e412e323c1','556f1dfd-43e9-4cc4-8257-a6ba5c70e34d');`,
     );
 
     //Here we are adding privileges
