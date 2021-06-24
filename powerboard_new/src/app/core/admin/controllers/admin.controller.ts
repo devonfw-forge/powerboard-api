@@ -5,6 +5,8 @@ import { Response as eResponse } from 'express';
 import { AdminService } from '../services/admin.service';
 import { UpdateTeam } from '../../../teams/model/dto/updateTeam.interface';
 
+import { User } from '../../user/model/entities/user.entity';
+
 @Controller('admin')
 export class AdminController {
   constructor(private adminService: AdminService) {}
@@ -77,5 +79,10 @@ export class AdminController {
   @Get('viewAllUserRoles')
   async getAllUserRoles(): Promise<UserRolesDTO[]> {
     return await this.adminService.getAllUserRoles();
+  }
+
+  @Get('viewAllGuests')
+  async getAllGuestUsers(): Promise<User[]> {
+    return await this.adminService.getAllGuestUsers();
   }
 }

@@ -14,6 +14,7 @@ import { UpdateUserRoleDTO } from '../model/dto/UpdateUserRoleDTO';
 import { UserRolesDTO } from '../model/dto/UserRolesDTO';
 import { TeamSpiritCrudService } from '../../../dashboard/team-spirit-integration/services/team-spirit.crud.service';
 import { TeamSpiritUserDTO } from '../../../dashboard/team-spirit-integration/model/dto/TeamSpiritUserDTO';
+
 var generator = require('generate-password');
 @Injectable()
 export class UserService extends TypeOrmCrudService<User> {
@@ -273,5 +274,20 @@ export class UserService extends TypeOrmCrudService<User> {
       rolesList.push(userRole);
     }
     return rolesList;
+  }
+
+  async getAllGuestUsers(): Promise<User[]> {
+    let guests: User[] = [];
+    const guestRoleOBJ = (await this.userRoleRepository.findOne({ where: { roleName: 'guest_user' } })) as UserRole;
+    const userTeams = (await this.userTeamRepository.find({ where: { role: guestRoleOBJ.id } })) as UserTeam[];
+
+    if (userTeams.length == 0) {
+      throw new NotFoundException('Guests not found');
+    }
+
+    for (let i = 0; i < userTeams.length; i++) {
+      guests[i] = userTeams[i].user;
+    }
+    return guests;
   }
 }

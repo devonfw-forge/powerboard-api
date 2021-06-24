@@ -7,6 +7,7 @@ import { UserService } from '../../user/services/user.service';
 import { UserRolesDTO } from '../../user/model/dto/UserRolesDTO';
 import { Team } from '../../../teams/model/entities/team.entity';
 import { UpdateTeam } from '../../../teams/model/dto/updateTeam.interface';
+import { User } from '../../user/model/entities/user.entity';
 
 @Injectable()
 export class AdminService {
@@ -80,5 +81,9 @@ export class AdminService {
    */
   getAllMemberOfTeam(teamId: string) {
     return this.userService.getAllMemberOfTeam(teamId);
+  }
+
+  getAllGuestUsers(): Promise<User[]> {
+    return this.userService.getAllGuestUsers();
   }
 }
