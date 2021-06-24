@@ -6,6 +6,7 @@ import { UserService } from '../../user/services/user.service';
 
 import { UserRolesDTO } from '../../user/model/dto/UserRolesDTO';
 import { Team } from '../../../teams/model/entities/team.entity';
+import { UpdateTeam } from '../../../teams/model/dto/updateTeam.interface';
 
 @Injectable()
 export class AdminService {
@@ -29,7 +30,7 @@ export class AdminService {
    * @param {AddTeamDTO} .Takes AddTeamDTO as input
    * @return {Team} Created Team as response
    */
-  updateTeam(updateTeam: AddTeam): any {
+  updateTeam(updateTeam: UpdateTeam): Promise<Team> {
     return this.teamService.updateTeam(updateTeam);
   }
 

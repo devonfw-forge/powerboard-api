@@ -35,6 +35,7 @@ import { TeamSpiritResponse } from '../../dashboard/team-spirit-integration/mode
 import { TeamSpiritCrudService } from '../../dashboard/team-spirit-integration/services/team-spirit.crud.service';
 import { TeamSpiritUserDTO } from '../../dashboard/team-spirit-integration/model/dto/TeamSpiritUserDTO';
 import { TeamDTO } from '../../dashboard/team-spirit-integration/model/dto/TeamDTO';
+import { UpdateTeam } from '../model/dto/updateTeam.interface';
 
 @Injectable()
 export class TeamCrudService extends TypeOrmCrudService<Team> {
@@ -302,18 +303,22 @@ export class TeamCrudService extends TypeOrmCrudService<Team> {
    * @param {AddTeamDTO} .Takes AddTeamDTO as input
    * @return {Team} Created Team as response
    */
-  async updateTeam(updateTeam: AddTeam): Promise<any> {
-    const value = updateTeam.teamCode;
-    const result = await this.teamRepository.findOne({ where: { teamCode: value } });
+  async updateTeam(updateTeam: UpdateTeam): Promise<Team> {
+    const teamId = updateTeam.teamId;
+    const result = (await this.teamRepository.findOne({ where: { id: teamId } })) as Team;
     let team = new Team();
-    if (result) {
-      team.id = result.id;
+    if (!result) {
+      throw new NotFoundException('Team Not Found');
     }
-    team.name = updateTeam.teamName;
+    team.id = result.id;
     team.teamCode = updateTeam.teamCode;
     team.projectKey = updateTeam.projectKey;
     team.ad_center = updateTeam.ad_center;
-    return await this.teamRepository.save(team);
+    try {
+      return await this.teamRepository.save(team);
+    } catch (e) {
+      throw new BadRequestException(e.message);
+    }
   }
 
   async viewTeamsInADC(teamId: string) {

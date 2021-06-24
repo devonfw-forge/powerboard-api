@@ -3,6 +3,7 @@ import { AddTeam } from '../../../shared/interfaces/addTeam.interface';
 import { UserRolesDTO } from '../../user/model/dto/UserRolesDTO';
 import { Response as eResponse } from 'express';
 import { AdminService } from '../services/admin.service';
+import { UpdateTeam } from '../../../teams/model/dto/updateTeam.interface';
 
 @Controller('admin')
 export class AdminController {
@@ -35,8 +36,13 @@ export class AdminController {
 
   //Update the team by System ADMIN
   @Put('team/update')
-  async updateTheteam(@Body() updateTeam: AddTeam): Promise<any> {
-    return await this.adminService.updateTeam(updateTeam);
+  async updateTeam(@Body() updateTeam: UpdateTeam, @Response() res: eResponse): Promise<void> {
+    const result = await this.adminService.updateTeam(updateTeam);
+    if (result) {
+      res.status(200).send('Team successfully updated');
+    } else {
+      throw new BadRequestException('Your request cannot be processed, Sorry for inconvenience');
+    }
   }
 
   //View All Team member of team by SystemADMIN
