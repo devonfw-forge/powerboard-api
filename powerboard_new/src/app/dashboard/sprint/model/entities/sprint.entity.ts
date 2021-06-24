@@ -19,7 +19,7 @@ export class Sprint extends BaseEntity {
   @Column('timestamp', { nullable: false })
   end_date!: string;
 
-  @ManyToOne(() => Team, { eager: true })
+  @ManyToOne(() => Team, { eager: true ,onDelete:"CASCADE"})
   @JoinColumn({ name: 'team_id', referencedColumnName: 'id' })
   team!: Team;
 

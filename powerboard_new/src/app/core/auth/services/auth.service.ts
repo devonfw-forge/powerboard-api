@@ -56,14 +56,20 @@ export class AuthService {
    */
 
   async login(user: LoginDTO): Promise<any> {
+    let isPassword:boolean= false;
     const payload = await this.validateUser(user.username!, user.password!);
     if (payload) {
       const accessToken = await this.signIn(user.username, user.password);
+      const userInfo = await this.userService.userInfoDetail(payload.id)
+      if(userInfo)
+      {
+         isPassword=true
+      }
       const userTeam = await this.userService.findUserTeamsByUserId(payload.id);
       if (userTeam[0].team == null) {
-        return this.systemAdminGuestUserLogin(userTeam[0], accessToken);
+        return this.systemAdminGuestUserLogin(userTeam[0], accessToken, isPassword);
       } else {
-        return this.teamMemberTeamAdminLogin(userTeam, accessToken, payload);
+        return this.teamMemberTeamAdminLogin(userTeam, accessToken, payload, isPassword);
       }
     } else {
       throw new UnauthorizedException('Wrong username or password, Please try again');
@@ -73,10 +79,10 @@ export class AuthService {
   /**
    * systemAdminGuestUserLogin method will return LoginResponse for system admin and guest user login
    */
-  async systemAdminGuestUserLogin(userTeam: UserTeam, accessToken: string) {
+  async systemAdminGuestUserLogin(userTeam: UserTeam, accessToken: string, isPassword:boolean) {
     let loginResponse: LoginResponse = {} as LoginResponse;
     loginResponse.userId = userTeam.user.id;
-    loginResponse.isPasswordChanged = userTeam.user.isPasswordChanged;
+    loginResponse.isPasswordChanged = isPassword;
     loginResponse.My_Center = undefined;
     loginResponse.My_Team = [];
     loginResponse.ADC_List = await this.centerService.getAllCenters();
@@ -88,7 +94,7 @@ export class AuthService {
   /**
    * teamMemberTeamAdminLogin method will return LoginResponse for team member and team admin login
    */
-  async teamMemberTeamAdminLogin(userTeam: UserTeam[], accessToken: string, payload: User) {
+  async teamMemberTeamAdminLogin(userTeam: UserTeam[], accessToken: string, payload: User, isPassword:boolean) {
     let teamsDTOArray = [],
       i;
     if (userTeam.length >= 1) {
@@ -103,17 +109,17 @@ export class AuthService {
         teamsWithinUser = {} as MyProject;
       }
       let teamId = teamsDTOArray[0].teamId;
-      const loginResponse = await this.loginDetailsForTeamMemberAdmin(teamId, teamsDTOArray, payload);
+      const loginResponse = await this.loginDetailsForTeamMemberAdmin(teamId, teamsDTOArray, payload, isPassword);
       return { loginResponse, accessToken };
     }
   }
   /**
    * loginDetailsForTeamMemberAdmin method will return LoginResponse for team member and team admin login
    */
-  async loginDetailsForTeamMemberAdmin(teamId: string, teamsDTOArray: MyProject[], payload: User) {
+  async loginDetailsForTeamMemberAdmin(teamId: string, teamsDTOArray: MyProject[], payload: User, isPassword:boolean) {
     let loginResponse: LoginResponse = {} as LoginResponse;
     loginResponse.userId = payload.id;
-    loginResponse.isPasswordChanged = payload.isPasswordChanged;
+    loginResponse.isPasswordChanged = isPassword;
     loginResponse.My_Center = await this.teamService.myCenter(teamId);
     loginResponse.My_Team = teamsDTOArray;
     loginResponse.Teams_In_ADC = await this.teamService.viewTeamsInADC(teamId);

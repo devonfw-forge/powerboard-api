@@ -1,12 +1,13 @@
 import {MigrationInterface, QueryRunner} from "typeorm";
 
-export class CreateTables1624522719433 implements MigrationInterface {
-    name = 'CreateTables1624522719433'
+export class CreateTables1624534745394 implements MigrationInterface {
+    name = 'CreateTables1624534745394'
 
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.query(`CREATE TABLE "privileges" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "version" integer NOT NULL DEFAULT '1', "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "privilege_name" character varying(255) NOT NULL, "privilege_description" character varying(1000), CONSTRAINT "PK_13f3ff98ae4d5565ec5ed6036cd" PRIMARY KEY ("id"))`);
+        await queryRunner.query(`CREATE TABLE "user_info" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "version" integer NOT NULL DEFAULT '1', "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "user_id" uuid NOT NULL, CONSTRAINT "PK_273a06d6cdc2085ee1ce7638b24" PRIMARY KEY ("id"))`);
         await queryRunner.query(`CREATE TABLE "user_role" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "version" integer NOT NULL DEFAULT '1', "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "role_name" character varying(255) NOT NULL, "role_description" character varying(1000), CONSTRAINT "PK_fb2e442d14add3cefbdf33c4561" PRIMARY KEY ("id"))`);
-        await queryRunner.query(`CREATE TABLE "user" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "version" integer NOT NULL DEFAULT '1', "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "username" character varying(255) NOT NULL, "password" character varying(255) NOT NULL, "email" character varying(255), "is_password_changed" boolean NOT NULL DEFAULT false, CONSTRAINT "UQ_78a916df40e02a9deb1c4b75edb" UNIQUE ("username"), CONSTRAINT "UQ_e12875dfb3b1d92d7d7c5377e22" UNIQUE ("email"), CONSTRAINT "PK_cace4a159ff9f2512dd42373760" PRIMARY KEY ("id"))`);
+        await queryRunner.query(`CREATE TABLE "user" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "version" integer NOT NULL DEFAULT '1', "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "username" character varying(255) NOT NULL, "password" character varying(255) NOT NULL, "email" character varying(255), CONSTRAINT "UQ_78a916df40e02a9deb1c4b75edb" UNIQUE ("username"), CONSTRAINT "UQ_e12875dfb3b1d92d7d7c5377e22" UNIQUE ("email"), CONSTRAINT "PK_cace4a159ff9f2512dd42373760" PRIMARY KEY ("id"))`);
         await queryRunner.query(`CREATE TABLE "business_unit" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "version" integer NOT NULL DEFAULT '1', "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "name" character varying(255), "parent_id" character varying, "root_parent_id" character varying, CONSTRAINT "PK_842dd03ad7a179a295f55c01008" PRIMARY KEY ("id"))`);
         await queryRunner.query(`CREATE TABLE "ad_center" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "version" integer NOT NULL DEFAULT '1', "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "name" character varying(255) NOT NULL, "business_id" uuid, CONSTRAINT "PK_e55cde54b4029f701207982ef40" PRIMARY KEY ("id"))`);
         await queryRunner.query(`CREATE TABLE "team" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "version" integer NOT NULL DEFAULT '1', "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "name" character varying(255) NOT NULL, "team_code" character varying(255) NOT NULL, "project_key" character varying(255), "logo" character varying(3000), "ad_center_id" uuid, CONSTRAINT "UQ_cf461f5b40cf1a2b8876011e1e1" UNIQUE ("name"), CONSTRAINT "UQ_1fdf0262e1eb23aea0b091ea685" UNIQUE ("team_code"), CONSTRAINT "UQ_89241d424525c5c594fed241a6f" UNIQUE ("project_key"), CONSTRAINT "PK_f57d8293406df4af348402e4b74" PRIMARY KEY ("id"))`);
@@ -30,18 +31,18 @@ export class CreateTables1624522719433 implements MigrationInterface {
         await queryRunner.query(`CREATE INDEX "IDX_b5953b98d1159f75a3156d071a" ON "user_role_privilege" ("role_id") `);
         await queryRunner.query(`CREATE INDEX "IDX_97a74e8a9913478806bd9258de" ON "user_role_privilege" ("privilege_id") `);
         await queryRunner.query(`ALTER TABLE "ad_center" ADD CONSTRAINT "FK_981851c0e0af71d8c3a0088df19" FOREIGN KEY ("business_id") REFERENCES "business_unit"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
-        await queryRunner.query(`ALTER TABLE "team" ADD CONSTRAINT "FK_8e571805766848ea10996a178d4" FOREIGN KEY ("ad_center_id") REFERENCES "ad_center"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
-        await queryRunner.query(`ALTER TABLE "user_team" ADD CONSTRAINT "FK_f7c7dca694de337fa4a89d73ec8" FOREIGN KEY ("user_Id") REFERENCES "user"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
-        await queryRunner.query(`ALTER TABLE "user_team" ADD CONSTRAINT "FK_8d8673f465f0797bf6126766c96" FOREIGN KEY ("team_Id") REFERENCES "team"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
+        await queryRunner.query(`ALTER TABLE "team" ADD CONSTRAINT "FK_8e571805766848ea10996a178d4" FOREIGN KEY ("ad_center_id") REFERENCES "ad_center"("id") ON DELETE CASCADE ON UPDATE NO ACTION`);
+        await queryRunner.query(`ALTER TABLE "user_team" ADD CONSTRAINT "FK_f7c7dca694de337fa4a89d73ec8" FOREIGN KEY ("user_Id") REFERENCES "user"("id") ON DELETE CASCADE ON UPDATE NO ACTION`);
+        await queryRunner.query(`ALTER TABLE "user_team" ADD CONSTRAINT "FK_8d8673f465f0797bf6126766c96" FOREIGN KEY ("team_Id") REFERENCES "team"("id") ON DELETE CASCADE ON UPDATE NO ACTION`);
         await queryRunner.query(`ALTER TABLE "user_team" ADD CONSTRAINT "FK_0c4cda0f5bdb141e7cdccb9c563" FOREIGN KEY ("user_role_id") REFERENCES "user_role"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
         await queryRunner.query(`ALTER TABLE "daily_meeting" ADD CONSTRAINT "FK_0654efb07db0f680ea953c810c6" FOREIGN KEY ("daily_team_id") REFERENCES "team"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
         await queryRunner.query(`ALTER TABLE "sprint" ADD CONSTRAINT "FK_39768350e23ee9800f4b30bb94f" FOREIGN KEY ("status") REFERENCES "sprint_status"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
-        await queryRunner.query(`ALTER TABLE "sprint" ADD CONSTRAINT "FK_738321a380b6d8e5266516b5302" FOREIGN KEY ("team_id") REFERENCES "team"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
+        await queryRunner.query(`ALTER TABLE "sprint" ADD CONSTRAINT "FK_738321a380b6d8e5266516b5302" FOREIGN KEY ("team_id") REFERENCES "team"("id") ON DELETE CASCADE ON UPDATE NO ACTION`);
         await queryRunner.query(`ALTER TABLE "sprint" ADD CONSTRAINT "FK_b376aaa2ef5e4724f3508cf5f33" FOREIGN KEY ("work_unit") REFERENCES "sprint_work_unit"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
         await queryRunner.query(`ALTER TABLE "client_status" ADD CONSTRAINT "FK_16a31ed3a3cc5249369bbd25c9a" FOREIGN KEY ("sprintId") REFERENCES "sprint"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
-        await queryRunner.query(`ALTER TABLE "code_quality_snapshot" ADD CONSTRAINT "FK_03be61d9d46dd39f1f355862e32" FOREIGN KEY ("team_id") REFERENCES "team"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
-        await queryRunner.query(`ALTER TABLE "sprint_snapshot" ADD CONSTRAINT "FK_fb748d58ef594e8505aa9970d98" FOREIGN KEY ("sprint_id") REFERENCES "sprint"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
-        await queryRunner.query(`ALTER TABLE "sprint_snapshot_metric" ADD CONSTRAINT "FK_ea96cf0fa988134725f6ad0984b" FOREIGN KEY ("snapshot_id") REFERENCES "sprint_snapshot"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
+        await queryRunner.query(`ALTER TABLE "code_quality_snapshot" ADD CONSTRAINT "FK_03be61d9d46dd39f1f355862e32" FOREIGN KEY ("team_id") REFERENCES "team"("id") ON DELETE CASCADE ON UPDATE NO ACTION`);
+        await queryRunner.query(`ALTER TABLE "sprint_snapshot" ADD CONSTRAINT "FK_fb748d58ef594e8505aa9970d98" FOREIGN KEY ("sprint_id") REFERENCES "sprint"("id") ON DELETE CASCADE ON UPDATE NO ACTION`);
+        await queryRunner.query(`ALTER TABLE "sprint_snapshot_metric" ADD CONSTRAINT "FK_ea96cf0fa988134725f6ad0984b" FOREIGN KEY ("snapshot_id") REFERENCES "sprint_snapshot"("id") ON DELETE CASCADE ON UPDATE NO ACTION`);
         await queryRunner.query(`ALTER TABLE "sprint_snapshot_metric" ADD CONSTRAINT "FK_32ee1ecd7212edf6dad1a86ee6a" FOREIGN KEY ("metric_id") REFERENCES "sprint_metric"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
         await queryRunner.query(`ALTER TABLE "team_spirit_median" ADD CONSTRAINT "FK_103f28512266352104e3edea624" FOREIGN KEY ("team_name") REFERENCES "team"("name") ON DELETE NO ACTION ON UPDATE NO ACTION`);
         await queryRunner.query(`ALTER TABLE "team_spirit" ADD CONSTRAINT "FK_c258101a9e329fc1cf1ca460195" FOREIGN KEY ("sprint_id") REFERENCES "sprint"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
@@ -100,6 +101,7 @@ export class CreateTables1624522719433 implements MigrationInterface {
         await queryRunner.query(`DROP TABLE "business_unit"`);
         await queryRunner.query(`DROP TABLE "user"`);
         await queryRunner.query(`DROP TABLE "user_role"`);
+        await queryRunner.query(`DROP TABLE "user_info"`);
         await queryRunner.query(`DROP TABLE "privileges"`);
     }
 

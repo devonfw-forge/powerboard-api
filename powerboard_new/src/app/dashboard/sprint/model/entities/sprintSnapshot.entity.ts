@@ -4,7 +4,7 @@ import { Sprint } from './sprint.entity';
 
 @Entity()
 export class SprintSnapshot extends BaseEntity {
-  @ManyToOne(() => Sprint, { eager: false })
+  @ManyToOne(() => Sprint, { eager: false, onDelete:"CASCADE"})
   @JoinColumn({ name: 'sprint_id', referencedColumnName: 'id' })
   sprint!: Sprint;
 

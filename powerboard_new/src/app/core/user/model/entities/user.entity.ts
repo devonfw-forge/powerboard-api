@@ -15,9 +15,6 @@ export class User extends BaseEntity {
   @Column('varchar', { length: 255, nullable: true ,unique:true})
   email!: string;
 
-  @Column('boolean', { name: 'is_password_changed',default:false })
-  isPasswordChanged!:boolean;
-
   @OneToMany(() => UserTeam, userteam => userteam.user, { nullable: true })
   userTeam!: UserTeam[];
 

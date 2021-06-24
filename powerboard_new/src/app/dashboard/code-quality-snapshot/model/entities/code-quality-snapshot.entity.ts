@@ -16,7 +16,7 @@ export class CodeQualitySnapshot extends BaseEntity {
   @Column('varchar', { length: 255, nullable: false })
   status!: string;
 
-  @ManyToOne(() => Team, { eager: true })
+  @ManyToOne(() => Team, { eager: true,onDelete:"CASCADE" })
   @JoinColumn({ name: 'team_id', referencedColumnName: 'id' })
   team!: Team;
 

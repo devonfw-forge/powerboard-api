@@ -17,7 +17,7 @@ export class Team extends BaseEntity {
   @Column('varchar', { length: 3000, nullable: true })
   logo!: string;
 
-  @ManyToOne(() => ADCenter, { eager: true })
+  @ManyToOne(() => ADCenter, { eager: true,onDelete:"CASCADE" })
   @JoinColumn({ name: 'ad_center_id', referencedColumnName: 'id' })
   ad_center!: ADCenter;
 

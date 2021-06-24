@@ -14,6 +14,7 @@ import { UpdateUserRoleDTO } from '../model/dto/UpdateUserRoleDTO';
 import { UserRolesDTO } from '../model/dto/UserRolesDTO';
 import { TeamSpiritCrudService } from '../../../dashboard/team-spirit-integration/services/team-spirit.crud.service';
 import { TeamSpiritUserDTO } from '../../../dashboard/team-spirit-integration/model/dto/TeamSpiritUserDTO';
+import { UserInfo } from '../model/entities/user_info.entity';
 
 var generator = require('generate-password');
 @Injectable()
@@ -22,6 +23,7 @@ export class UserService extends TypeOrmCrudService<User> {
     @InjectRepository(User) private readonly userRepository: Repository<User>,
     @InjectRepository(UserTeam) private readonly userTeamRepository: Repository<UserTeam>,
     @InjectRepository(UserRole) private readonly userRoleRepository: Repository<UserRole>,
+    @InjectRepository(UserInfo) private readonly userInfoRepository: Repository<UserInfo>,
     private readonly teamSpiritService: TeamSpiritCrudService,
   ) {
     super(userRepository);
@@ -239,6 +241,10 @@ export class UserService extends TypeOrmCrudService<User> {
       throw new NotFoundException('privileges not found');
     }
   }
+  async userInfoDetail(userId:string):Promise<any>
+  {
+     return await this.userInfoRepository.findOne({where:{userId: userId}}) as UserInfo;
+  }
   async changePassword(changePassword: ChangePasswordDTO): Promise<any> {
     const output = await this.userRepository.findOne({ where: { id: changePassword.userId } });
     const user = new User();
@@ -247,13 +253,21 @@ export class UserService extends TypeOrmCrudService<User> {
       const salt = await genSalt(12);
       const hashPass = await hash(changePassword.newPassword, salt);
       user.password = hashPass;
-      user.isPasswordChanged = true;
-      return await this.userRepository.save(user);
-    } else {
+      //user.isPasswordChanged = true;
+      const result = await this.userRepository.save(user);
+      if(result)
+      {
+        let userInfo = new UserInfo();
+        userInfo.userId =output.id
+           await this.userInfoRepository.save(userInfo)
+      }
+    else {
       console.log('User Not found');
       throw new NotFoundException('User not found');
     }
+    return result;
   }
+}
 
   async isAdminOrGuest(userId: string): Promise<boolean> {
     const output = (await this.userTeamRepository.findOne({ where: { user: userId } })) as UserTeam;

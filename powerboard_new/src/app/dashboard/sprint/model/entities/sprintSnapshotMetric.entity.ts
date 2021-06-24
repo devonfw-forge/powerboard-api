@@ -5,7 +5,7 @@ import { SprintMetric } from './sprint_metric.entity';
 
 @Entity()
 export class SprintSnapshotMetric extends BaseEntity {
-  @ManyToOne(() => SprintSnapshot, { eager: false })
+  @ManyToOne(() => SprintSnapshot, { eager: false,onDelete:"CASCADE" })
   @JoinColumn({ name: 'snapshot_id', referencedColumnName: 'id' })
   snapshot!: SprintSnapshot;
 
