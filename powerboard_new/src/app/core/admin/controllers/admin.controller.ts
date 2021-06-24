@@ -49,8 +49,11 @@ export class AdminController {
 
   //Delete user of particular team
   @Delete('delete/userTeam/:id')
-  async deleteUserFromTeamById(@Param('id') userTeamId: string): Promise<any> {
-    return await this.adminService.deleteUserFromTeamById(userTeamId);
+  async deleteUserFromTeamById(@Param('id') userTeamId: string, @Response() res: eResponse): Promise<any> {
+    const result = await this.adminService.deleteUserFromTeamById(userTeamId);
+    if (result) {
+      res.status(200).send();
+    }
   }
 
   //Updating the role of user by system admin

@@ -22,10 +22,12 @@ export class AuthController {
 
   //Add the user
   @Post('register')
-  async register(@Body() user: UserDTO): Promise<User> {
+  async register(@Body() user: UserDTO, @Response() res: eResponse): Promise<void> {
     try {
       const registered = await this.authService.register(user);
-      return registered;
+      if (registered) {
+        res.status(201).send('Users successfully Registered');
+      }
     } catch (e) {
       throw new BadRequestException(e.message);
     }

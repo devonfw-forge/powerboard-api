@@ -12,6 +12,8 @@ import { UserRole } from '../model/entities/user_role.entity';
 import { AddGuestDTO } from '../model/dto/AddGuestDTO';
 import { UpdateUserRoleDTO } from '../model/dto/UpdateUserRoleDTO';
 import { UserRolesDTO } from '../model/dto/UserRolesDTO';
+import { TeamSpiritCrudService } from '../../../dashboard/team-spirit-integration/services/team-spirit.crud.service';
+import { TeamSpiritUserDTO } from '../../../dashboard/team-spirit-integration/model/dto/TeamSpiritUserDTO';
 var generator = require('generate-password');
 @Injectable()
 export class UserService extends TypeOrmCrudService<User> {
@@ -19,6 +21,7 @@ export class UserService extends TypeOrmCrudService<User> {
     @InjectRepository(User) private readonly userRepository: Repository<User>,
     @InjectRepository(UserTeam) private readonly userTeamRepository: Repository<UserTeam>,
     @InjectRepository(UserRole) private readonly userRoleRepository: Repository<UserRole>,
+    private readonly teamSpiritService: TeamSpiritCrudService,
   ) {
     super(userRepository);
   }
@@ -36,34 +39,25 @@ export class UserService extends TypeOrmCrudService<User> {
    * @param {UserDTO} .Takes as input
    * @return {User} created User as response
    */
-  async registerUser(userDTO: UserDTO): Promise<User> {
+  async registerUser(userDTO: UserDTO): Promise<any> {
     const actualUser = await this.findUser(userDTO.username);
     if (actualUser) {
+      console.log(actualUser);
       return this.addUserToOtherTeam(actualUser, userDTO);
     }
-    var password = generator.generate({
-      length: 6,
-      numbers: true,
-    });
+    var password = generator.generate({ length: 6, numbers: true });
     console.log(password);
     console.log('kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk');
     const salt = await genSalt(12);
     const hashPass = await hash(password, salt);
-    console.log(hashPass);
     let user = new User();
     user.username = userDTO.username;
     user.password = hashPass;
     user.email = userDTO.email;
     const result = await this.userRepository.save(user);
-
     if (result) {
-      let userTeam = new UserTeam();
-      userTeam.user = result;
-      userTeam.role = (await this.userRoleRepository.findOne({ where: { id: userDTO.role } })) as UserRole;
-      userTeam.team = userDTO.team;
-      await this.userTeamRepository.save(userTeam);
+      return this.addUserToOtherTeam(result, userDTO);
     }
-    return result;
   }
 
   /**
@@ -71,13 +65,31 @@ export class UserService extends TypeOrmCrudService<User> {
    * @param {User, UserDTO} .Takes as input
    * @return {UserTeam} UserTeam as response
    */
-  async addUserToOtherTeam(actualUser: User | undefined, userDTO: UserDTO): Promise<any> {
+  async addUserToOtherTeam(actualUser: User, userDTO: UserDTO): Promise<any> {
     let userTeam = new UserTeam();
+    userTeam.user = actualUser;
+    const roleObj = (await this.userRoleRepository.findOne({ where: { id: userDTO.role } })) as UserRole;
+    if (roleObj.roleName == 'team_admin') {
+      let teamSpiritUserDTO1 = {} as TeamSpiritUserDTO;
+      teamSpiritUserDTO1.Email = 'adminTeamSpirit@capgemini.com';
+      teamSpiritUserDTO1.Password = 'TeamSpiritAdmin!';
+      const token = await this.teamSpiritService.loginToTeamSpirit(teamSpiritUserDTO1);
+      console.log(token);
+      console.log('------------------------');
+      if (token) {
+        let teamSpiritUserDTO = new TeamSpiritUserDTO();
+        teamSpiritUserDTO.Email = userDTO.email;
+        teamSpiritUserDTO.Full_Name = userDTO.fullName;
+        teamSpiritUserDTO.Password = actualUser.password;
+        console.log(teamSpiritUserDTO);
+        const result = await this.teamSpiritService.addUserToTeam(teamSpiritUserDTO, userDTO.team.name);
+        console.log(result);
+        console.log('((((((((((((((((((((((((((((((((');
+      }
+    }
+    userTeam.role = roleObj;
     userTeam.team = userDTO.team;
-    userTeam.role = (await this.userRoleRepository.findOne({ where: { id: userDTO.role } })) as UserRole;
-    userTeam.user = actualUser!;
-    const output = await this.userTeamRepository.save(userTeam);
-    return output;
+    return await this.userTeamRepository.save(userTeam);
   }
 
   async addGuest(guest: AddGuestDTO): Promise<User> {
@@ -125,7 +137,12 @@ export class UserService extends TypeOrmCrudService<User> {
    * @return {void}
    */
   async deleteUserFromTeamById(id: string): Promise<any> {
-    return await this.userTeamRepository.delete(id);
+    const userTeam = (await this.userTeamRepository.findOne({ where: { id: id } })) as UserTeam;
+    if (!userTeam) {
+      throw new NotFoundException('user not found for that tam');
+    } else {
+      return await this.userTeamRepository.delete(id);
+    }
   }
 
   /**
@@ -135,6 +152,9 @@ export class UserService extends TypeOrmCrudService<User> {
    */
   async getAllMemberOfTeam(teamId: string) {
     const result = (await this.userTeamRepository.find({ where: { team: teamId } })) as UserTeam[];
+    if (result.length == 0) {
+      throw new NotFoundException('Sorry for incovenience');
+    }
     let teamsMemberResponse: TeamsMemberResponse = {} as TeamsMemberResponse;
     let teamMemberList = [],
       i;
@@ -145,7 +165,6 @@ export class UserService extends TypeOrmCrudService<User> {
       teamsMemberResponse.roleId = result[i].role.id;
       teamsMemberResponse.userName = result[i].user.username;
       teamsMemberResponse.email = result[i].user.email;
-      // teamsMemberResponse.accessRole = result[i].accessRole;
       teamMemberList.push(teamsMemberResponse);
 
       teamsMemberResponse = {} as TeamsMemberResponse;
