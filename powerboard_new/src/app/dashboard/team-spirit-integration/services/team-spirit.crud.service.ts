@@ -45,15 +45,8 @@ export class TeamSpiritCrudService extends TypeOrmCrudService<TeamSpiritMedian> 
         return resp.data;
       });
     console.log('This is config ' + this.config);
-    console.log('This is headers Authorization' + this.config.headers.Authorization);
-    return this.config.headers.Authorization;
-  }
-
-  checkingConfig() {
-    console.log('Config Object');
-    console.log(this.config);
     console.log(this.config.headers.Authorization);
-    return this.config;
+    return this.config.headers.Authorization;
   }
 
   async getTeam(teamName: string): Promise<any> {
@@ -105,7 +98,7 @@ export class TeamSpiritCrudService extends TypeOrmCrudService<TeamSpiritMedian> 
   //   });
 
   //add a team to the team spirit
-  async addTeamToTeamSpirit(team: TeamDTO): Promise<any> {
+  async addTeamToTeamSpirit(team: TeamDTO): Promise<boolean> {
     console.log('Inside Creating team');
     // console.log(team);
     // const teamExisted: TeamDTO = await this.getTeam(team.Name);
@@ -127,6 +120,7 @@ export class TeamSpiritCrudService extends TypeOrmCrudService<TeamSpiritMedian> 
         console.log(error.response.data);
         return false;
       });
+
     return createdTeam;
     //}
   }
@@ -173,7 +167,7 @@ export class TeamSpiritCrudService extends TypeOrmCrudService<TeamSpiritMedian> 
       });
   }
 
-  async addUserToTeam(userDTO: TeamSpiritUserDTO, teamName: string): Promise<any> {
+  async addUserToTeam(userDTO: TeamSpiritUserDTO, teamName: string): Promise<TeamDTO> {
     userDTO.RoleID = 2;
     userDTO.Role = {
       Id: 2,
