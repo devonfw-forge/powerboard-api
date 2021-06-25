@@ -13,7 +13,7 @@ export class DailyMeeting extends BaseEntity {
   @Column('varchar', { name: 'daily_meeting_link', length: 5000, nullable: false })
   dailyMeetingLink!: string;
 
-  @ManyToOne(() => Team, { eager: true })
+  @ManyToOne(() => Team, { eager: true, onDelete: 'CASCADE' })
   @JoinColumn({ name: 'daily_team_id', referencedColumnName: 'id' })
   team!: string;
 }

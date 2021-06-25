@@ -7,7 +7,7 @@ export class TeamSpirit extends BaseEntity {
   @Column('int', { nullable: false })
   team_spirit_rating!: number;
 
-  @OneToOne(() => Sprint, { eager: true })
+  @OneToOne(() => Sprint, { eager: true, onDelete: 'CASCADE' })
   @JoinColumn({ name: 'sprint_id', referencedColumnName: 'id' })
   sprint!: Sprint;
 }

@@ -4,7 +4,7 @@
   "port": 5432,
   "username": "postgres",
   "password": "Pro@1234",
-  "database": "Powerboard_Dev",
+  "database": "Powerboard_Dev5",
   "synchronize": false,
   "migrationsRun": true,
   "logging": true,

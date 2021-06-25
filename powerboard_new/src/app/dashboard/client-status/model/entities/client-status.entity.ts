@@ -7,7 +7,7 @@ export class ClientStatus extends BaseEntity {
   @Column('int', { nullable: false })
   client_rating!: number;
 
-  @OneToOne(() => Sprint, { eager: true })
+  @OneToOne(() => Sprint, { eager: true, onDelete: 'CASCADE' })
   @JoinColumn({ name: 'sprintId', referencedColumnName: 'id' })
   sprint!: Sprint;
 }

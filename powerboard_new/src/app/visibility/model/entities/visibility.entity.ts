@@ -15,7 +15,7 @@ export class Visibility extends BaseEntity {
   @Column('boolean', { name: 'videos', nullable: true })
   videos!: boolean;
 
-  @OneToOne(() => Team, { eager: true })
+  @OneToOne(() => Team, { eager: true, onDelete: 'CASCADE' })
   @JoinColumn({ name: 'visibility_team_id', referencedColumnName: 'id' })
   team!: string;
 }

@@ -26,8 +26,13 @@ export class AdminController {
 
   //Deleting the team , system admin can do it
   @Delete('team/delete/:id')
-  async deleteTeamById(@Param('id') teamId: string): Promise<any> {
-    return await this.adminService.deleteTeamById(teamId);
+  async deleteTeamById(@Param('id') teamId: string, @Response() res: eResponse): Promise<void> {
+    const result = await this.adminService.deleteTeamById(teamId);
+    if (result) {
+      res.status(200).send('Team successfully Deleted');
+    } else {
+      throw new BadRequestException('Team Not deleted');
+    }
   }
 
   //View All Team by system ADMIN

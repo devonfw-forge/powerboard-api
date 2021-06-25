@@ -52,7 +52,7 @@ export class AdminService {
    * @param {teamId} .Takes teamId as input
    * @return {void}
    */
-  deleteTeamById(teamId: string): any {
+  deleteTeamById(teamId: string): Promise<DeleteResult> {
     return this.teamService.deleteTeamById(teamId);
   }
 

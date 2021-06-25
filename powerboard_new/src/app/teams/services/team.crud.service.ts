@@ -8,7 +8,7 @@ import { CodeQualitySnapshotCrudService } from '../../dashboard/code-quality-sna
 import { SprintDetailResponse } from '../../dashboard/sprint/model/dto/SprintDetailResponse';
 //import { TeamSpiritResponse } from '../../dashboard/team-spirit-integration/model/dto/TeamSpiritResponse';
 //import { TeamSpiritCrudService } from '../../dashboard/team-spirit-integration/services/team-spirit.crud.service';
-import { Repository } from 'typeorm';
+import { DeleteResult, Repository } from 'typeorm';
 import { BurndownResponse } from '../../dashboard/sprint/model/dto/BurndownResponse';
 import { VelocityComparisonResponse } from '../../dashboard/sprint/model/dto/VelocityComparisonResponse';
 import { SprintCrudService } from '../../dashboard/sprint/services/sprint.crud.service';
@@ -273,8 +273,12 @@ export class TeamCrudService extends TypeOrmCrudService<Team> {
    * @param {teamId} .Takes teamId as input
    * @return {void}
    */
-  async deleteTeamById(teamId: string): Promise<any> {
-    await this.teamRepository.delete(teamId);
+  async deleteTeamById(teamId: string): Promise<DeleteResult> {
+    const team = await this.findTeamById(teamId);
+    if (!team) {
+      throw new NotFoundException('Team not found');
+    }
+    return await this.teamRepository.delete(teamId);
   }
 
   /**

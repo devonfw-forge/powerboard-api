@@ -10,7 +10,7 @@ export class TeamLinks extends BaseEntity {
   @Column('varchar', { name: 'link', length: 5000, nullable: false })
   link!: string;
 
-  @ManyToOne(() => Team, { eager: true })
+  @ManyToOne(() => Team, { eager: true, onDelete: 'CASCADE' })
   @JoinColumn({ name: 'team_id', referencedColumnName: 'id' })
   team!: string;
 }
