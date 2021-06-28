@@ -72,6 +72,13 @@ export class UserService extends TypeOrmCrudService<User> {
     let userTeam = new UserTeam();
     userTeam.user = actualUser;
     const roleObj = (await this.userRoleRepository.findOne({ where: { id: userDTO.role } })) as UserRole;
+
+    const output = (await this.userTeamRepository.findOne({
+      where: { user: actualUser.id, team: userDTO.team.id },
+    })) as UserTeam;
+    if (output) {
+      throw new Error('User in team already exists');
+    }
     if (roleObj.roleName == 'team_admin') {
       let teamSpiritUserDTO1 = {} as TeamSpiritUserDTO;
       teamSpiritUserDTO1.Email = 'adminTeamSpirit@capgemini.com';
