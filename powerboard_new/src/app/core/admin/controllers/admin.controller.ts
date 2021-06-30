@@ -1,17 +1,13 @@
 import { Body, Controller, Delete, Get, HttpException, Param, Post, Put, Response } from '@nestjs/common';
 import { AddTeam } from '../../../shared/interfaces/addTeam.interface';
-import { UserRolesDTO } from '../../user/model/dto/UserRolesDTO';
 import { Response as eResponse } from 'express';
 import { AdminService } from '../services/admin.service';
 import { UpdateTeam } from '../../../teams/model/dto/updateTeam.interface';
-
-import { User } from '../../user/model/entities/user.entity';
 import { UpdateUserRoleDTO } from '../../user/model/dto/UpdateUserRoleDTO';
 
 @Controller('admin')
 export class AdminController {
   constructor(private adminService: AdminService) {}
-  error_message = 'Something went wrong, Please try again in some moment';
 
   //Adding team by System Admin
   // @Post('team/addTeam')
@@ -108,18 +104,20 @@ export class AdminController {
 
   //get all the available user roles
   @Get('viewAllUserRoles')
-  async getAllUserRoles(): Promise<UserRolesDTO[]> {
+  async getAllUserRoles(@Response() res: eResponse): Promise<void> {
     try {
-      return await this.adminService.getAllUserRoles();
+      const result = await this.adminService.getAllUserRoles();
+      res.status(200).json(result);
     } catch (e) {
       throw new HttpException(e.message, e.status);
     }
   }
 
   @Get('viewAllGuests')
-  async getAllGuestUsers(): Promise<User[]> {
+  async getAllGuestUsers(@Response() res: eResponse): Promise<void> {
     try {
-      return await this.adminService.getAllGuestUsers();
+      const result = await this.adminService.getAllGuestUsers();
+      res.status(200).json(result);
     } catch (e) {
       throw new HttpException(e.message, e.status);
     }
