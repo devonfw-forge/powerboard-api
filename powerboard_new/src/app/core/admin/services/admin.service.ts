@@ -11,6 +11,7 @@ import { User } from '../../user/model/entities/user.entity';
 import { DeleteResult } from 'typeorm/query-builder/result/DeleteResult';
 import { TeamsMemberResponse } from '../../../shared/interfaces/teamMemberResponse';
 import { UpdateUserRoleDTO } from '../../user/model/dto/UpdateUserRoleDTO';
+import { UserTeam } from '../../user/model/entities/user_team.entity';
 
 @Injectable()
 export class AdminService {
@@ -61,7 +62,7 @@ export class AdminService {
    * @param {UpdateRole} .Takes UpdateRole as input
    * @return {boolean} .Return boolean as response
    */
-  updateUserRole(updateRole: UpdateUserRoleDTO): Promise<boolean> {
+  updateUserRole(updateRole: UpdateUserRoleDTO): Promise<UserTeam> {
     return this.userService.updateUserRole(updateRole);
   }
 
@@ -73,7 +74,7 @@ export class AdminService {
    * deleteUserFromTeamById method will delete user from that team , and system admin can do so
    * @param {teamId} .Takes teamId as input
    */
-  deleteUserFromTeamById(userTeamId: string): any {
+  deleteUserFromTeamById(userTeamId: string): Promise<DeleteResult> {
     return this.userService.deleteUserFromTeamById(userTeamId);
   }
 

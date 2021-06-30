@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  HttpException,
   Param,
   Post,
   Response,
@@ -60,11 +61,11 @@ export class VideosCrudController {
     @Response() res: eResponse,
   ): Promise<void> {
     console.log(file);
-    const result = await this.videoService.setVideoPath(file.filename, teamId);
-    if (result) {
-      res.status(201).send();
-    } else {
-      throw new BadRequestException('Your request cannot be processed, Sorry for inconvenience');
+    try {
+      const result = await this.videoService.setVideoPath(file.filename, teamId);
+      res.status(201).json(result);
+    } catch (e) {
+      throw new HttpException(e.message, e.status);
     }
   }
 

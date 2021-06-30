@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { TypeOrmCrudService } from '@nestjsx/crud-typeorm';
 import { ClientStatusResponse } from '../../dashboard/client-status/model/dto/ClientStatusResponse';
@@ -239,7 +239,7 @@ export class TeamCrudService extends TypeOrmCrudService<Team> {
     const teamCode = addteam.teamCode;
     const result = await this.teamRepository.findOne({ where: { teamCode: teamCode } });
     if (result != null) {
-      throw new Error('team already registered');
+      throw new ConflictException('team already registered');
     } else {
       let team = new Team();
       team.name = addteam.teamName;
@@ -290,6 +290,9 @@ export class TeamCrudService extends TypeOrmCrudService<Team> {
    */
   async getAllTeams(): Promise<ViewTeamsResponse[]> {
     const teamList = await this.teamRepository.find();
+    if (teamList.length == 0) {
+      throw new NotFoundException('No Teams Found');
+    }
     let viewTeamsResponse: ViewTeamsResponse = {} as ViewTeamsResponse;
     let viewteamList = [],
       i;
@@ -321,11 +324,7 @@ export class TeamCrudService extends TypeOrmCrudService<Team> {
     team.teamCode = updateTeam.teamCode;
     team.projectKey = updateTeam.projectKey;
     //team.ad_center = updateTeam.ad_center;
-    try {
-      return await this.teamRepository.save(team);
-    } catch (e) {
-      throw new BadRequestException(e.message);
-    }
+    return await this.teamRepository.save(team);
   }
 
   async viewTeamsInADC(teamId: string) {

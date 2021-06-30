@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { DeleteResult, Repository } from 'typeorm';
 import { User } from '../model/entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -146,7 +146,7 @@ export class UserService extends TypeOrmCrudService<User> {
    * @param {userteamId} .Takes userTeamId as input
    * @return {void}
    */
-  async deleteUserFromTeamById(id: string): Promise<any> {
+  async deleteUserFromTeamById(id: string): Promise<DeleteResult> {
     const userTeam = (await this.userTeamRepository.findOne({ where: { id: id } })) as UserTeam;
     if (!userTeam) {
       throw new NotFoundException('user not found for that tam');
@@ -163,7 +163,7 @@ export class UserService extends TypeOrmCrudService<User> {
   async getAllMemberOfTeam(teamId: string): Promise<TeamsMemberResponse[]> {
     const result = (await this.userTeamRepository.find({ where: { team: teamId } })) as UserTeam[];
     if (result.length == 0) {
-      throw new NotFoundException('Sorry for incovenience');
+      throw new NotFoundException('No Member Found in team');
     }
     let teamsMemberResponse: TeamsMemberResponse = {} as TeamsMemberResponse;
     let teamMemberList = [],
@@ -182,26 +182,19 @@ export class UserService extends TypeOrmCrudService<User> {
     return teamMemberList;
   }
 
-  async updateUserRole(updateRoleDTO: UpdateUserRoleDTO): Promise<boolean> {
-    let result = (await this.userTeamRepository.findOne({
+  async updateUserRole(updateRoleDTO: UpdateUserRoleDTO): Promise<UserTeam> {
+    let userTeam = (await this.userTeamRepository.findOne({
       where: { user: updateRoleDTO.userId, team: updateRoleDTO.teamId },
     })) as UserTeam;
-    let userTeam = new UserTeam();
-    let output: boolean;
-    if (result) {
-      userTeam.id = result.id;
-      userTeam.role = (await this.userRoleRepository.findOne({ where: { id: updateRoleDTO.roleId } })) as UserRole;
-      const exist = await this.userTeamRepository.save(userTeam);
-      if (exist) {
-        output = true;
-      } else {
-        output = false;
-      }
-    } else {
-      console.log('no team found for that user in Userteam');
-      output = false;
+
+    if (!userTeam) {
+      throw new ConflictException('User in team not found');
     }
-    return output;
+    let userTeamOBJ = new UserTeam();
+    userTeamOBJ.id = userTeam.id;
+    userTeamOBJ.role = (await this.userRoleRepository.findOne({ where: { id: updateRoleDTO.roleId } })) as UserRole;
+    const result = await this.userTeamRepository.save(userTeamOBJ);
+    return result;
   }
 
   findUserTeamsByUserId(id: string) {
@@ -282,6 +275,9 @@ export class UserService extends TypeOrmCrudService<User> {
 
   async getAllUserRoles(): Promise<UserRolesDTO[]> {
     const roles = await this.userRoleRepository.find();
+    if (!roles) {
+      throw new NotFoundException('No Roles Found');
+    }
     let rolesList = [],
       i;
     for (i = 0; i < roles!.length; i++) {

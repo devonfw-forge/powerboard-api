@@ -5,6 +5,7 @@ import { ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@devon4node/config';
 import * as helmet from 'helmet';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { BusinessLogicFilter } from './app/shared/filters/business-logic.filter';
 
 async function bootstrap(): Promise<void> {
   const app = await NestFactory.create(AppModule, { logger: new WinstonLogger() });
@@ -15,6 +16,7 @@ async function bootstrap(): Promise<void> {
     }),
   );
   app.setGlobalPrefix(configModule.values.globalPrefix);
+  app.useGlobalFilters(new BusinessLogicFilter());
   app.use(helmet());
   app.enableCors({
     origin: '*',
