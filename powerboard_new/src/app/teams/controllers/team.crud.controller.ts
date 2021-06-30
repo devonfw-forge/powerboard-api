@@ -1,4 +1,14 @@
-import { Body, Controller, Get, Param, Post, UploadedFile, UseInterceptors } from '@nestjs/common';
+import {
+  BadRequestException,
+  Body,
+  Controller,
+  Get,
+  Response,
+  Param,
+  Post,
+  UploadedFile,
+  UseInterceptors,
+} from '@nestjs/common';
 import { Crud } from '@nestjsx/crud';
 import { CrudType } from '@devon4node/common/serializer';
 import { Team } from '../model/entities/team.entity';
@@ -10,11 +20,20 @@ import { v4 as uuidv4 } from 'uuid';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { UserTeamDTO } from '../model/dto/UserTeamDTO';
 import { TeamsInADC } from '../model/dto/TeamsInADC';
-//import { AddTeamDTO } from '../model/dto/AddTeamDTO';
+import { Response as eResponse } from 'express';
+const fs_1 = require('fs');
 //import { AuthGuard } from '@nestjs/passport';
-export const storage = {
+export const logoStorage = {
   storage: diskStorage({
-    destination: './uploads/logo',
+    destination: (req, file, cb) => {
+      const id = req.params.teamId;
+      console.log(file);
+      console.log(req.params);
+      const path = `./uploads/multimedia/${id}/logo`;
+      fs_1.mkdirSync(path, { recursive: true });
+      return cb(null, path);
+    },
+
     filename: (req, file, cb) => {
       console.log(req);
       const filename: string = path.parse(file.originalname).name.replace(/\s/g, '') + uuidv4();
@@ -32,7 +51,6 @@ export const storage = {
 @Controller('teams')
 export class TeamCrudController {
   constructor(public teamService: TeamCrudService) {}
-
 
   @Post('powerboard/team')
   async getPowerboardByTeamId(@Body() userTeam: UserTeamDTO): Promise<any> {
@@ -53,11 +71,19 @@ export class TeamCrudController {
   }
 
   @Post('uploadLogo/:teamId')
-  @UseInterceptors(FileInterceptor('file', storage))
-  async uploadImage(@UploadedFile() file: Express.Multer.File, @Param('teamId') teamId: string): Promise<Object> {
+  @UseInterceptors(FileInterceptor('file', logoStorage))
+  async uploadLogo(
+    @UploadedFile() file: Express.Multer.File,
+    @Param('teamId') teamId: string,
+    @Response() res: eResponse,
+  ): Promise<void> {
     console.log(file);
-    const result = this.teamService.setLogoPath(file.path, teamId);
-    return result;
+    const result = await this.teamService.setLogo(file.filename, teamId);
+    if (result) {
+      res.status(201).send();
+    } else {
+      throw new BadRequestException('Your request cannot be processed, Sorry for inconvenience');
+    }
   }
 
   // //Adding more team to powerboard application by system admin

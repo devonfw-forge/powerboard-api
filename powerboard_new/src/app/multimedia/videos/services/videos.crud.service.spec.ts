@@ -37,7 +37,7 @@ describe('VideosCrudService', () => {
         version: 1,
         createdAt: '2021-04-29T05:56:27.392Z',
         updatedAt: '2021-04-29T05:56:27.392Z',
-        content: 'uploads\\videos\\aspirants95cf1dfd-43e9-4cc4-8257-a6ba5c70e3bd.mp4',
+        content: 'aspirants95cf1dfd-43e9-4cc4-8257-a6ba5c70e3bd.mp4',
         team: '46455bf7-ada7-495c-8019-8d7ab76d488e',
       },
       {
@@ -45,23 +45,23 @@ describe('VideosCrudService', () => {
         version: 1,
         createdAt: '2021-04-29T05:56:27.392Z',
         updatedAt: '2021-04-29T05:56:27.392Z',
-        content: 'uploads\\videos\\coronab47da341-3258-4cf2-b19f-9f93de76241a.mp4',
+        content: 'coronab47da341-3258-4cf2-b19f-9f93de76241a.mp4',
         team: '46455bf7-ada7-495c-8019-8d7ab76d488e',
       },
     ];
     const expectedVideoResponses: VideoResponse[] = [
       {
         videoId: '52355bf8-ada5-495c-8019-8d7ab76d488e',
-        videoPath: 'uploads\\videos\\aspirants95cf1dfd-43e9-4cc4-8257-a6ba5c70e3bd.mp4',
+        videoPath: 'aspirants95cf1dfd-43e9-4cc4-8257-a6ba5c70e3bd.mp4',
       },
       {
         videoId: '52255bf8-ada5-495c-8019-8d7ab76d488e',
-        videoPath: 'uploads\\videos\\coronab47da341-3258-4cf2-b19f-9f93de76241a.mp4',
+        videoPath: 'coronab47da341-3258-4cf2-b19f-9f93de76241a.mp4',
       },
     ];
 
     jest.spyOn(videosMockRepo, 'find').mockImplementation(() => videos);
-    const actualVideoResponse = await videosCrudService.getPathOfVideos(teamId);
+    const actualVideoResponse = await videosCrudService.getVideosForTeam(teamId);
     expect(videosMockRepo.find).toBeCalledTimes(1);
     expect(actualVideoResponse).toEqual(expectedVideoResponses);
   });

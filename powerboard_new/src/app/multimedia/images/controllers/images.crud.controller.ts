@@ -19,7 +19,7 @@ import { v4 as uuidv4 } from 'uuid';
 import path = require('path');
 import { ImageResponse } from '../model/dto/ImageResponse';
 import { Response as eResponse } from 'express';
-// import { join } from 'path';
+
 const fs_1 = require('fs');
 export const storage = {
   storage: diskStorage({
@@ -86,21 +86,6 @@ export class ImagesCrudController {
     }
   }
 
-  @Post('uploadLogo/:teamId')
-  @UseInterceptors(FileInterceptor('file', logoStorage))
-  async uploadLogo(
-    @UploadedFile() file: Express.Multer.File,
-    @Param('teamId') teamId: string,
-    @Response() res: eResponse,
-  ): Promise<void> {
-    console.log(file);
-    const result = await this.imageService.setLogoPath(file.filename, teamId);
-    if (result) {
-      res.status(201).send();
-    } else {
-      throw new BadRequestException('Your request cannot be processed, Sorry for inconvenience');
-    }
-  }
   // @Get('imagename/:imagename')
   // async findProfileImage(@Param('imagename') imagename: any, @Res() res: any): Promise<Object> {
   //   return res.sendFile(join(process.cwd(), 'uploads/profileimages/' + imagename));
@@ -114,23 +99,4 @@ export class ImagesCrudController {
   async deleteImageById(@Param('id') imageId: string): Promise<any> {
     return await this.imageService.deleteImageById(imageId);
   }
-  // @Post('multiple')
-  // @UseInterceptors(FilesInterceptor('file', 20, storage))
-  // async uploadMultipleFiles(@UploadedFiles() files: any) {
-  //   const response: any = [];
-  //   files.forEach((file: any) => {
-  //     const fileReponse = {
-  //       imagePath: file.path,
-  //       // originalname: file.originalname,
-  //       // filename: file.filename,
-  //     };
-  //     response.push(fileReponse);
-  //   });
-  //   return response;
-  // }
-
-  // @Get(':imgpath')
-  // seeUploadedFile(@Param('imgpath') image: any, @Res() res: any) {
-  //   return res.sendFile(image, { root: './uploads/profileimages/' });
-  // }
 }

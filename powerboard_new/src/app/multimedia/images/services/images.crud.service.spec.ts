@@ -8,7 +8,6 @@ import { ImagesCrudService } from './images.crud.service';
 describe('ImagesCrudService', () => {
   let imagesCrudService: ImagesCrudService;
   let imagesMockRepo: ImagesMock;
-
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -31,14 +30,14 @@ describe('ImagesCrudService', () => {
 
   const teamId: string = '46455bf7-ada7-495c-8019-8d7ab76d488e';
 
-  it('getPathOfImage() should return all the images present in the database', async () => {
+  it('getImageForTeam() should return all the images present in the database', async () => {
     const images: Images[] = [
       {
         id: '52055bf8-ada5-495c-8019-8d7ab76d488e',
         version: 1,
         createdAt: '2021-04-29T05:56:27.392Z',
         updatedAt: '2021-04-29T05:56:27.392Z',
-        image: 'uploads\\profileimages\\jirab05d9639-10f5-4ec5-85bf-087731ce4f8b.png',
+        image: 'jirab05d9639-10f5-4ec5-85bf-087731ce4f8b.png',
         team: '46455bf7-ada7-495c-8019-8d7ab76d488e',
       },
       {
@@ -46,24 +45,25 @@ describe('ImagesCrudService', () => {
         version: 1,
         createdAt: '2021-04-29T05:56:27.392Z',
         updatedAt: '2021-04-29T05:56:27.392Z',
-        image: 'uploads\\profileimages\\power46455bf7-ada7-495c-8019-8d7ab76d497e.png',
+        image: 'power46455bf7-ada7-495c-8019-8d7ab76d497e.png',
         team: '46455bf7-ada7-495c-8019-8d7ab76d488e',
       },
     ];
     const expectedImageResponses: ImageResponse[] = [
       {
         ImageId: '52055bf8-ada5-495c-8019-8d7ab76d488e',
-        ImagePath: 'uploads\\profileimages\\jirab05d9639-10f5-4ec5-85bf-087731ce4f8b.png',
+        ImagePath: 'jirab05d9639-10f5-4ec5-85bf-087731ce4f8b.png',
       },
       {
         ImageId: '52155bf8-ada5-495c-8019-8d7ab76d488e',
-        ImagePath: 'uploads\\profileimages\\power46455bf7-ada7-495c-8019-8d7ab76d497e.png',
+        ImagePath: 'power46455bf7-ada7-495c-8019-8d7ab76d497e.png',
       },
     ];
 
     jest.spyOn(imagesMockRepo, 'find').mockImplementation(() => images);
-    const actualImageResponse = await imagesCrudService.getPathOfImage(teamId);
+    const actualImageResponse = await imagesCrudService.getImagesForTeam(teamId);
     expect(imagesMockRepo.find).toBeCalledTimes(1);
+    expect(actualImageResponse).toBeDefined();
     expect(actualImageResponse).toEqual(expectedImageResponses);
   });
 
@@ -71,12 +71,12 @@ describe('ImagesCrudService', () => {
     //const path = './uploads/profileimages';
 
     const images = {
-      image: 'uploads\\profileimages\\powerb60f5d38-7a1e-430e-9d88-0a620359f191.png',
+      image: 'powerb60f5d38-7a1e-430e-9d88-0a620359f191.png',
       team: '46455bf7-ada7-495c-8019-8d7ab76d488e',
     };
 
     const expectedSavedImageResponse: Images = {
-      image: 'uploads\\profileimages\\powerb60f5d38-7a1e-430e-9d88-0a620359f191.png',
+      image: 'powerb60f5d38-7a1e-430e-9d88-0a620359f191.png',
       team: '46455bf7-ada7-495c-8019-8d7ab76d488e',
       id: 'd123011a-7fd0-4237-b1b5-d3fc657d2467',
       version: 1,
@@ -87,6 +87,7 @@ describe('ImagesCrudService', () => {
     jest.spyOn(imagesMockRepo, 'save').mockImplementation(() => expectedSavedImageResponse);
     const actualImageResponse = await imagesCrudService.setImagePath(images.image, images.team);
     expect(imagesMockRepo.save).toBeCalledTimes(1);
+    expect(actualImageResponse).toBeDefined();
     expect(actualImageResponse).toEqual(expectedSavedImageResponse);
   });
 

@@ -1,12 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
-
 import { CodeQualityRepositoryMock, MockRepository } from '../../../../../test/mockCrudRepository/crudRepository.mock';
-import { Team } from '../../teams/model/entities/team.entity';
+import { Team } from '../../../teams/model/entities/team.entity';
 import { CodeQualityResponse } from '../model/dto/CodeQualityResponse';
-
 import { CodeQualitySnapshot } from '../model/entities/code-quality-snapshot.entity';
-
 import { CodeQualitySnapshotCrudService } from './code-quality-snapshot.crud.service';
 
 describe('CodeQualitySnapshotCrudService', () => {
@@ -40,15 +37,25 @@ describe('CodeQualitySnapshotCrudService', () => {
       createdAt: '2021-03-12T17:36:31.141Z',
       updatedAt: '2021-03-12T17:36:31.141Z',
       name: 'Diamler Devops',
-      logo: 'uploads\\logo\\logo31ca9983-ae97-4bb0-9f22-4867d3cc16a0.png',
-      business_unit: {
-        id: '46655bf7-ada7-495c-8019-8d7ab62d488e',
+      teamCode: '102112',
+      logo: '',
+      projectKey: 'T12311',
+      userTeam: [],
+      ad_center: {
+        id: '1',
         version: 1,
         createdAt: '2021-03-12T17:36:31.141Z',
         updatedAt: '2021-03-12T17:36:31.141Z',
         name: 'ADC Bangalore',
-        parent_id: '46555bf7-ada7-495c-8019-8d7ab62d488e',
-        root_parent_id: '11111bf1-ada1-111c-1111-1d1ab11d111e',
+        businessUnit: {
+          id: '1',
+          name: '',
+          version: 1,
+          createdAt: '2021-03-12T17:36:31.141Z',
+          updatedAt: '2021-03-12T17:36:31.141Z',
+          parent_id: '1',
+          root_parent_id: '1',
+        },
       },
     };
 

@@ -2,10 +2,9 @@ import { User } from '../../src/app/core/user/model/entities/user.entity';
 import { UnauthorizedException } from '@nestjs/common';
 export class AuthServiceMock {
   private user: Partial<User> = {
-    id: 1,
+    id: '1',
     username: 'user1',
     password: 'user1',
-    role: 0,
   };
 
   async validateUser(username: string, pass: string): Promise<User | undefined> {

@@ -4,9 +4,9 @@ import {
   ClientStatusRepositoryMock,
   SprintRepositoryMock,
 } from '../../../../../test/mockCrudRepository/crudRepository.mock';
+import { Team } from '../../../teams/model/entities/team.entity';
 
 import { Sprint } from '../../sprint/model/entities/sprint.entity';
-import { Team } from '../../teams/model/entities/team.entity';
 import { ClientStatus } from '../model/entities/client-status.entity';
 import { ClientStatusCrudService } from './client-status.crud.service';
 
@@ -41,38 +41,49 @@ describe('ClientStatusCrudService', () => {
     expect(sprintRepo).toBeDefined();
   });
 
-  it('getClientFeedback() method should return teamSpiritResponse', async () => {
+  it('getClientFeedback() method should return clientStatusResponse', async () => {
     const team1: Team = {
-      id: 1,
+      id: '1',
       version: 1,
       createdAt: '2021-03-12T17:36:31.141Z',
       updatedAt: '2021-03-12T17:36:31.141Z',
       name: 'Diamler Devops',
-      business_unit: {
-        id: 4,
+      teamCode: '102112',
+      logo: '',
+      projectKey: 'T12311',
+      userTeam: [],
+      ad_center: {
+        id: '1',
         version: 1,
         createdAt: '2021-03-12T17:36:31.141Z',
         updatedAt: '2021-03-12T17:36:31.141Z',
         name: 'ADC Bangalore',
-        parent_id: 3,
-        root_parent_id: 1,
+        businessUnit: {
+          id: '1',
+          name: '',
+          version: 1,
+          createdAt: '2021-03-12T17:36:31.141Z',
+          updatedAt: '2021-03-12T17:36:31.141Z',
+          parent_id: '1',
+          root_parent_id: '1',
+        },
       },
     };
     const sprint: Sprint = {
-      id: 2,
+      id: '2',
       version: 1,
       createdAt: '2021-03-22T08:39:31.870Z',
       updatedAt: '2021-03-22T08:39:31.870Z',
       sprint_number: 10,
       start_date: '2021-02-10',
       end_date: '2021-02-25',
-      status: 3,
+      status: '3',
       team: team1,
-      work_unit: 2,
+      work_unit: '2',
     };
 
     const clientStatus: ClientStatus = {
-      id: 2,
+      id: '2',
       version: 1,
       createdAt: '2021-03-27T16:07:27.741Z',
       updatedAt: '2021-03-27T16:07:27.741Z',

@@ -1,18 +1,14 @@
-import { forwardRef, Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { TypeOrmCrudService } from '@nestjsx/crud-typeorm';
 import { Repository } from 'typeorm';
-import { Team } from '../../../teams/model/entities/team.entity';
-import { TeamCrudService } from '../../../teams/services/team.crud.service';
 import { ImageResponse } from '../model/dto/ImageResponse';
 import { Images } from '../model/entities/image.entity';
 
 @Injectable()
 export class ImagesCrudService extends TypeOrmCrudService<Images> {
   constructor(
-    @InjectRepository(Images) private readonly imageRepository: Repository<Images>,
-    @Inject(forwardRef(() => TeamCrudService))
-    private teamService: TeamCrudService,
+    @InjectRepository(Images) private readonly imageRepository: Repository<Images>, // @Inject(forwardRef(() => TeamCrudService)) // private teamService: TeamCrudService,
   ) {
     super(imageRepository);
   }
@@ -27,19 +23,15 @@ export class ImagesCrudService extends TypeOrmCrudService<Images> {
     let image = new Images();
     image.image = path;
     image.team = teamId;
-    const team = await this.teamService.findTeamById(teamId);
-    console.log('ssssssssss');
-    console.log(team);
-    if (!team) {
-      console.log('lllllllllllllllllllllllllllllllll');
-      throw new NotFoundException('Team Not Found');
-    } else {
-      return await this.imageRepository.save(image);
-    }
-  }
-
-  async setLogoPath(path: string, teamId: string): Promise<Team> {
-    return this.teamService.updateLogo(path, teamId);
+    // const team = await this.teamService.findTeamById(teamId);
+    // console.log('ssssssssss');
+    // console.log(team);
+    // if (!team) {
+    //   console.log('lllllllllllllllllllllllllllllllll');
+    //   throw new NotFoundException('Team Not Found');
+    // } else {
+    return await this.imageRepository.save(image);
+    //}
   }
 
   /**

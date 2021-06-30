@@ -3,8 +3,9 @@ import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class AppService {
-  // getHello(): string {
-  //   return 'Hello World!';
+  getHello(): string {
+    return 'Hello World!';
+  }
   // @Cron('* * * 10 * *')
   // async handleCron() {
   //   console.log('aa jao jira ')

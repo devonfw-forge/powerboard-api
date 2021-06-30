@@ -5,7 +5,7 @@ describe('JwtStrategy', () => {
     it('should validate the payload received in the JWT token and should return it', () => {
       const jwtConfig: any = { values: { jwtConfig: { secret: 'SECRET' } } };
       const jwtStrategy = new JwtStrategy(jwtConfig);
-      const inputPayload: UserPayload = { id: 0, username: 'test', role: 0 };
+      const inputPayload: UserPayload = { id: '0', username: 'test' };
 
       expect(jwtStrategy.validate(inputPayload)).resolves.toStrictEqual(inputPayload);
       expect(jwtStrategy.validate(inputPayload)).resolves.not.toStrictEqual({

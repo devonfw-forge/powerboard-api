@@ -1,8 +1,7 @@
-import { forwardRef, Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { TypeOrmCrudService } from '@nestjsx/crud-typeorm';
 import { Repository } from 'typeorm';
-import { TeamCrudService } from '../../../teams/services/team.crud.service';
 import { VideoResponse } from '../model/dto/VideoResponse';
 import { Videos } from '../model/entities/videos.entity';
 
@@ -10,9 +9,9 @@ import { Videos } from '../model/entities/videos.entity';
 export class VideosCrudService extends TypeOrmCrudService<Videos> {
   constructor(
     @InjectRepository(Videos) private readonly videoRepository: Repository<Videos>,
-    @Inject(forwardRef(() => TeamCrudService))
-    private teamService: TeamCrudService,
-  ) {
+  ) // @Inject(forwardRef(() => TeamCrudService))
+  // private teamService: TeamCrudService,
+  {
     super(videoRepository);
   }
   videoResponse: VideoResponse = {} as VideoResponse;
@@ -26,12 +25,12 @@ export class VideosCrudService extends TypeOrmCrudService<Videos> {
     let videos = new Videos();
     videos.content = path;
     videos.team = teamId;
-    const team = await this.teamService.findTeamById(teamId);
-    if (!team) {
-      throw new NotFoundException('Team Not Found');
-    } else {
-      return await this.videoRepository.save(videos);
-    }
+    // const team = await this.teamService.findTeamById(teamId);
+    // if (!team) {
+    //   throw new NotFoundException('Team Not Found');
+    // } else {
+    return await this.videoRepository.save(videos);
+    // }
   }
 
   /**

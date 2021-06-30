@@ -13,41 +13,31 @@ import {
   UserRepositoryMock,
   VideosMock,
   VisibilityMock,
-} from '../../../../../test/mockCrudRepository/crudRepository.mock';
+} from '../../../../test/mockCrudRepository/crudRepository.mock';
+import { User } from '../../core/user/model/entities/user.entity';
+import { UserService } from '../../core/user/services/user.service';
+import { DailyMeeting } from '../../daily-links/model/entities/daily-meeting.entity';
+import { DailyMeetingCrudService } from '../../daily-links/services/daily-meeting.crud.service';
+import { BusinessUnit } from '../../dashboard/business-units/model/entities/business-unit.entity';
+import { ClientStatus } from '../../dashboard/client-status/model/entities/client-status.entity';
+import { ClientStatusCrudService } from '../../dashboard/client-status/services/client-status.crud.service';
+import { CodeQualitySnapshot } from '../../dashboard/code-quality-snapshot/model/entities/code-quality-snapshot.entity';
+import { CodeQualitySnapshotCrudService } from '../../dashboard/code-quality-snapshot/services/code-quality-snapshot.crud.service';
+import { Sprint } from '../../dashboard/sprint/model/entities/sprint.entity';
+import { SprintCrudService } from '../../dashboard/sprint/services/sprint.crud.service';
+import { TeamSpirit } from '../../dashboard/team-spirit-integration/model/entities/team-spirit.entity';
+import { TeamSpiritCrudService } from '../../dashboard/team-spirit-integration/services/team-spirit.crud.service';
+import { Images } from '../../multimedia/images/model/entities/image.entity';
+import { ImagesCrudService } from '../../multimedia/images/services/images.crud.service';
+import { Videos } from '../../multimedia/videos/model/entities/videos.entity';
+import { VideosCrudService } from '../../multimedia/videos/services/videos.crud.service';
+import { TeamLinks } from '../../team-links/model/entities/team-links.entity';
+import { TeamLinksCrudService } from '../../team-links/services/team-links.crud.service';
 
-import { BusinessUnit } from '../../business-units/model/entities/business-unit.entity';
-
-import { ClientStatus } from '../../client-status/model/entities/client-status.entity';
-import { ClientStatusCrudService } from '../../client-status/services/client-status.crud.service';
-import { CodeQualitySnapshot } from '../../code-quality-snapshot/model/entities/code-quality-snapshot.entity';
-import { CodeQualitySnapshotCrudService } from '../../code-quality-snapshot/services/code-quality-snapshot.crud.service';
-import { User } from '../../../core/user/model/entities/user.entity';
-import { UserService } from '../../../core/user/services/user.service';
-import { Sprint } from '../../sprint/model/entities/sprint.entity';
-import { SprintCrudService } from '../../sprint/services/sprint.crud.service';
-import { TeamSpirit } from '../../team-spirit/model/entities/team-spirit.entity';
-import { TeamSpiritCrudService } from '../../team-spirit/services/team-spirit.crud.service';
 import { Team } from '../../teams/model/entities/team.entity';
+import { Visibility } from '../../visibility/model/entities/visibility.entity';
+import { VisibilityCrudService } from '../../visibility/services/visibility.crud.service';
 import { TeamCrudService } from './team.crud.service';
-
-import { VisibilityCrudService } from '../../../visibility/services/visibility.crud.service';
-import { VideosCrudService } from '../../../multimedia/videos/services/videos.crud.service';
-import { ImagesCrudService } from '../../../multimedia/images/services/images.crud.service';
-import { TeamLinksCrudService } from '../../../team-links/services/team-links.crud.service';
-import { DailyMeetingCrudService } from '../../../daily-links/services/daily-meeting.crud.service';
-import { DailyMeeting } from '../../../daily-links/model/entities/daily-meeting.entity';
-import { TeamLinks } from '../../../team-links/model/entities/team-links.entity';
-import { Images } from '../../../multimedia/images/model/entities/image.entity';
-import { Videos } from '../../../multimedia/videos/model/entities/videos.entity';
-import { Visibility } from '../../../visibility/model/entities/visibility.entity';
-import { UserInfo } from '../../../core/userinfo/model/entities/userinfo.entity';
-// import { ClientStatusResponse } from '../../client-status/model/dto/ClientStatusResponse';
-// import { CodeQualityResponse } from '../../code-quality-snapshot/model/dto/CodeQualityResponse';
-// import { SprintDetailResponse } from '../../sprint/model/dto/SprintDetailResponse';
-// import { VelocityComparisonResponse } from '../../sprint/model/dto/VelocityComparisonResponse';
-// import { TeamSpiritResponse } from '../../team-spirit/model/dto/TeamSpiritResponse';
-// import { DashBoardResponse } from '../model/dto/DashBoardResponse';
-// import { LoginResponse } from '../model/dto/LoginResponse';
 
 describe('TeamCrudService', () => {
   let teamService: TeamCrudService;
@@ -527,27 +517,26 @@ describe('TeamCrudService', () => {
       createdAt: '2021-03-12T17:36:31.141Z',
       updatedAt: '2021-03-12T17:36:31.141Z',
       name: 'Diamler Devops',
-      logo: 'uploads\\logo\\logo31ca9983-ae97-4bb0-9f22-4867d3cc16a0.png',
-      business_unit: {
+      teamCode: '102112',
+      logo: '',
+      projectKey: 'T12311',
+      userTeam: [],
+      ad_center: {
         id: '46655bf7-ada7-495c-8019-8d7ab62d488e',
         version: 1,
         createdAt: '2021-03-12T17:36:31.141Z',
         updatedAt: '2021-03-12T17:36:31.141Z',
         name: 'ADC Bangalore',
-        parent_id: '46555bf7-ada7-495c-8019-8d7ab62d488e',
-        root_parent_id: '11111bf1-ada1-111c-1111-1d1ab11d111e',
+        businessUnit: {
+          id: '46655bf7-ada7-495c-8019-8d7ab62d488e',
+          version: 1,
+          createdAt: '2021-03-12T17:36:31.141Z',
+          updatedAt: '2021-03-12T17:36:31.141Z',
+          name: '',
+          parent_id: '',
+          root_parent_id: '',
+        },
       },
-    };
-    const userInfo: UserInfo = {
-      id: '',
-      version: 1,
-      createdAt: '2021-03-12T17:36:31.141Z',
-      updatedAt: '2021-03-12T17:36:31.141Z',
-      firstName: 'Azhar',
-      lastName: 'Hussain',
-      center: 'ADCenter Bangalore',
-      email: 'azharhussain123@gmail.com',
-      teameSpiritName: '',
     };
 
     const user: User = {
@@ -557,9 +546,8 @@ describe('TeamCrudService', () => {
       updatedAt: '2021-03-12T17:36:31.141Z',
       username: 'raj11',
       password: 'password',
-      role: 0,
-      user: userInfo,
-      teamId: team,
+      email: 'raj@mail.com',
+      userTeam: [],
     };
     const images: Images[] = [
       {
@@ -704,7 +692,7 @@ describe('TeamCrudService', () => {
     jest.spyOn(visibilityRepo, 'findOne').mockImplementation(() => visibility);
 
     // const actualLoginResponseForElectronApp = await teamService.getElectronBoardByUserId(user.id);
-    await teamService.getElectronBoardByUserId(user.id);
+    // await teamService.getOtherComponentsDetailByTeamId(user.id);
     expect(userRepo.findOne).toHaveBeenCalledTimes(1);
     // expect(actualLoginResponseForElectronApp).toEqual(expectedElectronBoardLoginResponse);
   });
@@ -716,7 +704,7 @@ describe('TeamCrudService', () => {
 //         updatedAt: '2021-03-12T17:36:31.141Z',
 //         name: 'Diamler Devops',
 //         business_unit: {
-//             id: 4,
+//             id: "4",
 //             version: 1,
 //             createdAt: '2021-03-12T17:36:31.141Z',
 //             updatedAt: '2021-03-12T17:36:31.141Z',

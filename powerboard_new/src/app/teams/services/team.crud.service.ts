@@ -29,7 +29,7 @@ import { TeamsInADC } from '../model/dto/TeamsInADC';
 import { PowerboardResponse } from '../model/dto/PowerboardResponse';
 import { UserTeamDTO } from '../model/dto/UserTeamDTO';
 import { MyCenter } from '../model/dto/MyCenter';
-import { UserService } from 'src/app/core/user/services/user.service';
+import { UserService } from '../../core/user/services/user.service';
 import { TeamLinkResponse } from '../../team-links/model/dto/TeamLinkResponse';
 import { TeamSpiritResponse } from '../../dashboard/team-spirit-integration/model/dto/TeamSpiritResponse';
 import { TeamSpiritCrudService } from '../../dashboard/team-spirit-integration/services/team-spirit.crud.service';
@@ -154,19 +154,21 @@ export class TeamCrudService extends TypeOrmCrudService<Team> {
   }
 
   /**
-   * setLogoPath method will set logo for that team
+   * setLogo method will set logo for that team
    * @param {teamId, path} .Takes teamId and path as input
    * @return {Images} Images as response for that team
    */
-  async setLogoPath(path: string, teamId: string): Promise<any> {
-    const output = (await this.teamRepository.findOne({ where: { id: teamId } })) as Team;
-    let team = new Team();
-    if (output) {
-      team.id = output.id;
+  async setLogo(path: string, teamId: string): Promise<Team> {
+    const team = await this.findTeamById(teamId);
+    if (!team) {
+      throw new NotFoundException('Team Not Found');
     }
-    team.logo = path;
-    return await this.teamRepository.save(team);
+    let teamOBJ = new Team();
+    teamOBJ.id = team.id;
+    teamOBJ.logo = path;
+    return this.teamRepository.save(teamOBJ);
   }
+
   /**
    * fetchstatus method will fetch the status of all respective KPI's of dashboard
    * @param {dashboard} dashboard takes dashboard object as input
@@ -353,16 +355,5 @@ export class TeamCrudService extends TypeOrmCrudService<Team> {
 
   async findTeamById(teamId: string): Promise<Team> {
     return (await this.teamRepository.findOne(teamId)) as Team;
-  }
-
-  async updateLogo(path: string, teamId: string): Promise<Team> {
-    const team = await this.findTeamById(teamId);
-    if (!team) {
-      throw new NotFoundException('Team Not Found');
-    }
-    let teamOBJ = new Team();
-    teamOBJ.id = team.id;
-    teamOBJ.logo = path;
-    return this.teamRepository.save(teamOBJ);
   }
 }
