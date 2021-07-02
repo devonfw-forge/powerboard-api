@@ -1,7 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { CodeQualityRepositoryMock, MockRepository } from '../../../../../test/mockCrudRepository/crudRepository.mock';
-import { Team } from '../../../teams/model/entities/team.entity';
 import { CodeQualityResponse } from '../model/dto/CodeQualityResponse';
 import { CodeQualitySnapshot } from '../model/entities/code-quality-snapshot.entity';
 import { CodeQualitySnapshotCrudService } from './code-quality-snapshot.crud.service';
@@ -31,52 +30,25 @@ describe('CodeQualitySnapshotCrudService', () => {
   });
 
   describe('getCodeQualitySnapshot', () => {
-    const team1: Team = {
-      id: '46455bf7-ada7-495c-8019-8d7ab76d488e',
-      version: 1,
-      createdAt: '2021-03-12T17:36:31.141Z',
-      updatedAt: '2021-03-12T17:36:31.141Z',
-      name: 'Diamler Devops',
-      teamCode: '102112',
-      logo: '',
-      projectKey: 'T12311',
-      userTeam: [],
-      ad_center: {
-        id: '1',
-        version: 1,
-        createdAt: '2021-03-12T17:36:31.141Z',
-        updatedAt: '2021-03-12T17:36:31.141Z',
-        name: 'ADC Bangalore',
-        businessUnit: {
-          id: '1',
-          name: '',
-          version: 1,
-          createdAt: '2021-03-12T17:36:31.141Z',
-          updatedAt: '2021-03-12T17:36:31.141Z',
-          parent_id: '1',
-          root_parent_id: '1',
-        },
-      },
-    };
+    const teamId = '46455bf7-ada7-495c-8019-8d7ab76d490e';
 
-    const codeQuality: CodeQualitySnapshot = {
-      id: '61155bf8-ada5-495c-8019-8d7ab76d488e',
+    const codeQuality = {
+      id: '61055bf8-ada5-495c-8019-8d7ab76d488e',
       version: 1,
-      createdAt: '2021-03-22T08:39:31.870Z',
-      updatedAt: '2021-03-22T08:39:31.870Z',
-      bugs: 3,
-      debt: 4,
-      code_coverage: 90,
+      createdAt: '2021-06-25T08:25:00.982Z',
+      updatedAt: '2021-06-25T08:25:00.982Z',
+      bugs: 5,
+      debt: 21,
+      code_coverage: 80,
       status: 'PASSED',
-      snapshot_time: '2021-02-25T09:00:22.000Z',
-      team: team1,
+      snapshot_time: '2021-05-16T20:40:55.000Z',
     };
 
     it('should return code quality response of the existed team', async () => {
       const expectedCodeQualityResponse: CodeQualityResponse = {
-        bugs: 3,
-        debt: 4,
-        codeCoverage: 90,
+        bugs: 5,
+        debt: 21,
+        codeCoverage: 80,
         status: 'PASSED',
       };
 
@@ -89,7 +61,7 @@ describe('CodeQualitySnapshotCrudService', () => {
       };
 
       jest.spyOn(repository, 'createQueryBuilder').mockImplementation(() => createQueryBuilder);
-      const actualCodeQualityResponse = await service.getCodeQualitySnapshot(team1.id);
+      const actualCodeQualityResponse = await service.getCodeQualitySnapshot(teamId);
       expect(repository.createQueryBuilder).toBeCalledTimes(1);
       expect(actualCodeQualityResponse).toEqual(expectedCodeQualityResponse);
     });
