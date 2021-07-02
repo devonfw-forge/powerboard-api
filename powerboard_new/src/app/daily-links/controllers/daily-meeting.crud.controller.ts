@@ -1,5 +1,6 @@
-import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Response } from '@nestjs/common';
 import { Crud } from '@nestjsx/crud';
+import { Response as eResponse } from 'express';
 import { CrudType } from '@devon4node/common/serializer';
 import { DailyMeetingCrudService } from '../services/daily-meeting.crud.service';
 import { DailyMeeting } from '../model/entities/daily-meeting.entity';
@@ -17,18 +18,22 @@ export class DailyMeetingCrudController {
   constructor(public dailyMeetingService: DailyMeetingCrudService) {}
 
   @Get('teamId/:id')
-  async getDailyMeeting(@Param('id') teamId: string): Promise<any> {
-    return await this.dailyMeetingService.getDailyLinks(teamId);
+  async getDailyMeeting(@Param('id') teamId: string, @Response() res: eResponse): Promise<void> {
+    const result = await this.dailyMeetingService.getDailyLinks(teamId);
+    res.status(200).json(result);
   }
 
   @Delete('delete/:id')
-  async deleteDailyMeetingById(@Param('id') dailyMeetingId: string): Promise<any> {
-    return await this.dailyMeetingService.deleteDailyMeetingById(dailyMeetingId);
+  async deleteDailyMeetingById(@Param('id') dailyMeetingId: string, @Response() res: eResponse): Promise<void> {
+    const result = await this.dailyMeetingService.deleteDailyMeetingById(dailyMeetingId);
+    console.log(result);
+    res.status(200).json({ message: 'Meeting Link successfully Deleted' });
   }
 
   @Post('teamId/create')
   //@UseGuards(AuthGuard('jwt'))
-  async createDailyMeeting(@Body() meetingDTO: DailyMeetingDTO): Promise<any> {
-    return await this.dailyMeetingService.createDailyMeeting(meetingDTO);
+  async createDailyMeeting(@Body() meetingDTO: DailyMeetingDTO, @Response() res: eResponse): Promise<void> {
+    const result = await this.dailyMeetingService.createDailyMeeting(meetingDTO);
+    res.status(201).json(result);
   }
 }

@@ -77,7 +77,7 @@ export class UserService extends TypeOrmCrudService<User> {
       where: { user: actualUser.id, team: userDTO.team.id },
     })) as UserTeam;
     if (output) {
-      throw new Error('User in team already exists');
+      throw new ConflictException('User in team already exists');
     }
     if (roleObj.roleName == 'team_admin') {
       let teamSpiritUserDTO1 = {} as TeamSpiritUserDTO;
@@ -111,7 +111,7 @@ export class UserService extends TypeOrmCrudService<User> {
 
     const actualUser = await this.findUser(guest.username);
     if (actualUser) {
-      throw new BadRequestException('user already registered');
+      throw new ConflictException('user already registered');
     }
 
     var password = generator.generate({
@@ -126,20 +126,16 @@ export class UserService extends TypeOrmCrudService<User> {
     user.username = guest.username;
     user.password = hashPass;
     user.email = guest.email;
-    try {
-      let result = await this.userRepository.save(user);
+    let result = await this.userRepository.save(user);
 
-      if (result) {
-        let userTeam = new UserTeam();
-        userTeam.user = result;
-        userTeam.role = guestRoleOBJ;
-        const output = await this.userTeamRepository.save(userTeam);
-        console.log(output);
-      }
-      return result;
-    } catch (e) {
-      throw new BadRequestException(e.message);
+    if (result) {
+      let userTeam = new UserTeam();
+      userTeam.user = result;
+      userTeam.role = guestRoleOBJ;
+      const output = await this.userTeamRepository.save(userTeam);
+      console.log(output);
     }
+    return result;
   }
   /**
    * deleteUserFromTeamById method will delete user , and system admin can do so
@@ -188,7 +184,7 @@ export class UserService extends TypeOrmCrudService<User> {
     })) as UserTeam;
 
     if (!userTeam) {
-      throw new ConflictException('User in team not found');
+      throw new NotFoundException('User in team not found');
     }
     let userTeamOBJ = new UserTeam();
     userTeamOBJ.id = userTeam.id;

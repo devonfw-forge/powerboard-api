@@ -1,14 +1,4 @@
-import {
-  Controller,
-  Delete,
-  Get,
-  Param,
-  Post,
-  UploadedFile,
-  UseInterceptors,
-  Response,
-  HttpException,
-} from '@nestjs/common';
+import { Controller, Delete, Get, Param, Post, UploadedFile, UseInterceptors, Response } from '@nestjs/common';
 import { Crud } from '@nestjsx/crud';
 import { CrudType } from '@devon4node/common/serializer';
 import { Images } from '../model/entities/image.entity';
@@ -17,7 +7,6 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { v4 as uuidv4 } from 'uuid';
 import path = require('path');
-import { ImageResponse } from '../model/dto/ImageResponse';
 import { Response as eResponse } from 'express';
 
 const fs_1 = require('fs');
@@ -78,12 +67,9 @@ export class ImagesCrudController {
     @Response() res: eResponse,
   ): Promise<void> {
     console.log(file);
-    try {
-      const result = await this.imageService.setImagePath(file.filename, teamId);
-      res.status(201).json(result);
-    } catch (e) {
-      throw new HttpException(e.message, e.status);
-    }
+
+    const result = await this.imageService.setImagePath(file.filename, teamId);
+    res.status(201).json(result);
   }
 
   // @Get('imagename/:imagename')
@@ -91,12 +77,15 @@ export class ImagesCrudController {
   //   return res.sendFile(join(process.cwd(), 'uploads/profileimages/' + imagename));
   // }
   @Get('getAllImages/:teamId')
-  async getAllImages(@Param('teamId') teamId: string): Promise<ImageResponse[]> {
-    return await this.imageService.getImagesForTeam(teamId);
+  async getAllImages(@Param('teamId') teamId: string, @Response() res: eResponse): Promise<void> {
+    const result = await this.imageService.getImagesForTeam(teamId);
+    res.status(200).json(result);
   }
 
   @Delete('delete/:id')
-  async deleteImageById(@Param('id') imageId: string): Promise<any> {
-    return await this.imageService.deleteImageById(imageId);
+  async deleteImageById(@Param('id') imageId: string, @Response() res: eResponse): Promise<void> {
+    const result = await this.imageService.deleteImageById(imageId);
+    console.log(result);
+    res.status(200).json({ message: 'Image successfully Deleted' });
   }
 }

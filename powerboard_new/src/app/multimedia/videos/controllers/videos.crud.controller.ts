@@ -1,14 +1,4 @@
-import {
-  Controller,
-  Delete,
-  Get,
-  HttpException,
-  Param,
-  Post,
-  Response,
-  UploadedFile,
-  UseInterceptors,
-} from '@nestjs/common';
+import { Controller, Delete, Get, Param, Post, Response, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { Crud } from '@nestjsx/crud';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { CrudType } from '@devon4node/common/serializer';
@@ -18,7 +8,6 @@ import { diskStorage } from 'multer';
 import { v4 as uuidv4 } from 'uuid';
 import path = require('path');
 // import { join } from 'path';
-import { VideoResponse } from '../model/dto/VideoResponse';
 import { Response as eResponse } from 'express';
 
 const fs_1 = require('fs');
@@ -60,22 +49,21 @@ export class VideosCrudController {
     @Response() res: eResponse,
   ): Promise<void> {
     console.log(file);
-    try {
-      const result = await this.videoService.setVideoPath(file.filename, teamId);
-      res.status(201).json(result);
-    } catch (e) {
-      throw new HttpException(e.message, e.status);
-    }
+    const result = await this.videoService.setVideoPath(file.filename, teamId);
+    res.status(201).json(result);
   }
 
   @Get('getAllVideos/:teamId')
-  async getAllVideos(@Param('teamId') teamId: string): Promise<VideoResponse[]> {
-    return await this.videoService.getVideosForTeam(teamId);
+  async getAllVideos(@Param('teamId') teamId: string, @Response() res: eResponse): Promise<void> {
+    const result = await this.videoService.getVideosForTeam(teamId);
+    res.status(200).json(result);
   }
 
   @Delete('delete/:id')
-  async deleteVideoById(@Param('id') videoId: string): Promise<any> {
-    return await this.videoService.deleteVideoById(videoId);
+  async deleteVideoById(@Param('id') videoId: string, @Response() res: eResponse): Promise<void> {
+    const result = await this.videoService.deleteVideoById(videoId);
+    console.log(result);
+    res.status(200).json({ message: 'Video successfully Deleted' });
   }
   // @Get('videoname/:videoname')
   // async findProfileVideo(@Param('videoname') videoname: any, @Res() res: any): Promise<Object> {

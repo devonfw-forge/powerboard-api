@@ -1,4 +1,4 @@
-import { BadRequestException, Body, Controller, Get, Post, Put, UseGuards, Response } from '@nestjs/common';
+import { Body, Controller, Get, Post, Put, UseGuards, Response } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { User } from '../../user/model/entities/user.entity';
 import { AuthService } from '../services/auth.service';
@@ -23,13 +23,9 @@ export class AuthController {
   //Add the user
   @Post('register')
   async register(@Body() user: UserDTO, @Response() res: eResponse): Promise<void> {
-    try {
-      const registered = await this.authService.register(user);
-      if (registered) {
-        res.status(201).send('Users successfully Registered');
-      }
-    } catch (e) {
-      throw new BadRequestException(e.message);
+    const registered = await this.authService.register(user);
+    if (registered) {
+      res.status(201).send('Users successfully Registered');
     }
   }
 
@@ -42,11 +38,8 @@ export class AuthController {
   @Post('add-guest')
   async addGuestUser(@Body() guest: AddGuestDTO, @Response() res: eResponse): Promise<void> {
     const result = await this.authService.addGuest(guest);
-    if (result) {
-      res.status(201).send('Guest successfully Registered');
-    } else {
-      throw new BadRequestException('Your request cannot be processed, Sorry for inconvenience');
-    }
+
+    res.status(201).json(result);
   }
 
   @Get('currentuser')

@@ -75,7 +75,7 @@ export class TeamCrudService extends TypeOrmCrudService<Team> {
   /**
    * getPowerboardResponseForTeam method will return powerboard response realted to team
    */
-  async getPowerboardResponseForTeam(
+  private async getPowerboardResponseForTeam(
     teams: Team,
     privilegeList: string[],
     isAdminOrGuest: boolean,
@@ -108,6 +108,9 @@ export class TeamCrudService extends TypeOrmCrudService<Team> {
     this.dash.teamId = teamId;
 
     const team = await this.teamRepository.findOne(teamId);
+    if (!team) {
+      throw new NotFoundException('Team Not Found');
+    }
 
     const codeQuality: CodeQualityResponse | undefined = await this.codequalityService.getCodeQualitySnapshot(teamId);
     this.dash.codeQuality = codeQuality;
@@ -139,6 +142,9 @@ export class TeamCrudService extends TypeOrmCrudService<Team> {
   async getTeamsByCenterId(CenterId: string): Promise<TeamsInADC[]> {
     const teams: Team[] = await this.teamRepository.find({ where: { ad_center: CenterId } });
     console.log(teams);
+    if (teams.length == 0) {
+      throw new NotFoundException('No teams available in center');
+    }
     let teamsResponse: TeamsInADC = {} as TeamsInADC;
     let teamsDTOArray = [],
       i;
@@ -204,7 +210,7 @@ export class TeamCrudService extends TypeOrmCrudService<Team> {
     }
   }
 
-  async getOtherComponentsDetailByTeamId(
+  private async getOtherComponentsDetailByTeamId(
     teamId: string,
     privilegeList: string[],
     powerboardResponse: PowerboardResponse,

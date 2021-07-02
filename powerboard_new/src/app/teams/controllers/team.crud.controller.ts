@@ -1,25 +1,15 @@
-import {
-  BadRequestException,
-  Body,
-  Controller,
-  Get,
-  Response,
-  Param,
-  Post,
-  UploadedFile,
-  UseInterceptors,
-} from '@nestjs/common';
+import { Body, Controller, Get, Response, Param, Post, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { Crud } from '@nestjsx/crud';
 import { CrudType } from '@devon4node/common/serializer';
 import { Team } from '../model/entities/team.entity';
 import { TeamCrudService } from '../services/team.crud.service';
-import { DashBoardResponse } from '../model/dto/DashBoardResponse';
+
 import { diskStorage } from 'multer';
 import path = require('path');
 import { v4 as uuidv4 } from 'uuid';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { UserTeamDTO } from '../model/dto/UserTeamDTO';
-import { TeamsInADC } from '../model/dto/TeamsInADC';
+
 import { Response as eResponse } from 'express';
 const fs_1 = require('fs');
 //import { AuthGuard } from '@nestjs/passport';
@@ -53,21 +43,22 @@ export class TeamCrudController {
   constructor(public teamService: TeamCrudService) {}
 
   @Post('powerboard/team')
-  async getPowerboardByTeamId(@Body() userTeam: UserTeamDTO): Promise<any> {
-    const powerboardResponse = await this.teamService.getPowerboardByTeamId(userTeam);
-    return { powerboardResponse };
+  async getPowerboardByTeamId(@Body() userTeam: UserTeamDTO, @Response() res: eResponse): Promise<void> {
+    const result = await this.teamService.getPowerboardByTeamId(userTeam);
+    res.status(200).json(result);
   }
 
   @Get('team/:id')
   //@UseGuards(AuthGuard('jwt'))
-  async getDashboardByTeamId(@Param('id') teamId: string): Promise<DashBoardResponse> {
-    const teamResponse = await this.teamService.getDashboardByTeamId(teamId);
-    return teamResponse;
+  async getDashboardByTeamId(@Param('id') teamId: string, @Response() res: eResponse): Promise<void> {
+    const result = await this.teamService.getDashboardByTeamId(teamId);
+    res.status(200).json(result);
   }
 
   @Get('center/:id')
-  async getTeamsByCenterId(@Param('id') centerId: string): Promise<TeamsInADC[]> {
-    return this.teamService.getTeamsByCenterId(centerId);
+  async getTeamsByCenterId(@Param('id') centerId: string, @Response() res: eResponse): Promise<void> {
+    const result = this.teamService.getTeamsByCenterId(centerId);
+    res.status(200).json(result);
   }
 
   @Post('uploadLogo/:teamId')
@@ -79,11 +70,7 @@ export class TeamCrudController {
   ): Promise<void> {
     console.log(file);
     const result = await this.teamService.setLogo(file.filename, teamId);
-    if (result) {
-      res.status(201).send();
-    } else {
-      throw new BadRequestException('Your request cannot be processed, Sorry for inconvenience');
-    }
+    res.status(201).json(result);
   }
 
   // //Adding more team to powerboard application by system admin

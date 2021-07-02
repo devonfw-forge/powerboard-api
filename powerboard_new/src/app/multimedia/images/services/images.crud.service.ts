@@ -23,15 +23,7 @@ export class ImagesCrudService extends TypeOrmCrudService<Images> {
     let image = new Images();
     image.image = path;
     image.team = teamId;
-    // const team = await this.teamService.findTeamById(teamId);
-    // console.log('ssssssssss');
-    // console.log(team);
-    // if (!team) {
-    //   console.log('lllllllllllllllllllllllllllllllll');
-    //   throw new NotFoundException('Team Not Found');
-    // } else {
     return await this.imageRepository.save(image);
-    //}
   }
 
   /**
