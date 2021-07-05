@@ -44,8 +44,8 @@ export class SprintCrudService extends TypeOrmCrudService<Sprint> {
       .limit(2)
       .getRawMany();
 
-    // console.log('sprint detail response ***************************************');
-    // console.log(sprintDetail);
+    console.log('sprint detail response ***************************************');
+    console.log(sprintDetail);
     if (sprintDetail[0] == null) {
       return undefined;
     } else {
@@ -194,8 +194,8 @@ export class SprintCrudService extends TypeOrmCrudService<Sprint> {
       .limit(2)
       .getRawMany();
 
-    // console.log('Get Velocity Comparison ****************************************');
-    // console.log(sprintMetricsResponse);
+    console.log('Get Velocity Comparison ****************************************');
+    console.log(sprintMetricsResponse);
     if (sprintMetricsResponse == null) {
       return undefined;
     } else {
@@ -215,8 +215,8 @@ export class SprintCrudService extends TypeOrmCrudService<Sprint> {
         .andWhere('ssm.metric_id=:metric_id', { metric_id: '11155bf2-ada5-495c-8019-8d7ab76d488e' })
         .orderBy('sprint.id')
         .getRawMany();
-      // console.log('Previous sprint completed ***********************');
-      // console.log(previousSprintCompleted);
+      console.log('Previous sprint completed ***********************');
+      console.log(previousSprintCompleted);
       if (previousSprintCompleted.length == 0 || previousSprintCompleted == null) {
         console.log('ho gya');
         return undefined;

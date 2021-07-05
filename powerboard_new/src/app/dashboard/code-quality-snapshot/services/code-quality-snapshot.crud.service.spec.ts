@@ -31,7 +31,23 @@ describe('CodeQualitySnapshotCrudService', () => {
 
   describe('getCodeQualitySnapshot', () => {
     const teamId = '46455bf7-ada7-495c-8019-8d7ab76d490e';
-
+    // const team = {
+    //   id: '46455bf7-ada7-495c-8019-8d7ab76d490e',
+    //   version: 1,
+    //   createdAt: '2021-06-25T08:25:00.982Z',
+    //   updatedAt: '2021-06-25T08:25:00.982Z',
+    //   name: 'K&N',
+    //   teamCode: '10012347',
+    //   projectKey: 'P87695',
+    //   logo: null,
+    //   ad_center: {
+    //     id: '99055bf7-ada7-495c-8019-8d7ab62d488e',
+    //     version: 1,
+    //     createdAt: '2021-06-25T08:25:00.982Z',
+    //     updatedAt: '2021-06-25T08:25:00.982Z',
+    //     name: 'ADCenter Bangalore'
+    //   }
+    // }
     const codeQuality = {
       id: '61055bf8-ada5-495c-8019-8d7ab76d488e',
       version: 1,
