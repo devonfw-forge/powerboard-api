@@ -142,12 +142,13 @@ export class TeamCrudService extends TypeOrmCrudService<Team> {
   async getTeamsByCenterId(CenterId: string): Promise<TeamsInADC[]> {
     const teams: Team[] = await this.teamRepository.find({ where: { ad_center: CenterId } });
     console.log(teams);
-    if (teams.length == 0) {
-      throw new NotFoundException('No teams available in center');
-    }
     let teamsResponse: TeamsInADC = {} as TeamsInADC;
-    let teamsDTOArray = [],
+    let teamsDTOArray: TeamsInADC[] = [],
       i;
+    if (teams.length == 0) {
+      return teamsDTOArray;
+    }
+
     for (i = 0; i < teams.length; i++) {
       teamsResponse.teamId = teams[i].id;
       teamsResponse.teamName = teams[i].name;
