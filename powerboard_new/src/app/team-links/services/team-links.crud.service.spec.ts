@@ -95,4 +95,13 @@ describe('TeamLinksCrudService', () => {
     expect(teamLinkRepo.save).toBeCalledTimes(1);
     expect(actualSavedTeamLink).toEqual(expectedTeamLinkSaved);
   });
+  it('deleteTeamLinkById() should delete the given team links ', async () => {
+    const teamLinkId: string = '2299aacf-ba66-4815-b082-f02a68d96008';
+
+    jest.spyOn(teamLinkRepo, 'delete').mockImplementation(() => undefined);
+
+    await teamLinkService.deleteTeamLinkById(teamLinkId);
+    expect(teamLinkRepo.delete).toBeCalledTimes(1);
+    expect(teamLinkRepo.delete).toBeCalledWith(teamLinkId);
+  });
 });

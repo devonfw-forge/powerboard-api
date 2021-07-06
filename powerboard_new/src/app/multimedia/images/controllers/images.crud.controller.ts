@@ -10,13 +10,17 @@ import path = require('path');
 import { Response as eResponse } from 'express';
 
 const fs_1 = require('fs');
+const globalPath = `C:/powerboard/multimedia`;
 export const storage = {
   storage: diskStorage({
     destination: (req, file, cb) => {
       const id = req.params.teamId;
       console.log(file);
       console.log(req.params);
-      const path = `./uploads/multimedia/${id}/images`;
+      // const path = `./uploads/multimedia/${id}/images`;
+      //const path = `../../../../../../../../../../uploads/multimedia/${id}/images`;
+
+      const path = `${globalPath}/${id}/images`;
       fs_1.mkdirSync(path, { recursive: true });
       return cb(null, path);
     },
@@ -30,25 +34,25 @@ export const storage = {
   }),
 };
 
-export const logoStorage = {
-  storage: diskStorage({
-    destination: (req, file, cb) => {
-      const id = req.params.teamId;
-      console.log(file);
-      console.log(req.params);
-      const path = `./uploads/multimedia/${id}/logo`;
-      fs_1.mkdirSync(path, { recursive: true });
-      return cb(null, path);
-    },
+// export const logoStorage = {
+//   storage: diskStorage({
+//     destination: (req, file, cb) => {
+//       const id = req.params.teamId;
+//       console.log(file);
+//       console.log(req.params);
+//       const path = `./uploads/multimedia/${id}/logo`;
+//       fs_1.mkdirSync(path, { recursive: true });
+//       return cb(null, path);
+//     },
 
-    filename: (req, file, cb) => {
-      console.log(req);
-      const filename: string = path.parse(file.originalname).name.replace(/\s/g, '') + uuidv4();
-      const extension: string = path.parse(file.originalname).ext;
-      cb(null, `${filename}${extension}`);
-    },
-  }),
-};
+//     filename: (req, file, cb) => {
+//       console.log(req);
+//       const filename: string = path.parse(file.originalname).name.replace(/\s/g, '') + uuidv4();
+//       const extension: string = path.parse(file.originalname).ext;
+//       cb(null, `${filename}${extension}`);
+//     },
+//   }),
+// };
 @Crud({
   model: {
     type: Images,

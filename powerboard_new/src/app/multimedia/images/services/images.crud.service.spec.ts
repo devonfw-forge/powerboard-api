@@ -30,7 +30,7 @@ describe('ImagesCrudService', () => {
 
   const teamId: string = '46455bf7-ada7-495c-8019-8d7ab76d488e';
 
-  it('getImageForTeam() should return all the images present in the database', async () => {
+  it('getImagesForTeam() should return all the images present in the database', async () => {
     const images: Images[] = [
       {
         id: '52055bf8-ada5-495c-8019-8d7ab76d488e',
@@ -98,6 +98,6 @@ describe('ImagesCrudService', () => {
 
     await imagesCrudService.deleteImageById(imageId);
     expect(imagesMockRepo.delete).toBeCalledTimes(1);
-    expect(imagesMockRepo.delete).toBeCalledWith(imageId);
+     expect(imagesMockRepo.delete).toBeCalledWith(imageId);
   });
 });

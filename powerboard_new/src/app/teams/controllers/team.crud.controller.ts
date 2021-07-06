@@ -12,6 +12,7 @@ import { UserTeamDTO } from '../model/dto/UserTeamDTO';
 
 import { Response as eResponse } from 'express';
 const fs_1 = require('fs');
+const globalPath = `C:/powerboard/multimedia`;
 //import { AuthGuard } from '@nestjs/passport';
 export const logoStorage = {
   storage: diskStorage({
@@ -19,7 +20,8 @@ export const logoStorage = {
       const id = req.params.teamId;
       console.log(file);
       console.log(req.params);
-      const path = `./uploads/multimedia/${id}/logo`;
+      // const path = `./uploads/multimedia/${id}/logo`;
+      const path = `${globalPath}/${id}/logo`;
       fs_1.mkdirSync(path, { recursive: true });
       return cb(null, path);
     },
@@ -57,7 +59,7 @@ export class TeamCrudController {
 
   @Get('center/:id')
   async getTeamsByCenterId(@Param('id') centerId: string, @Response() res: eResponse): Promise<void> {
-    const result = this.teamService.getTeamsByCenterId(centerId);
+    const result = await this.teamService.getTeamsByCenterId(centerId);
     res.status(200).json(result);
   }
 
