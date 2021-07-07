@@ -7,8 +7,7 @@ export class ADCenter extends BaseEntity {
   @Column('varchar', { length: 255, nullable: false })
   name!: string;
 
-  
-  @ManyToOne(() => BusinessUnit, {  nullable:true})
+  @ManyToOne(() => BusinessUnit, { nullable: true })
   @JoinColumn({ name: 'business_id', referencedColumnName: 'id' })
-  businessUnit!: BusinessUnit;
+  businessUnit?: BusinessUnit;
 }

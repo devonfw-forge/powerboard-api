@@ -47,3 +47,4 @@ export class TeamLinksMock extends MockRepository {}
 export class ImagesMock extends MockRepository {}
 export class VideosMock extends MockRepository {}
 export class VisibilityMock extends MockRepository {}
+export class ADCenterRepositoryMock extends MockRepository {}
