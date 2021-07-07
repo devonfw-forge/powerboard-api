@@ -58,15 +58,6 @@ describe('ClientStatusCrudService', () => {
         createdAt: '2021-03-12T17:36:31.141Z',
         updatedAt: '2021-03-12T17:36:31.141Z',
         name: 'ADC Bangalore',
-        businessUnit: {
-          id: '1',
-          name: '',
-          version: 1,
-          createdAt: '2021-03-12T17:36:31.141Z',
-          updatedAt: '2021-03-12T17:36:31.141Z',
-          parent_id: '1',
-          root_parent_id: '1',
-        },
       },
     };
     const sprint: Sprint = {
