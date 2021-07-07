@@ -10,17 +10,17 @@ import path = require('path');
 import { Response as eResponse } from 'express';
 
 const fs_1 = require('fs');
-const globalPath = `C:/powerboard/multimedia`;
+// const globalPath = `C:/powerboard/multimedia`;
 export const storage = {
   storage: diskStorage({
     destination: (req, file, cb) => {
       const id = req.params.teamId;
       console.log(file);
       console.log(req.params);
-      // const path = `./uploads/multimedia/${id}/images`;
+       const path = `./uploads/multimedia/${id}/images`;
       //const path = `../../../../../../../../../../uploads/multimedia/${id}/images`;
 
-      const path = `${globalPath}/${id}/images`;
+      // const path = `${globalPath}/${id}/images`;
       fs_1.mkdirSync(path, { recursive: true });
       return cb(null, path);
     },
