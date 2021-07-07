@@ -1,6 +1,7 @@
 import { TestingModule, Test } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { SprintRepositoryMock } from '../../../../../test/mockCrudRepository/crudRepository.mock';
+import { SprintDetailResponse } from '../model/dto/SprintDetailResponse';
 //import { Team } from '../../../teams/model/entities/team.entity';
 //import { SprintDetailResponse } from '../model/dto/SprintDetailResponse';
 import { VelocityComparisonResponse } from '../model/dto/VelocityComparisonResponse';
@@ -53,48 +54,47 @@ describe('SprintCrudService', () => {
   // }
 
   it('getSprintDetailResponse() should return sprint Detail Response', async () => {
-    const sprintDetail = {};
-    // const sprintDetail: any = [
-    //   {
-    //     sprint_id: '20555bf8-ada5-495c-8019-8d7ab76d488e',
-    //     sprint_version: 1,
-    //     sprint_createdAt: '2021-06-25T08:25:00.982Z',
-    //     sprint_updatedAt: '2021-06-25T08:25:00.982Z',
-    //     sprint_sprint_number: 22,
-    //     sprint_start_date: '2021-06-08T10:00:15.000Z',
-    //     sprint_end_date: '2021-07-06T10:00:15.000Z',
-    //     sprint_status: '11155bf2-ada5-495c-8019-8d7ab76d488e',
-    //     sprint_team_id: '46455bf7-ada7-495c-8019-8d7ab76d490e',
-    //     sprint_work_unit: '11155bf1-ada5-495c-8019-8d7ab76d488e',
-    //     st_status: 'In Progress',
-    //     ss_id: '80355bf8-ada5-495c-8019-8d7ab76d488e',
-    //     ss_date_time: '2021-06-08T09:00:00.000Z',
-    //     ssm_value: '280',
-    //     smt_name: 'Work Committed'
-    //   },
-    //   {
-    //     sprint_id: '20555bf8-ada5-495c-8019-8d7ab76d488e',
-    //     sprint_version: 1,
-    //     sprint_createdAt: '2021-06-25T08:25:00.982Z',
-    //     sprint_updatedAt: '2021-06-25T08:25:00.982Z',
-    //     sprint_sprint_number: 22,
-    //     sprint_start_date: '2021-06-08T10:00:15.000Z',
-    //     sprint_end_date: '2021-07-06T10:00:15.000Z',
-    //     sprint_status: '11155bf2-ada5-495c-8019-8d7ab76d488e',
-    //     sprint_team_id: '46455bf7-ada7-495c-8019-8d7ab76d490e',
-    //     sprint_work_unit: '11155bf1-ada5-495c-8019-8d7ab76d488e',
-    //     st_status: 'In Progress',
-    //     ss_id: '80355bf8-ada5-495c-8019-8d7ab76d488e',
-    //     ss_date_time: '2021-06-08T09:00:00.000Z',
-    //     ssm_value: '35',
-    //     smt_name: 'Work Completed'
-    //   }
-    // ];
-    // const expectedSprintDetailResponse: SprintDetailResponse = {
-    //   Sprint_current_day: 27,
-    //   sprint_number: 22,
-    //   Sprint_days: 28,
-    // };
+    const sprintDetail: any = [
+      {
+        sprint_id: '20555bf8-ada5-495c-8019-8d7ab76d488e',
+        sprint_version: 1,
+        sprint_createdAt: '2021-06-25T08:25:00.982Z',
+        sprint_updatedAt: '2021-06-25T08:25:00.982Z',
+        sprint_sprint_number: 22,
+        sprint_start_date: '2021-06-08T10:00:15.000Z',
+        sprint_end_date: '2021-07-06T10:00:15.000Z',
+        sprint_status: '11155bf2-ada5-495c-8019-8d7ab76d488e',
+        sprint_team_id: '46455bf7-ada7-495c-8019-8d7ab76d490e',
+        sprint_work_unit: '11155bf1-ada5-495c-8019-8d7ab76d488e',
+        st_status: 'In Progress',
+        ss_id: '80355bf8-ada5-495c-8019-8d7ab76d488e',
+        ss_date_time: '2021-06-08T09:00:00.000Z',
+        ssm_value: '280',
+        smt_name: 'Work Committed',
+      },
+      {
+        sprint_id: '20555bf8-ada5-495c-8019-8d7ab76d488e',
+        sprint_version: 1,
+        sprint_createdAt: '2021-06-25T08:25:00.982Z',
+        sprint_updatedAt: '2021-06-25T08:25:00.982Z',
+        sprint_sprint_number: 22,
+        sprint_start_date: '2021-06-08T10:00:15.000Z',
+        sprint_end_date: '2021-07-06T10:00:15.000Z',
+        sprint_status: '11155bf2-ada5-495c-8019-8d7ab76d488e',
+        sprint_team_id: '46455bf7-ada7-495c-8019-8d7ab76d490e',
+        sprint_work_unit: '11155bf1-ada5-495c-8019-8d7ab76d488e',
+        st_status: 'In Progress',
+        ss_id: '80355bf8-ada5-495c-8019-8d7ab76d488e',
+        ss_date_time: '2021-06-08T09:00:00.000Z',
+        ssm_value: '35',
+        smt_name: 'Work Completed',
+      },
+    ];
+    const expectedSprintDetailResponse: SprintDetailResponse = {
+      Sprint_current_day: 28,
+      sprint_number: 22,
+      Sprint_days: 28,
+    };
 
     const createQueryBuilder1: any = {
       limit: () => createQueryBuilder1,
@@ -111,60 +111,59 @@ describe('SprintCrudService', () => {
     };
 
     jest.spyOn(sprintRepo, 'createQueryBuilder').mockImplementation(() => createQueryBuilder1);
-    // const actualSprintDetail = await service.getSprintDetailResponse(teamId);
-    await service.getSprintDetailResponse(teamId);
+    const actualSprintDetail = await service.getSprintDetailResponse(teamId);
+    //await service.getSprintDetailResponse(teamId);
     expect(sprintRepo.createQueryBuilder).toHaveBeenCalledTimes(1);
-    //expect(actualSprintDetail).toEqual(expectedSprintDetailResponse);
+    expect(actualSprintDetail).toEqual(expectedSprintDetailResponse);
   });
 
   it('getBurnDown() should return burndown details', async () => {
-    const sprintForBurndown = {};
-    // const sprintForBurndown: any = [
-    //   {
-    //     sprint_id: '20555bf8-ada5-495c-8019-8d7ab76d488e',
-    //     sprint_version: 1,
-    //     sprint_createdAt: '2021-06-25T08:25:00.982Z',
-    //     sprint_updatedAt: '2021-06-25T08:25:00.982Z',
-    //     sprint_sprint_number: 22,
-    //     sprint_start_date: '2021-06-08T10:00:15.000Z',
-    //     sprint_end_date: '2021-07-06T10:00:15.000Z',
-    //     sprint_status: '11155bf2-ada5-495c-8019-8d7ab76d488e',
-    //     sprint_team_id: '46455bf7-ada7-495c-8019-8d7ab76d490e',
-    //     sprint_work_unit: '11155bf1-ada5-495c-8019-8d7ab76d488e',
-    //     st_status: 'In Progress',
-    //     ss_id: '80355bf8-ada5-495c-8019-8d7ab76d488e',
-    //     ss_date_time: '2021-06-08T09:00:00.000Z',
-    //     ssm_value: '280',
-    //     sw_work_unit: 'hour',
-    //     smt_name: 'Work Committed'
-    //   },
-    //   {
-    //     sprint_id: '20555bf8-ada5-495c-8019-8d7ab76d488e',
-    //     sprint_version: 1,
-    //     sprint_createdAt: '2021-06-25T08:25:00.982Z',
-    //     sprint_updatedAt: '2021-06-25T08:25:00.982Z',
-    //     sprint_sprint_number: 22,
-    //     sprint_start_date: '2021-06-08T10:00:15.000Z',
-    //     sprint_end_date: '2021-07-06T10:00:15.000Z',
-    //     sprint_status: '11155bf2-ada5-495c-8019-8d7ab76d488e',
-    //     sprint_team_id: '46455bf7-ada7-495c-8019-8d7ab76d490e',
-    //     sprint_work_unit: '11155bf1-ada5-495c-8019-8d7ab76d488e',
-    //     st_status: 'In Progress',
-    //     ss_id: '80355bf8-ada5-495c-8019-8d7ab76d488e',
-    //     ss_date_time: '2021-06-08T09:00:00.000Z',
-    //     ssm_value: '35',
-    //     sw_work_unit: 'hour',
-    //     smt_name: 'Work Completed'
-    //   },
-    // ];
+    const sprintForBurndown: any = [
+      {
+        sprint_id: '20555bf8-ada5-495c-8019-8d7ab76d488e',
+        sprint_version: 1,
+        sprint_createdAt: '2021-06-25T08:25:00.982Z',
+        sprint_updatedAt: '2021-06-25T08:25:00.982Z',
+        sprint_sprint_number: 22,
+        sprint_start_date: '2021-06-08T10:00:15.000Z',
+        sprint_end_date: '2021-07-06T10:00:15.000Z',
+        sprint_status: '11155bf2-ada5-495c-8019-8d7ab76d488e',
+        sprint_team_id: '46455bf7-ada7-495c-8019-8d7ab76d490e',
+        sprint_work_unit: '11155bf1-ada5-495c-8019-8d7ab76d488e',
+        st_status: 'In Progress',
+        ss_id: '80355bf8-ada5-495c-8019-8d7ab76d488e',
+        ss_date_time: '2021-06-08T09:00:00.000Z',
+        ssm_value: '280',
+        sw_work_unit: 'hour',
+        smt_name: 'Work Committed',
+      },
+      {
+        sprint_id: '20555bf8-ada5-495c-8019-8d7ab76d488e',
+        sprint_version: 1,
+        sprint_createdAt: '2021-06-25T08:25:00.982Z',
+        sprint_updatedAt: '2021-06-25T08:25:00.982Z',
+        sprint_sprint_number: 22,
+        sprint_start_date: '2021-06-08T10:00:15.000Z',
+        sprint_end_date: '2021-07-06T10:00:15.000Z',
+        sprint_status: '11155bf2-ada5-495c-8019-8d7ab76d488e',
+        sprint_team_id: '46455bf7-ada7-495c-8019-8d7ab76d490e',
+        sprint_work_unit: '11155bf1-ada5-495c-8019-8d7ab76d488e',
+        st_status: 'In Progress',
+        ss_id: '80355bf8-ada5-495c-8019-8d7ab76d488e',
+        ss_date_time: '2021-06-08T09:00:00.000Z',
+        ssm_value: '35',
+        sw_work_unit: 'hour',
+        smt_name: 'Work Completed',
+      },
+    ];
 
-    // const expectedBurndownResponse = {
-    //   workUnit: 'hour',
-    //   remainingDays: 1,
-    //   remainingWork: 245,
-    //   count: 235,
-    //   burndownStatus: 'Behind Time',
-    // };
+    const expectedBurndownResponse = {
+      workUnit: 'hour',
+      remainingDays: 0,
+      remainingWork: 245,
+      count: 245,
+      burndownStatus: 'Behind Time',
+    };
 
     const createQueryBuilder: any = {
       limit: () => createQueryBuilder,
@@ -183,10 +182,10 @@ describe('SprintCrudService', () => {
 
     jest.spyOn(sprintRepo, 'createQueryBuilder').mockImplementation(() => createQueryBuilder);
 
-    // const actualBurndownResponse = await service.getBurndown(teamId);
-    await service.getBurndown(teamId);
+    const actualBurndownResponse = await service.getBurndown(teamId);
+    //await service.getBurndown(teamId);
     expect(sprintRepo.createQueryBuilder).toHaveBeenCalledTimes(1);
-    // expect(actualBurndownResponse).toEqual(expectedBurndownResponse);
+    expect(actualBurndownResponse).toEqual(expectedBurndownResponse);
   });
 
   it('getVelocityComparison() should return velocity comparison details', async () => {

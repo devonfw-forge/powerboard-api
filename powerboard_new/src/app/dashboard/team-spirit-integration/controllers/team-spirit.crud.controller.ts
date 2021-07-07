@@ -6,7 +6,7 @@ import { TeamSpiritCrudService } from '../services/team-spirit.crud.service';
 //import { TeamSpiritDTO } from '../model/dto/TeamSpiritDTO';
 import { TeamDTO } from '../model/dto/TeamDTO';
 import { TeamSpiritUserDTO } from '../model/dto/TeamSpiritUserDTO';
-import { ChangePasswordTeamSpiritDTO } from '../model/dto/ChangePasswordTeamSpiritDTO';
+//import { ChangePasswordTeamSpiritDTO } from '../model/dto/ChangePasswordTeamSpiritDTO';
 
 @Crud({
   model: {
@@ -41,10 +41,10 @@ export class TeamSpiritCrudController {
     return await this.teamSpiritService.createUser(userDto);
   }
 
-  @Put('user/password-change/:userId')
-  async updateUser(@Body() newPassword: ChangePasswordTeamSpiritDTO, @Param('userId') userId: number): Promise<any> {
-    return await this.teamSpiritService.updateUser(newPassword, userId);
-  }
+  // @Put('user/password-change/:userId')
+  // async updateUser(@Body() newPassword: ChangePasswordTeamSpiritDTO, @Param('userId') userId: number): Promise<any> {
+  //   return await this.teamSpiritService.updateUser(newPassword, userId);
+  // }
 
   @Post('team/create')
   async addTeamToTeamSpirit(@Body() team: TeamDTO): Promise<any> {

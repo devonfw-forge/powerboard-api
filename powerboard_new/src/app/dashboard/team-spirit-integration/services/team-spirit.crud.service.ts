@@ -8,7 +8,7 @@ import { TeamDTO } from '../model/dto/TeamDTO';
 import { TeamSpiritUserDTO } from '../model/dto/TeamSpiritUserDTO';
 //import { Team } from '../../../teams/model/entities/team.entity';
 import { TeamSpiritMedian } from '../model/entities/team-spirit-median.entity';
-import { ChangePasswordTeamSpiritDTO } from '../model/dto/ChangePasswordTeamSpiritDTO';
+//import { ChangePasswordTeamSpiritDTO } from '../model/dto/ChangePasswordTeamSpiritDTO';
 //import { TeamSpiritMedian } from '../model/entities/team-spirit-median.entity';
 
 @Injectable()
@@ -72,15 +72,6 @@ export class TeamSpiritCrudService extends TypeOrmCrudService<TeamSpiritMedian> 
       .orderBy('team_spirit_median.start_date', 'DESC')
       .limit(1)
       .getOne()) as TeamSpiritMedian;
-
-    console.log('this is survey Result');
-    console.log(surveyResult);
-    // if (surveyResult) {
-    //   return surveyResult.surveyMedian;
-    // } else {
-    //   return undefined;
-    // }
-
     let teamSpiritResponse = new TeamSpiritResponse();
     if (surveyResult) {
       teamSpiritResponse.teamSpiritRating = surveyResult.surveyMedian;
@@ -92,15 +83,6 @@ export class TeamSpiritCrudService extends TypeOrmCrudService<TeamSpiritMedian> 
 
     //return teamSpiritResponse;
   }
-
-  // const surveyResult = await this.http
-  //   .get(this.newTeamSpiritEndpointURL + 'survey/result/' + projectName, {
-  //     headers: { Authorization: 'Bearer ' + this.config.headers.Authorization.token },
-  //   })
-  //   .toPromise()
-  //   .then(resp => {
-  //     return resp.data;
-  //   });
 
   //add a team to the team spirit
   async addTeamToTeamSpirit(team: TeamDTO): Promise<any> {
@@ -160,25 +142,25 @@ export class TeamSpiritCrudService extends TypeOrmCrudService<TeamSpiritMedian> 
       });
   }
 
-  async updateUser(changePasswordTeamSpiritDTO: ChangePasswordTeamSpiritDTO, userId: number): Promise<any> {
-    const user: TeamSpiritUserDTO = await this.http
-      .get(this.newTeamSpiritEndpointURL + 'user/' + userId, {
-        headers: { Authorization: 'Bearer ' + this.config.headers.Authorization.token },
-      })
-      .toPromise()
-      .then(resp => {
-        return resp.data;
-      });
-    user.Password = changePasswordTeamSpiritDTO.newPassword;
-    return await this.http
-      .put(this.newTeamSpiritEndpointURL + 'user/' + userId, user, {
-        headers: { Authorization: 'Bearer ' + this.config.headers.Authorization.token },
-      })
-      .toPromise()
-      .then(resp => {
-        return resp.data;
-      });
-  }
+  // async updateUser(changePasswordTeamSpiritDTO: ChangePasswordTeamSpiritDTO, userId: number): Promise<any> {
+  //   const user: TeamSpiritUserDTO = await this.http
+  //     .get(this.newTeamSpiritEndpointURL + 'user/' + userId, {
+  //       headers: { Authorization: 'Bearer ' + this.config.headers.Authorization.token },
+  //     })
+  //     .toPromise()
+  //     .then(resp => {
+  //       return resp.data;
+  //     });
+  //   user.Password = changePasswordTeamSpiritDTO.newPassword;
+  //   return await this.http
+  //     .put(this.newTeamSpiritEndpointURL + 'user/' + userId, user, {
+  //       headers: { Authorization: 'Bearer ' + this.config.headers.Authorization.token },
+  //     })
+  //     .toPromise()
+  //     .then(resp => {
+  //       return resp.data;
+  //     });
+  // }
 
   async addUserToTeam(userDTO: TeamSpiritUserDTO, teamName: string): Promise<any> {
     userDTO.RoleID = 2;
@@ -223,24 +205,6 @@ export class TeamSpiritCrudService extends TypeOrmCrudService<TeamSpiritMedian> 
   }
 
   async getAllSurveyResult(): Promise<any> {
-    // const allTeams = await this.teamRepository.find();
-    // console.log('All the teams present in the Powerboard');
-    // console.log(allTeams);
-    // let i;
-    // for (i = 0; i <= allTeams.length; i++) {
-    //   const teamsSurveyMedian = await this.http.get(this.newTeamSpiritEndpointURL + 'survey/result' + allTeams[i].name, { headers: { Authorization: 'Bearer ' + this.config.headers.Authorization.token } })
-    //     .toPromise()
-    //     .then(resp => {
-    //       return resp.data;
-    //     })
-    //   console.log(teamsSurveyMedian);
-    // let  TeamSurveyMedian =new TeamSurveyMedianDTO();
-    // TeamSurveyMedian.teamName=teamsSurveyMedian[i].name;
-    // TeamSurveyMedian.median=teamsSurveyMedian[i].median;
-    // TeamSurveyMedian.startDate=teamsSurveyMedian[i].startDate;
-    // TeamSurveyMedian.endDate=teamsSurveyMedian[i].endDate;
-    //  return await this.teamSurveyMedianRepository.save(TeamSurveyMedian);
-    //}
     const allSurveyResult = await this.http
       .get(this.newTeamSpiritEndpointURL + 'survies', {
         headers: { Authorization: 'Bearer ' + this.config.headers.Authorization.token },

@@ -199,16 +199,8 @@ describe('TeamSpiritCrudService', () => {
 
     const teamName = 'flip';
 
-    it('addUserToTeam() method should successfully update the team and return the updated Team response', async () => {
-      const httpResponse: AxiosResponse<any> = {
-        data: {},
-        headers: {},
-        config: { url: 'http://localhost:3000/team-Spirit' },
-        status: 200,
-        statusText: 'OK',
-      };
-
-      const existedTeam = {
+    it('addUserToTeam() method should successfully add the user to team and return the updated Team response', async () => {
+      const existingTeam = {
         Name: 'flip',
         Num_mumbers: 7,
         StartDate: '2021-05-15T00:00:00Z',
@@ -226,19 +218,45 @@ describe('TeamSpiritCrudService', () => {
         Users: [],
       };
 
+      const updatedTeam = {
+        existingTeam,
+        Users: [
+          {
+            Id: 104,
+            Full_name: 'andyra',
+            Email: 'andyra@mail.com',
+            Password: 'andyra',
+            Role: {
+              Id: 2,
+              Name: 'Team Leader',
+            },
+            RoleID: 2,
+            Teams: null,
+          },
+        ],
+      };
+
       const getTeamResponse = {
-        data: existedTeam,
+        data: existingTeam,
         headers: {},
         config: { url: 'http://localhost:3000/team-Spirit' },
         status: 200,
         statusText: 'OK',
       };
 
+      const puthttpResponse: AxiosResponse<any> = {
+        data: updatedTeam,
+        headers: {},
+        config: { url: 'http://localhost:3000/team-Spirit' },
+        status: 200,
+        statusText: 'OK',
+      };
       jest.spyOn(httpService, 'get').mockImplementationOnce(() => of(getTeamResponse));
-      jest.spyOn(httpService, 'put').mockImplementationOnce(() => of(httpResponse));
-      await teamSpiritService.addUserToTeam(userDTO, teamName);
+      jest.spyOn(httpService, 'put').mockImplementationOnce(() => of(puthttpResponse));
+      const actualResponse = await teamSpiritService.addUserToTeam(userDTO, teamName);
       expect(httpService.get).toBeCalledTimes(1);
       expect(httpService.put).toBeCalledTimes(1);
+      expect(updatedTeam).toEqual(actualResponse);
     });
 
     it(' should throw error if team is not already present', async () => {

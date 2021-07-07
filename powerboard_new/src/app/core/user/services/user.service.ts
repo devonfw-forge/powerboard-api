@@ -43,6 +43,8 @@ export class UserService extends TypeOrmCrudService<User> {
    * @return {User} created User as response
    */
   async registerUser(userDTO: UserDTO): Promise<any> {
+    console.log('This is user DTO');
+    console.log(userDTO);
     const actualUser = await this.findUser(userDTO.username);
     if (actualUser) {
       console.log(actualUser);
@@ -71,11 +73,16 @@ export class UserService extends TypeOrmCrudService<User> {
   async addUserToOtherTeam(actualUser: User, userDTO: UserDTO): Promise<any> {
     let userTeam = new UserTeam();
     userTeam.user = actualUser;
+    console.log('actual User');
+    console.log(actualUser);
     const roleObj = (await this.userRoleRepository.findOne({ where: { id: userDTO.role } })) as UserRole;
-
+    console.log('Role Object');
+    console.log(roleObj);
     const output = (await this.userTeamRepository.findOne({
       where: { user: actualUser.id, team: userDTO.team.id },
     })) as UserTeam;
+    console.log('output from userTeamRepository');
+    console.log(output);
     if (output) {
       throw new ConflictException('User in team already exists');
     }
