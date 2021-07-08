@@ -35,6 +35,8 @@ import { TeamSpiritResponse } from '../../dashboard/team-spirit-integration/mode
 import { TeamSpiritCrudService } from '../../dashboard/team-spirit-integration/services/team-spirit.crud.service';
 
 import { UpdateTeam } from '../model/dto/updateTeam.interface';
+import { TeamSpiritUserDTO } from '../../dashboard/team-spirit-integration/model/dto/TeamSpiritUserDTO';
+import { TeamDTO } from '../../dashboard/team-spirit-integration/model/dto/TeamDTO';
 
 @Injectable()
 export class TeamCrudService extends TypeOrmCrudService<Team> {
@@ -66,16 +68,18 @@ export class TeamCrudService extends TypeOrmCrudService<Team> {
     const userId = userTeam.userId;
     const teams: Team = (await this.teamRepository.findOne({ where: { id: teamId } })) as Team;
     if (!teams) {
-      throw new NotFoundException('Team not found');
+      throw new NotFoundException('Team Not Found');
     }
+
     const isAdminOrGuest = await this.userService.isAdminOrGuest(userId);
     const privilegeList = await this.userService.getTeamPrivileges(userId, teamId, isAdminOrGuest);
+
     return this.getPowerboardResponseForTeam(teams, privilegeList, isAdminOrGuest);
   }
   /**
    * getPowerboardResponseForTeam method will return powerboard response realted to team
    */
-  private async getPowerboardResponseForTeam(
+  async getPowerboardResponseForTeam(
     teams: Team,
     privilegeList: string[],
     isAdminOrGuest: boolean,
@@ -166,7 +170,7 @@ export class TeamCrudService extends TypeOrmCrudService<Team> {
    * @return {Images} Images as response for that team
    */
   async setLogo(path: string, teamId: string): Promise<Team> {
-    const team = await this.findTeamById(teamId);
+    const team = await this.teamRepository.findOne(teamId);
     if (!team) {
       throw new NotFoundException('Team Not Found');
     }
@@ -207,11 +211,13 @@ export class TeamCrudService extends TypeOrmCrudService<Team> {
       } else {
         statusResult = 1;
       }
+      console.log('status');
+      console.log(statusResult);
       return statusResult;
     }
   }
 
-  private async getOtherComponentsDetailByTeamId(
+  async getOtherComponentsDetailByTeamId(
     teamId: string,
     privilegeList: string[],
     powerboardResponse: PowerboardResponse,
@@ -224,14 +230,17 @@ export class TeamCrudService extends TypeOrmCrudService<Team> {
     }
     if (privilegeList.includes('view_team_links')) {
       const teamLink: TeamLinkResponse[] = await this.teamLinkService.getTeamLinks(teamId);
+
       powerboardResponse.teamLinks = teamLink;
     } else {
       powerboardResponse.teamLinks = [];
     }
     const images: ImageResponse[] = await this.imageService.getImagesForTeam(teamId);
+
     powerboardResponse.images = images;
 
     const videos: VideoResponse[] = await this.videoService.getVideosForTeam(teamId);
+
     powerboardResponse.videos = videos;
 
     return powerboardResponse;
@@ -245,7 +254,8 @@ export class TeamCrudService extends TypeOrmCrudService<Team> {
   async addTeam(addteam: AddTeam): Promise<Team> {
     const teamCode = addteam.teamCode;
     const result = await this.teamRepository.findOne({ where: { teamCode: teamCode } });
-    if (result != null) {
+    console.log(result);
+    if (result) {
       throw new ConflictException('team already registered');
     } else {
       let team = new Team();
@@ -256,23 +266,24 @@ export class TeamCrudService extends TypeOrmCrudService<Team> {
 
       const result = await this.teamRepository.save(team);
 
-      //   if(result){
-      //   let teamSpiritUserDTO = {} as TeamSpiritUserDTO;
-      //   teamSpiritUserDTO.Email = 'adminTeamSpirit@capgemini.com';
-      //   teamSpiritUserDTO.Password = 'TeamSpiritAdmin!';
-      //   const token = await this.teamSpiritService.loginToTeamSpirit(teamSpiritUserDTO);
-      //   if (token) {
-      //     let teamDTO = new TeamDTO();
-      //     teamDTO.Frequency = addteam.frequency;
-      //     teamDTO.Name = addteam.teamName;
-      //     teamDTO.Num_mumbers = addteam.member_number;
-      //     teamDTO.StartDate = addteam.start_date;
+      if (result) {
+        let teamSpiritUserDTO = {} as TeamSpiritUserDTO;
+        teamSpiritUserDTO.Email = 'adminTeamSpirit@capgemini.com';
+        teamSpiritUserDTO.Password = 'TeamSpiritAdmin!';
+        const token = await this.teamSpiritService.loginToTeamSpirit(teamSpiritUserDTO);
+        console.log('token');
+        console.log(token);
+        if (token) {
+          let teamDTO = new TeamDTO();
+          teamDTO.Frequency = addteam.frequency;
+          teamDTO.Name = addteam.teamName;
+          teamDTO.Num_mumbers = addteam.member_number;
+          teamDTO.StartDate = addteam.start_date;
 
-      //     const output = await this.teamSpiritService.addTeamToTeamSpirit(teamDTO);
-      //     console.log(output);
-      //   }
-
-      // }
+          const output = await this.teamSpiritService.addTeamToTeamSpirit(teamDTO);
+          console.log(output);
+        }
+      }
       return result;
     }
   }
@@ -298,8 +309,9 @@ export class TeamCrudService extends TypeOrmCrudService<Team> {
   async getAllTeams(): Promise<ViewTeamsResponse[]> {
     const teamList = await this.teamRepository.find();
     if (teamList.length == 0) {
-      throw new NotFoundException('No Teams Found');
+      throw new NotFoundException('Team Not Found');
     }
+    console.log(teamList);
     let viewTeamsResponse: ViewTeamsResponse = {} as ViewTeamsResponse;
     let viewteamList = [],
       i;

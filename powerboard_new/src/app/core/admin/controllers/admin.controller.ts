@@ -45,7 +45,7 @@ export class AdminController {
   async updateTeam(@Body() updateTeam: UpdateTeam, @Response() res: eResponse): Promise<void> {
     const result = await this.adminService.updateTeam(updateTeam);
     console.log(result);
-    res.status(200).json({ message: 'Team successfully updated' });
+    res.status(200).json(result);
   }
 
   //View All Team member of team by SystemADMIN

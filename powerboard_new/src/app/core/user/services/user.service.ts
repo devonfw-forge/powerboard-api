@@ -196,6 +196,13 @@ export class UserService extends TypeOrmCrudService<User> {
     let userTeamOBJ = new UserTeam();
     userTeamOBJ.id = userTeam.id;
     userTeamOBJ.role = (await this.userRoleRepository.findOne({ where: { id: updateRoleDTO.roleId } })) as UserRole;
+    // if(userTeamOBJ.role.roleName=='team_admin')
+    // {
+    //   let teamSpiritUserOBJ= new TeamSpiritUserDTO();
+    //   teamSpiritUserOBJ.Email=userTeam.user.email;
+    //   teamSpiritUserOBJ.Full_Name=userTeam.user.username;
+    //   teamSpiritUserOBJ.Password
+    // }
     const result = await this.userTeamRepository.save(userTeamOBJ);
     return result;
   }

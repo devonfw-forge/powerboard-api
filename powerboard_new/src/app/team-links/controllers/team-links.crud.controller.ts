@@ -18,7 +18,7 @@ export class TeamLinksCrudController {
   constructor(public teamLinksService: TeamLinksCrudService) {}
 
   @Get('teamId/:id')
-  async getDailyMeeting(@Param('id') teamId: string, @Response() res: eResponse): Promise<void> {
+  async getTeamLinks(@Param('id') teamId: string, @Response() res: eResponse): Promise<void> {
     const result = await this.teamLinksService.getTeamLinks(teamId);
     res.status(200).json(result);
   }
@@ -32,7 +32,7 @@ export class TeamLinksCrudController {
 
   @Post('teamId/create')
   // @UseGuards(AuthGuard('jwt'))
-  async createDailyMeeting(@Body() teamLinkDTO: TeamLinkDTO, @Response() res: eResponse): Promise<void> {
+  async addTeamLinks(@Body() teamLinkDTO: TeamLinkDTO, @Response() res: eResponse): Promise<void> {
     const result = await this.teamLinksService.createTeamLinks(teamLinkDTO);
     res.status(201).json(result);
   }

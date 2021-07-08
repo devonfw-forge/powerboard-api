@@ -1,6 +1,8 @@
+import { HttpModule, HttpService } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import {
+  ADCenterRepositoryMock,
   BusinessUnitRepositoryMock,
   ClientStatusRepositoryMock,
   CodeQualityRepositoryMock,
@@ -10,33 +12,49 @@ import {
   TeamLinksMock,
   TeamRepositoryMock,
   TeamSpiritRepositoryMock,
+  UserInfoRepositoryMock,
   UserRepositoryMock,
+  UserRoleRepositoryMock,
+  UserTeamRepositoryMock,
   VideosMock,
   VisibilityMock,
 } from '../../../../test/mockCrudRepository/crudRepository.mock';
 import { User } from '../../core/user/model/entities/user.entity';
+import { UserInfo } from '../../core/user/model/entities/user_info.entity';
+import { UserRole } from '../../core/user/model/entities/user_role.entity';
+import { UserTeam } from '../../core/user/model/entities/user_team.entity';
 import { UserService } from '../../core/user/services/user.service';
 import { DailyMeeting } from '../../daily-links/model/entities/daily-meeting.entity';
 import { DailyMeetingCrudService } from '../../daily-links/services/daily-meeting.crud.service';
+import { ADCenter } from '../../dashboard/ad-center/model/entities/ad-center.entity';
 import { BusinessUnit } from '../../dashboard/business-units/model/entities/business-unit.entity';
+
 import { ClientStatus } from '../../dashboard/client-status/model/entities/client-status.entity';
 import { ClientStatusCrudService } from '../../dashboard/client-status/services/client-status.crud.service';
+
 import { CodeQualitySnapshot } from '../../dashboard/code-quality-snapshot/model/entities/code-quality-snapshot.entity';
 import { CodeQualitySnapshotCrudService } from '../../dashboard/code-quality-snapshot/services/code-quality-snapshot.crud.service';
+
 import { Sprint } from '../../dashboard/sprint/model/entities/sprint.entity';
 import { SprintCrudService } from '../../dashboard/sprint/services/sprint.crud.service';
-import { TeamSpirit } from '../../dashboard/team-spirit-integration/model/entities/team-spirit.entity';
+
+import { TeamSpiritMedian } from '../../dashboard/team-spirit-integration/model/entities/team-spirit-median.entity';
+//import { TeamSpirit } from '../../dashboard/team-spirit-integration/model/entities/team-spirit.entity';
 import { TeamSpiritCrudService } from '../../dashboard/team-spirit-integration/services/team-spirit.crud.service';
 import { Images } from '../../multimedia/images/model/entities/image.entity';
 import { ImagesCrudService } from '../../multimedia/images/services/images.crud.service';
 import { Videos } from '../../multimedia/videos/model/entities/videos.entity';
 import { VideosCrudService } from '../../multimedia/videos/services/videos.crud.service';
+import { AddTeam } from '../../shared/interfaces/addTeam.interface';
 import { TeamLinks } from '../../team-links/model/entities/team-links.entity';
 import { TeamLinksCrudService } from '../../team-links/services/team-links.crud.service';
 
 import { Team } from '../../teams/model/entities/team.entity';
 import { Visibility } from '../../visibility/model/entities/visibility.entity';
 import { VisibilityCrudService } from '../../visibility/services/visibility.crud.service';
+import { DashBoardResponse } from '../model/dto/DashBoardResponse';
+import { UpdateTeam } from '../model/dto/updateTeam.interface';
+import { UserTeamDTO } from '../model/dto/UserTeamDTO';
 import { TeamCrudService } from './team.crud.service';
 
 describe('TeamCrudService', () => {
@@ -55,16 +73,23 @@ describe('TeamCrudService', () => {
   let businessUnitRepo: BusinessUnitRepositoryMock;
   let codeQualityRepo: CodeQualityRepositoryMock;
   let clientStatusRepo: ClientStatusRepositoryMock;
-  let teamSpiritRepo: TeamSpiritRepositoryMock;
+  let teamSpiritRepository: TeamSpiritRepositoryMock;
   let sprintRepo: SprintRepositoryMock;
   let dailyMeetingLinkRepo: DailyMeetingLinkMock;
   let teamLinksRepo: TeamLinksMock;
   let imageRepo: ImagesMock;
   let videoRepo: VideosMock;
   let visibilityRepo: VisibilityMock;
+  let adcenterRepo: ADCenterRepositoryMock;
+  let httpService: HttpService;
+  let userRoleRepo: UserRoleRepositoryMock;
+  let userInfoRepo: UserInfoRepositoryMock;
+  let userTeamRepo: UserTeamRepositoryMock;
+  let userService: UserService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
+      imports: [HttpModule],
       providers: [
         TeamCrudService,
         ClientStatusCrudService,
@@ -77,6 +102,26 @@ describe('TeamCrudService', () => {
         ImagesCrudService,
         VideosCrudService,
         VisibilityCrudService,
+        {
+          provide: getRepositoryToken(UserRole),
+          useClass: UserRoleRepositoryMock,
+        },
+        {
+          provide: getRepositoryToken(UserTeam),
+          useClass: UserTeamRepositoryMock,
+        },
+        {
+          provide: getRepositoryToken(UserInfo),
+          useClass: UserInfoRepositoryMock,
+        },
+        {
+          provide: getRepositoryToken(TeamSpiritMedian),
+          useClass: TeamSpiritRepositoryMock,
+        },
+        {
+          provide: getRepositoryToken(ADCenter),
+          useClass: ADCenterRepositoryMock,
+        },
         {
           provide: getRepositoryToken(User),
           useClass: UserRepositoryMock,
@@ -101,10 +146,7 @@ describe('TeamCrudService', () => {
           provide: getRepositoryToken(CodeQualitySnapshot),
           useClass: CodeQualityRepositoryMock,
         },
-        {
-          provide: getRepositoryToken(TeamSpirit),
-          useClass: TeamSpiritRepositoryMock,
-        },
+
         {
           provide: getRepositoryToken(DailyMeeting),
           useClass: DailyMeetingLinkMock,
@@ -144,19 +186,29 @@ describe('TeamCrudService', () => {
     businessUnitRepo = module.get<BusinessUnitRepositoryMock>(getRepositoryToken(BusinessUnit));
     codeQualityRepo = module.get<CodeQualityRepositoryMock>(getRepositoryToken(CodeQualitySnapshot));
     clientStatusRepo = module.get<ClientStatusRepositoryMock>(getRepositoryToken(ClientStatus));
-    teamSpiritRepo = module.get<TeamRepositoryMock>(getRepositoryToken(TeamSpirit));
+    teamSpiritRepository = module.get<TeamSpiritRepositoryMock>(getRepositoryToken(TeamSpiritMedian));
     dailyMeetingLinkRepo = module.get<DailyMeetingLinkMock>(getRepositoryToken(DailyMeeting));
     teamLinksRepo = module.get<TeamLinksMock>(getRepositoryToken(TeamLinks));
     imageRepo = module.get<ImagesMock>(getRepositoryToken(Images));
     videoRepo = module.get<VideosMock>(getRepositoryToken(Videos));
     visibilityRepo = module.get<VisibilityMock>(getRepositoryToken(Visibility));
+    adcenterRepo = module.get<ADCenterRepositoryMock>(getRepositoryToken(ADCenter));
+    httpService = module.get<HttpService>(HttpService);
+    userRoleRepo = module.get<UserRoleRepositoryMock>(getRepositoryToken(UserRole));
+    userInfoRepo = module.get<UserInfoRepositoryMock>(getRepositoryToken(UserInfo));
+    userTeamRepo = module.get<UserTeamRepositoryMock>(getRepositoryToken(UserTeam));
+    userService = module.get<UserService>(UserService);
   });
 
   it('should be defined after module initialization', () => {
+    expect(userRoleRepo).toBeDefined();
+    expect(userTeamRepo).toBeDefined();
+    expect(userInfoRepo).toBeDefined();
     expect(teamService).toBeDefined();
     expect(clientStatusService).toBeDefined();
     expect(codeQualityService).toBeDefined();
     expect(sprintService).toBeDefined();
+    expect(userService).toBeDefined();
     expect(teamSpiritService).toBeDefined();
     expect(dailyMeetingLinkService).toBeDefined();
     expect(teamLinkService).toBeDefined();
@@ -169,698 +221,1660 @@ describe('TeamCrudService', () => {
     expect(businessUnitRepo).toBeDefined();
     expect(codeQualityRepo).toBeDefined();
     expect(clientStatusRepo).toBeDefined();
-    expect(teamSpiritRepo).toBeDefined();
+    expect(teamSpiritRepository).toBeDefined();
     expect(dailyMeetingLinkRepo).toBeDefined();
     expect(teamLinksRepo).toBeDefined();
     expect(imageRepo).toBeDefined();
     expect(videoRepo).toBeDefined();
     expect(visibilityRepo).toBeDefined();
+    expect(adcenterRepo).toBeDefined();
+    expect(httpService).toBeDefined();
   });
 
-  // it('getDashBoardByUserId() method should return login response and getDashBoardByTeamId() should return dashboard response', async () => {
+  describe('updateTeam() should update the team', () => {
+    test('test 1 if team not found', async () => {
+      //inputs
+      const updateTeam: UpdateTeam = {
+        teamId: 'fe4f8120-8a2c-47ad-bad7-86e412e341c1',
+        teamCode: '99009188',
+        projectKey: 'P11247',
+      };
 
-  //   const team: Team = {
-  //     id: '46455bf7-ada7-495c-8019-8d7ab76d488e',
-  //     version: 1,
-  //     createdAt: '2021-03-12T17:36:31.141Z',
-  //     updatedAt: '2021-03-12T17:36:31.141Z',
-  //     name: 'Diamler Devops',
-  //     logo: 'uploads\\logo\\logo31ca9983-ae97-4bb0-9f22-4867d3cc16a0.png',
-  //     business_unit: {
-  //       id: '46655bf7-ada7-495c-8019-8d7ab62d488e',
-  //       version: 1,
-  //       createdAt: '2021-03-12T17:36:31.141Z',
-  //       updatedAt: '2021-03-12T17:36:31.141Z',
-  //       name: 'ADC Bangalore',
-  //       parent_id: '46555bf7-ada7-495c-8019-8d7ab62d488e',
-  //       root_parent_id: '11111bf1-ada1-111c-1111-1d1ab11d111e',
-  //     },
-  //   };
-  //   const userInfo: UserInfo = {
-  //     id: '',
-  //     version: 1,
-  //     createdAt: '2021-03-12T17:36:31.141Z',
-  //     updatedAt: '2021-03-12T17:36:31.141Z',
-  //     firstName: 'Azhar',
-  //     lastName: 'Hussain',
-  //     center: 'ADCenter Bangalore',
-  //     email: 'azharhussain123@gmail.com',
-  //     teameSpiritName: '',
-  //   };
+      jest.spyOn(teamRepo, 'findOne').mockImplementation(() => undefined);
 
-  //   const user: User = {
-  //     id: '10cf1dfd-43e9-4cc4-8257-a6ba5c70e33d',
-  //     version: 1,
-  //     createdAt: '2021-03-12T17:36:31.141Z',
-  //     updatedAt: '2021-03-12T17:36:31.141Z',
-  //     username: 'John11',
-  //     password: 'password',
-  //     role: 0,
-  //     user: userInfo,
-  //     teamId: team,
-  //   };
+      try {
+        await teamService.updateTeam(updateTeam);
+      } catch (e) {
+        expect(e.message).toMatch('Team Not Found');
+      }
+    });
+    test('test 2 if team found', async () => {
+      //inputs
+      const updateTeam: UpdateTeam = {
+        teamId: 'fe4f8120-8a2c-47ad-bad7-86e412e323c1',
+        teamCode: '92009188',
+        projectKey: 'P31247',
+      };
 
-  //   const sprint: Sprint = {
-  //     id: '20255bf8-ada5-495c-8019-8d7ab76d488e',
-  //     version: 1,
-  //     createdAt: '2021-03-22T08:39:31.870Z',
-  //     updatedAt: '2021-03-22T08:39:31.870Z',
-  //     sprint_number: 10,
-  //     start_date: '2021-02-10',
-  //     end_date: '2021-02-25',
-  //     status: '11155bf3-ada5-495c-8019-8d7ab76d488e',
-  //     team: team,
-  //     work_unit: '11155bf2-ada5-495c-8019-8d7ab76d488e',
-  //   };
+      const result = {
+        id: 'fe4f8120-8a2c-47ad-bad7-86e412e323c1',
+        version: 4,
+        createdAt: '2021-06-25T06:25:06.419Z',
+        updatedAt: '2021-07-07T11:16:47.830Z',
+        name: 'Maruti',
+        teamCode: '93009188',
+        projectKey: 'P41247',
+        logo: '',
+        ad_center: {
+          id: '98955bf7-ada7-495c-8019-8d7ab62d488e',
+          version: 1,
+          createdAt: '2021-06-25T06:25:06.419Z',
+          updatedAt: '2021-06-25T06:25:06.419Z',
+          name: 'ADCenter Murcia',
+        },
+      };
 
-  //   const clientStatus: ClientStatus = {
-  //     id: '20112bf8-ada5-495c-8019-8d7ab76d488e',
-  //     version: 1,
-  //     createdAt: '2021-03-27T16:07:27.741Z',
-  //     updatedAt: '2021-03-27T16:07:27.741Z',
-  //     client_rating: 5,
-  //     sprint: sprint,
-  //   };
-  //   const teamSpirit: TeamSpirit = {
-  //     id: '20111bf8-ada5-495c-8019-8d7ab76d488e',
-  //     version: 1,
-  //     createdAt: '2021-03-22T08:39:31.870Z',
-  //     updatedAt: '2021-03-22T08:39:31.870Z',
-  //     team_spirit_rating: 8,
-  //     sprint: sprint,
-  //   };
-  //   const businessUnits: BusinessUnit[] = [
-  //     {
-  //       id: '11111bf1-ada1-111c-1111-1d1ab11d111e',
-  //       version: 1,
-  //       createdAt: '2021-03-27T16:07:27.741Z',
-  //       updatedAt: '2021-03-27T16:07:27.741Z',
-  //       name: 'Capgemini India',
-  //       parent_id: '11111bf1-ada1-111c-1111-1d1ab11d111e',
-  //       root_parent_id: '11111bf1-ada1-111c-1111-1d1ab11d111e',
-  //     },
-  //     {
-  //       id: '46055bf7-ada7-495c-8019-8d7ab62d488e',
-  //       version: 1,
-  //       createdAt: '2021-03-27T16:07:27.741Z',
-  //       updatedAt: '2021-03-27T16:07:27.741Z',
-  //       name: 'NA BU',
-  //       parent_id: '11111bf1-ada1-111c-1111-1d1ab11d111e',
-  //       root_parent_id: '11111bf1-ada1-111c-1111-1d1ab11d111e',
-  //     },
-  //     {
-  //       id: '46155bf7-ada7-495c-8019-8d7ab62d488e',
-  //       version: 1,
-  //       createdAt: '2021-03-27T16:07:27.741Z',
-  //       updatedAt: '2021-03-27T16:07:27.741Z',
-  //       name: 'Sogeti',
-  //       parent_id: '11111bf1-ada1-111c-1111-1d1ab11d111e',
-  //       root_parent_id: '11111bf1-ada1-111c-1111-1d1ab11d111e',
-  //     },
-  //     {
-  //       id: '46255bf7-ada7-495c-8019-8d7ab62d488e',
-  //       version: 1,
-  //       createdAt: '2021-03-27T16:07:27.741Z',
-  //       updatedAt: '2021-03-27T16:07:27.741Z',
-  //       name: 'NA AS CSD',
-  //       parent_id: '46055bf7-ada7-495c-8019-8d7ab62d488e',
-  //       root_parent_id: '11111bf1-ada1-111c-1111-1d1ab11d111e',
-  //     },
-  //     {
-  //       id: '46355bf7-ada7-495c-8019-8d7ab62d488e',
-  //       version: 1,
-  //       createdAt: '2021-03-27T16:07:27.741Z',
-  //       updatedAt: '2021-03-27T16:07:27.741Z',
-  //       name: 'Europe CSD AS',
-  //       parent_id: '46455bf7-ada7-495c-8019-8d7ab62d488e',
-  //       root_parent_id: '11111bf1-ada1-111c-1111-1d1ab11d111e',
-  //     },
-  //     {
-  //       id: '46455bf7-ada7-495c-8019-8d7ab62d488e',
-  //       version: 1,
-  //       createdAt: '2021-03-27T16:07:27.741Z',
-  //       updatedAt: '2021-03-27T16:07:27.741Z',
-  //       name: 'Europe BU',
-  //       parent_id: '11111bf1-ada1-111c-1111-1d1ab11d111e',
-  //       root_parent_id: '11111bf1-ada1-111c-1111-1d1ab11d111e',
-  //     },
-  //     {
-  //       id: '46355bf7-ada7-495c-8019-8d7ab62d488e',
-  //       version: 1,
-  //       createdAt: '2021-03-27T16:07:27.741Z',
-  //       updatedAt: '2021-03-27T16:07:27.741Z',
-  //       name: 'Europe CSD AD',
-  //       parent_id: '46455bf7-ada7-495c-8019-8d7ab62d488e',
-  //       root_parent_id: '11111bf1-ada1-111c-1111-1d1ab11d111e',
-  //     },
-  //     {
-  //       id: '46655bf7-ada7-495c-8019-8d7ab62d488e',
-  //       version: 1,
-  //       createdAt: '2021-03-27T16:07:27.741Z',
-  //       updatedAt: '2021-03-27T16:07:27.741Z',
-  //       name: 'ADC Bangalore',
-  //       parent_id: '46555bf7-ada7-495c-8019-8d7ab62d488e',
-  //       root_parent_id: '11111bf1-ada1-111c-1111-1d1ab11d111e',
-  //     },
-  //   ];
+      const expectedOutput = {
+        id: 'fe4f8120-8a2c-47ad-bad7-86e412e323c1',
+        teamCode: '92009188',
+        projectKey: 'P31247',
+        logo: '',
+        version: 6,
+        updatedAt: '2021-07-07T11:16:47.830Z',
+      };
 
-  //   const breadCrumbResponse: any = [
-  //     {
-  //       bu_id: 1,
-  //       bu_name: 'Capgemini India',
-  //     },
-  //     {
-  //       bu_id: 2,
-  //       bu_name: 'Europe BU',
-  //     },
-  //     {
-  //       bu_id: 3,
-  //       bu_name: 'Europe CSD AD',
-  //     },
-  //     {
-  //       bu_id: 4,
-  //       bu_name: 'ADC Bangalore',
-  //     },
-  //     {
-  //       bu_name: 'Diamler Devops',
-  //     },
-  //   ];
+      jest.spyOn(teamRepo, 'findOne').mockImplementation(() => result);
+      jest.spyOn(teamRepo, 'save').mockImplementation(() => expectedOutput);
+      const actualOutput = await teamService.updateTeam(updateTeam);
+      expect(teamRepo.findOne).toBeCalledTimes(1);
+      expect(actualOutput).toBeDefined();
+      expect(actualOutput).toEqual(expectedOutput);
+    });
+  });
 
-  //   const codeQuality: CodeQualitySnapshot = {
-  //     id: '61155bf8-ada5-495c-8019-8d7ab76d488e',
-  //     version: 1,
-  //     createdAt: '2021-03-22T08:39:31.870Z',
-  //     updatedAt: '2021-03-22T08:39:31.870Z',
-  //     bugs: 3,
-  //     debt: 4,
-  //     code_coverage: 90,
-  //     status: 'PASSED',
-  //     snapshot_time: '2021-02-25T09:00:22.000Z',
-  //     team: team,
-  //   };
+  describe('getDashboardByTeamId()', () => {
+    test('test 1 if team not present', async () => {
+      //inputs
+      const teamId: string = '46455bf7-ada7-495c-8019-8d7ab76d481e';
 
-  //   const codeQualityResponse: CodeQualityResponse = {
-  //     bugs: 3,
-  //     debt: 4,
-  //     codeCoverage: 90,
-  //     status: 'PASSED',
-  //   };
+      jest.spyOn(teamRepo, 'findOne').mockImplementation(() => undefined);
 
-  //   const clientStatusResponse: ClientStatusResponse = {
-  //     clientSatisfactionRating: 5,
-  //     sprintNumber: 10,
-  //   };
+      try {
+        await teamService.getDashboardByTeamId(teamId);
+      } catch (e) {
+        expect(e.message).toMatch('Team Not Found');
+      }
+    });
+    test('test 2 if team present', async () => {
+      //inputs
+      const teamId_para: string = '46455bf7-ada7-495c-8019-8d7ab76d488e';
+      const codeQualityResponse: any = { bugs: 3, debt: 13, codeCoverage: 85, status: 'PASSED' };
+      const clientStatusResponse: any = { clientSatisfactionRating: 5, sprintNumber: 10 };
+      const teamSpiritResponse: any = { teamSpiritRating: 7 };
+      const burndownResponse: any = {
+        workUnit: 'story point',
+        remainingDays: 26,
+        remainingWork: 122,
+        count: 8,
+        burndownStatus: 'Ahead Time',
+      };
+      const status = 1;
+      const velocityComparisonResponse: any = { Avg: 115, Committed: 140, Completed: 18 };
+      const spirintDetailResponse: any = { Sprint_current_day: 2, sprint_number: 11, Sprint_days: 28 };
 
-  //   const teamSpiritResponse: TeamSpiritResponse = {
-  //     teamSpiritRating: 8,
-  //     sprintNumber: 10,
-  //   };
+      const team = {
+        id: '46455bf7-ada7-495c-8019-8d7ab76d488e',
+        version: 1,
+        createdAt: '2021-07-07T12:22:21.770Z',
+        updatedAt: '2021-07-07T12:22:21.770Z',
+        name: 'Diamler Devops',
+        teamCode: '10012345',
+        projectKey: 'P12343',
+        logo: '',
+        ad_center: {
+          id: '99055bf7-ada7-495c-8019-8d7ab62d488e',
+          version: 1,
+          createdAt: '2021-07-07T12:22:21.770Z',
+          updatedAt: '2021-07-07T12:22:21.770Z',
+          name: 'ADCenter Bangalore',
+        },
+      };
 
-  //   const burndownResponse: any = {
-  //     workUnit: 'story point',
-  //     remainingDays: 15,
-  //     remainingWork: 128,
-  //     count: 53,
-  //     burndownStatus: 'Behind Time',
-  //   };
+      const expectedOutput: DashBoardResponse = {
+        teamId: '46455bf7-ada7-495c-8019-8d7ab76d488e',
+        codeQuality: { bugs: 3, debt: 13, codeCoverage: 85, status: 'PASSED' },
+        clientStatus: { clientSatisfactionRating: 5, sprintNumber: 10 },
+        teamSpirit: { teamSpiritRating: 7 },
+        burndown: {
+          workUnit: 'story point',
+          remainingDays: 26,
+          remainingWork: 122,
+          count: 8,
+          burndownStatus: 'Ahead Time',
+        },
+        sprintDetail: { Sprint_current_day: 2, sprint_number: 11, Sprint_days: 28 },
+        velocity: { Avg: 115, Committed: 140, Completed: 18 },
+        teamStatus: 1,
+      };
 
-  //   const sprintDetailResponse: SprintDetailResponse = {
-  //     Sprint_current_day: 13,
-  //     sprint_number: 11,
-  //     Sprint_days: 28,
-  //   };
+      jest.spyOn(teamRepo, 'findOne').mockImplementation(() => team);
+      jest.spyOn(codeQualityService, 'getCodeQualitySnapshot').mockImplementation(() => codeQualityResponse);
+      jest.spyOn(clientStatusService, 'getClientFeedback').mockImplementation(() => clientStatusResponse);
+      jest.spyOn(teamSpiritService, 'getTeamSpiritFromSurvey').mockImplementation(() => teamSpiritResponse);
+      jest.spyOn(sprintService, 'getBurndown').mockImplementation(() => burndownResponse);
+      jest.spyOn(sprintService, 'getSprintDetailResponse').mockImplementation(() => spirintDetailResponse);
+      jest.spyOn(sprintService, 'getVelocityComparison').mockImplementation(() => velocityComparisonResponse);
+      jest.spyOn(teamService, 'fetchStatus').mockImplementation(() => status);
+      const actualOutput = await teamService.getDashboardByTeamId(teamId_para);
+      expect(actualOutput).toBeDefined();
+      expect(actualOutput).toEqual(expectedOutput);
+    });
+  });
 
-  //   const velocityComparisonResponse: VelocityComparisonResponse = {
-  //     Avg: 76,
-  //     Committed: 140,
-  //     Completed: 12,
-  //   };
+  describe('setLogo() will save the logo path into db', () => {
+    test('test 1 if teamid is not present in DB', async () => {
+      //inputs
+      const teamId: string = '46455bf7-ada7-495c-8019-8d7ab76d481e';
+      const path: string =
+        'C:/powerboard/multimedia/46455bf7-ada7-495c-8019-8d7ab76d488e/logo/krishna46455bf7-ada7-495c-8019-8d7ab76d488e';
 
-  //   const dashBoardResponse: DashBoardResponse = {
-  //     teamId: '46455bf7-ada7-495c-8019-8d7ab76d488e',
-  //     teamStatus: 1,
-  //     codeQualityResponse: codeQualityResponse,
-  //     clientStatusResponse: clientStatusResponse,
-  //     teamSpiritResponse: teamSpiritResponse,
-  //     burndownResponse: burndownResponse,
-  //     sprintDetailResponse: sprintDetailResponse,
-  //     velocityResponse: velocityComparisonResponse,
-  //   };
+      //test
+      jest.spyOn(teamRepo, 'findOne').mockImplementation(() => undefined);
 
-  //   const expectedLoginResponse: LoginResponse = {
-  //     dashboard: dashBoardResponse,
-  //     user_breadCrumb: breadCrumbResponse,
-  //     dump_businessUnit: businessUnits,
-  //   };
+      try {
+        await teamService.setLogo(path, teamId);
+      } catch (e) {
+        expect(e.message).toMatch('Team Not Found');
+      }
 
-  //   console.log(expectedLoginResponse)
-  //   const sprintForBurndown: any = [
-  //     {
-  //       sprint_id: '20355bf8-ada5-495c-8019-8d7ab76d488e',
-  //       sprint_version: 1,
-  //       sprint_createdAt: '2021 - 04 - 28T05: 57: 33.080Z',
-  //       sprint_updatedAt: '2021 - 04 - 28T05: 57: 33.080Z',
-  //       sprint_sprint_number: 11,
-  //       sprint_start_date: '2021 - 04 - 24T18: 30: 00.000Z',
-  //       sprint_end_date: '2021 - 05 - 22T18: 30: 00.000Z',
-  //       sprint_status: '11155bf2-ada5-495c-8019-8d7ab76d488e',
-  //       sprint_team_id: '46455bf7-ada7-495c-8019-8d7ab76d488e',
-  //       sprint_work_unit: '11155bf2-ada5-495c-8019-8d7ab76d488e',
-  //       st_status: 'In Progress',
-  //       ss_id: '80255bf8-ada5-495c-8019-8d7ab76d488e',
-  //       ss_date_time: '2021 - 04 - 26T09: 00: 00.000Z',
-  //       ssm_value: '140',
-  //       sw_work_unit: 'story point',
-  //       smt_name: 'Work Committed',
-  //     },
-  //     {
-  //       sprint_id: '20355bf8-ada5-495c-8019-8d7ab76d488e',
-  //       sprint_version: 1,
-  //       sprint_createdAt: '2021 - 04 - 28T05: 57: 33.080Z',
-  //       sprint_updatedAt: '2021 - 04 - 28T05: 57: 33.080Z',
-  //       sprint_sprint_number: 11,
-  //       sprint_start_date: '2021 - 04 - 24T18: 30: 00.000Z',
-  //       sprint_end_date: '2021 - 05 - 22T18: 30: 00.000Z',
-  //       sprint_status: '11155bf2-ada5-495c-8019-8d7ab76d488e',
-  //       sprint_team_id: '46455bf7-ada7-495c-8019-8d7ab76d488e',
-  //       sprint_work_unit: '11155bf2-ada5-495c-8019-8d7ab76d488e',
-  //       st_status: 'In Progress',
-  //       ss_id: '80255bf8-ada5-495c-8019-8d7ab76d488e',
-  //       ss_date_time: '2021 - 04 - 26T09: 00: 00.000Z',
-  //       ssm_value: '12',
-  //       sw_work_unit: 'story point',
-  //       smt_name: 'Work Completed',
-  //     },
-  //   ];
+      //expect
+    });
+    test('test 2 if teamid is present in DB', async () => {
+      //inputs
+      const teamId: string = '46455bf7-ada7-495c-8019-8d7ab76d488e';
+      const path: string = 'krishna46455bf7-ada7-495c-8019-8d7ab76d488e';
 
-  //   const createQueryBuilder1: any = {
-  //     where: () => createQueryBuilder1,
-  //     getMany: jest.fn().mockResolvedValue(businessUnits),
-  //   };
+      const team = {
+        id: '46455bf7-ada7-495c-8019-8d7ab76d488e',
+        version: 1,
+        createdAt: '2021-07-07T12:22:21.770Z',
+        updatedAt: '2021-07-07T12:22:21.770Z',
+        name: 'Diamler Devops',
+        teamCode: '10012345',
+        projectKey: 'P12343',
+        logo: '',
+        ad_center: {
+          id: '99055bf7-ada7-495c-8019-8d7ab62d488e',
+          version: 1,
+          createdAt: '2021-07-07T12:22:21.770Z',
+          updatedAt: '2021-07-07T12:22:21.770Z',
+          name: 'ADCenter Bangalore',
+        },
+      };
+      const expectedOutput = {
+        id: '46455bf7-ada7-495c-8019-8d7ab76d488e',
+        teamCode: '10012345',
+        projectKey: 'P12343',
+        logo: 'krishna46455bf7-ada7-495c-8019-8d7ab76d488e',
+        version: 1,
+        updatedAt: '2021-07-07T12:22:21.770Z',
+      };
 
-  //   const createQueryBuilder2: any = {
-  //     limit: () => createQueryBuilder2,
-  //     groupBy: () => createQueryBuilder2,
-  //     where: () => createQueryBuilder2,
-  //     orderBy: () => createQueryBuilder2,
-  //     getOne: jest.fn().mockResolvedValue(codeQuality),
-  //   };
+      //test
+      jest.spyOn(teamRepo, 'findOne').mockImplementation(() => team);
+      jest.spyOn(teamRepo, 'save').mockImplementation(() => expectedOutput);
+      const actualOutput = await teamService.setLogo(path, teamId);
+      expect(teamRepo.findOne).toBeCalledTimes(1);
+      expect(teamRepo.save).toBeCalledTimes(1);
+      expect(actualOutput).toBeDefined();
+      expect(actualOutput).toEqual(expectedOutput);
 
-  //   const createQueryBuilder3: any = {
-  //     limit: () => createQueryBuilder3,
-  //     where: () => createQueryBuilder3,
-  //     getOne: jest.fn().mockResolvedValue(clientStatus),
-  //   };
+      //expect
+    });
+  });
 
-  //   const createQueryBuilder4: any = {
-  //     limit: () => createQueryBuilder4,
-  //     groupBy: () => createQueryBuilder4,
-  //     where: () => createQueryBuilder4,
-  //     orderBy: () => createQueryBuilder4,
-  //     skip: () => createQueryBuilder4,
-  //     take: () => createQueryBuilder4,
-  //     addSelect: () => createQueryBuilder4,
-  //     innerJoin: () => createQueryBuilder4,
-  //     leftJoin: () => createQueryBuilder4,
-  //     andWhere: () => createQueryBuilder4,
-  //     getOne: jest.fn().mockResolvedValue(sprint),
-  //     getRawMany: jest.fn().mockResolvedValue(sprintForBurndown),
-  //   };
+  describe('fetchStatus method will return status of project', () => {
+    test('test 1 if client status is null', () => {
+      //inputs
+      const dashboard: any = {
+        teamId: '46455bf7-ada7-495c-8019-8d7ab76d488e',
+        codeQuality: { bugs: 3, debt: 13, codeCoverage: 85, status: 'PASSED' },
+        clientStatus: undefined,
+        teamSpirit: { teamSpiritRating: 7 },
+        burndown: {
+          workUnit: 'story point',
+          remainingDays: 26,
+          remainingWork: 122,
+          count: 8,
+          burndownStatus: 'Ahead Time',
+        },
+        sprintDetail: { Sprint_current_day: 2, sprint_number: 11, Sprint_days: 28 },
+        velocity: { Avg: 115, Committed: 140, Completed: 18 },
+      };
 
-  //   const createQueryBuilder5: any = {
-  //     limit: () => createQueryBuilder5,
-  //     where: () => createQueryBuilder5,
-  //     getOne: jest.fn().mockResolvedValue(teamSpirit),
-  //   };
+      const expectedOutput = undefined;
 
-  //   jest.spyOn(codeQualityRepo, 'createQueryBuilder').mockImplementation(() => createQueryBuilder2);
-  //   jest.spyOn(userRepo, 'findOne').mockImplementation(() => user);
-  //   jest.spyOn(teamRepo, 'findOne').mockImplementation(() => team);
-  //   jest.spyOn(businessUnitRepo, 'createQueryBuilder').mockImplementation(() => createQueryBuilder1);
-  //   jest.spyOn(clientStatusRepo, 'createQueryBuilder').mockImplementation(() => createQueryBuilder3);
-  //   jest.spyOn(sprintRepo, 'createQueryBuilder').mockImplementation(() => createQueryBuilder4);
-  //   jest.spyOn(teamSpiritRepo, 'createQueryBuilder').mockImplementation(() => createQueryBuilder5);
+      //test
+      const actualOutput = teamService.fetchStatus(dashboard);
 
-  //   const actualLoginResponse = await teamService.getDashboardByUserId(user.id);
-  //   await teamService.getDashboardByUserId(user.id);
-  //   const actualDashBoardResponse = await teamService.getDashboardByTeamId(team.id);
-  //   expect(actualDashBoardResponse).toEqual(dashBoardResponse);
-  //   expect(userRepo.findOne).toHaveBeenCalledTimes(1);
-  //   expect(teamRepo.findOne).toHaveBeenCalledTimes(1);
-  //   expect(actualLoginResponse).toEqual(expectedLoginResponse);
-  // });
+      //expect
+      expect(actualOutput).toEqual(expectedOutput);
+    });
 
-  it('getElectronBoardByUserId() method should return electron app response for the particular userId response', async () => {
-    const team: Team = {
+    test('test 1 if client status is null', () => {
+      //inputs
+      const dashboard: any = {
+        teamId: '46455bf7-ada7-495c-8019-8d7ab76d488e',
+        codeQuality: { bugs: 3, debt: 13, codeCoverage: 85, status: 'PASSED' },
+        clientStatus: { clientSatisfactionRating: 5, sprintNumber: 10 },
+        teamSpirit: { teamSpiritRating: 7 },
+        burndown: {
+          workUnit: 'story point',
+          remainingDays: 26,
+          remainingWork: 122,
+          count: 8,
+          burndownStatus: 'Ahead Time',
+        },
+        sprintDetail: { Sprint_current_day: 2, sprint_number: 11, Sprint_days: 28 },
+        velocity: { Avg: 115, Committed: 140, Completed: 18 },
+      };
+
+      const expectedOutput = 1;
+
+      //test
+      const actualOutput = teamService.fetchStatus(dashboard);
+
+      //expect
+      expect(actualOutput).toEqual(expectedOutput);
+    });
+  });
+
+  describe('getPowerboardByTeamId() get all 5 kpis details along with spirint and status', () => {
+    test('test 1 if team not present in db ', async () => {
+      //inputs
+      const userTeam: UserTeamDTO = {
+        userId: '35afbdf8-9035-4bc6-ae04-28c6140495ad',
+        teamId: '46455bf7-ada7-495c-8019-8d7ab76d481e',
+      };
+
+      //test
+      jest.spyOn(teamRepo, 'findOne').mockImplementation(() => undefined);
+      try {
+        await teamService.getPowerboardByTeamId(userTeam);
+      } catch (e) {
+        expect(e.message).toMatch('Team Not Found');
+      }
+    });
+
+    test('test 2 if team present in db ', async () => {
+      //inputs
+      const userTeam: UserTeamDTO = {
+        userId: '35afbdf8-9035-4bc6-ae04-28c6140495ad',
+        teamId: '46455bf7-ada7-495c-8019-8d7ab76d488e',
+      };
+      const team: any = {
+        id: '46455bf7-ada7-495c-8019-8d7ab76d488e',
+        version: 1,
+        createdAt: '2021-07-08T05:12:17.648Z',
+        updatedAt: '2021-07-08T05:12:17.648Z',
+        name: 'Diamler Devops',
+        teamCode: '10012345',
+        projectKey: 'P12343',
+        logo: '',
+        ad_center: {
+          id: '99055bf7-ada7-495c-8019-8d7ab62d488e',
+          version: 1,
+          createdAt: '2021-07-08T05:12:17.648Z',
+          updatedAt: '2021-07-08T05:12:17.648Z',
+          name: 'ADCenter Bangalore',
+        },
+      };
+      const isAdminOrGuest: any = true;
+      const priviledgeList: any = [
+        'add_team_admin',
+        'view_meeting_links',
+        'view_team_links',
+        'team_configuration',
+        'register_team',
+        'update_team',
+        'delete_team',
+        'view_all_team',
+        'view_members_of_team',
+        'update_role',
+        'delete_team_members',
+        'add_team_member',
+        'add_guest_user',
+      ];
+      const expectedOutput: any = {
+        team_id: '46455bf7-ada7-495c-8019-8d7ab76d488e',
+        team_name: 'Diamler Devops',
+        center: 'ADCenter Bangalore',
+        team_code: '10012345',
+        logo: '',
+        dashboard: {
+          teamId: '46455bf7-ada7-495c-8019-8d7ab76d488e',
+          codeQuality: {
+            bugs: 3,
+            debt: 13,
+            codeCoverage: 85,
+            status: 'PASSED',
+          },
+          clientStatus: {
+            clientSatisfactionRating: 5,
+            sprintNumber: 10,
+          },
+          teamSpirit: {
+            teamSpiritRating: 7,
+          },
+          burndown: {
+            workUnit: 'story point',
+            remainingDays: 26,
+            remainingWork: 122,
+            count: 8,
+            burndownStatus: 'Ahead Time',
+          },
+          sprintDetail: {
+            Sprint_current_day: 2,
+            sprint_number: 11,
+            Sprint_days: 28,
+          },
+          velocity: {
+            Avg: 115,
+            Committed: 140,
+            Completed: 18,
+          },
+          teamStatus: 1,
+        },
+        meetingLinks: [
+          {
+            dailyMeetingId: '43000bf7-ada7-495c-8019-8d7ab76d490e',
+            type: 'TEAMS',
+            title: 'Stand Up',
+            links:
+              'https://teams.microsoft.com/l/meetup-join/19%3ameeting_NjY3MzIyNmYtZTg1YS00MzBjLTk0NmUtMTk4MWE0OWJjNjhl%40thread.v2/0?context=%7b%22Tid%22%3a%2276a2ae5a-9f00-4f6b-95ed-5d33d77c4d61%22%2c%22Oid%22%3a%22d6dd7c98-546f-4dcb-9c39-39c8eeff8a24%22%7d',
+          },
+        ],
+        teamLinks: [
+          {
+            teamLinkId: '51055bf7-ada6-495c-8019-8d7ab76d488e',
+            title: 'Jira Cloud',
+            links: 'https://powerboard-capgemini.atlassian.net/jira/software/projects/DUM/boards/3',
+          },
+          {
+            teamLinkId: '51055bf8-ada5-495c-8019-8d7ab76d488e',
+            title: 'GitHub',
+            links: 'https://github.com/devonfw-forge/powerboard-api/blob/develop-0.0.1/',
+          },
+        ],
+        images: [
+          {
+            ImageId: 'aaad19f7-1b66-44aa-a443-4fcdd173f385',
+            ImagePath: 'bannerd8a32383-b767-44e7-b48c-d15fbecc9a49.jpg',
+          },
+          {
+            ImageId: '89cbb47b-5454-440d-a0e8-98b681ed6f83',
+            ImagePath: 'Capgeminie399d4d7-5119-4c2b-b238-4275d2f7c5da.jpg',
+          },
+          {
+            ImageId: 'fbf8ea11-62a2-433a-936f-9fddfb90b1c6',
+            ImagePath: 'chare72e95bb-b552-425a-a051-b7dfc69efa0b.jpg',
+          },
+          {
+            ImageId: 'dc6a6a55-23f9-4edf-90e5-a18c6b07a0be',
+            ImagePath: 'dataf74b26af-7a68-42c9-94b8-b4ebc378dce1.jpg',
+          },
+          {
+            ImageId: '8c4f8d5d-b3b7-4efb-868e-4336474094b3',
+            ImagePath: 'france-capgeminic4ba8e67-c56d-446d-814e-9ab149521959.jpg',
+          },
+        ],
+        videos: [
+          {
+            videoId: '79b90a96-bd52-4fab-9b8f-e119cf4e66ab',
+            videoPath: 'CapgeminiPurpose1c42fff2-6884-40bd-a8f0-489552af140f.mp4',
+          },
+          {
+            videoId: '0176b6eb-6336-4efc-9710-edfc4af25a31',
+            videoPath: 'CapgeminiValues499f846a-780c-4a9a-86c9-99d3055f7d1e.mp4',
+          },
+        ],
+        privileges: [],
+      };
+
+      //test
+      jest.spyOn(teamRepo, 'findOne').mockImplementation(() => team);
+      jest.spyOn(userService, 'isAdminOrGuest').mockImplementation(() => isAdminOrGuest);
+      jest.spyOn(userService, 'getTeamPrivileges').mockImplementation(() => priviledgeList);
+      jest.spyOn(teamService, 'getPowerboardResponseForTeam').mockImplementation(() => expectedOutput);
+      const actualOutput = await teamService.getPowerboardByTeamId(userTeam);
+      expect(teamRepo.findOne).toBeCalledTimes(1);
+      expect(userService.isAdminOrGuest).toBeCalledTimes(1);
+      expect(userService.getTeamPrivileges).toBeCalledTimes(1);
+      expect(actualOutput).toBeDefined();
+      expect(actualOutput).toEqual(expectedOutput);
+    });
+  });
+
+  describe('getPowerboardResponseForTeam()', () => {
+    const dashboard: any = {
+      teamId: '46455bf7-ada7-495c-8019-8d7ab76d488e',
+      codeQuality: { bugs: 3, debt: 13, codeCoverage: 85, status: 'PASSED' },
+      clientStatus: { clientSatisfactionRating: 5, sprintNumber: 10 },
+      teamSpirit: { teamSpiritRating: 7 },
+      burndown: {
+        workUnit: 'story point',
+        remainingDays: 26,
+        remainingWork: 122,
+        count: 8,
+        burndownStatus: 'Ahead Time',
+      },
+      sprintDetail: { Sprint_current_day: 2, sprint_number: 11, Sprint_days: 28 },
+      velocity: { Avg: 115, Committed: 140, Completed: 18 },
+      teamStatus: 1,
+    };
+
+    const powerBoardResponse: any = {
+      team_id: '46455bf7-ada7-495c-8019-8d7ab76d488e',
+      team_name: 'Diamler Devops',
+      center: 'ADCenter Bangalore',
+      team_code: '10012345',
+      logo: '',
+      dashboard: {
+        teamId: '46455bf7-ada7-495c-8019-8d7ab76d488e',
+        codeQuality: {
+          bugs: 3,
+          debt: 13,
+          codeCoverage: 85,
+          status: 'PASSED',
+        },
+        clientStatus: {
+          clientSatisfactionRating: 5,
+          sprintNumber: 10,
+        },
+        teamSpirit: {
+          teamSpiritRating: 7,
+        },
+        burndown: {
+          workUnit: 'story point',
+          remainingDays: 26,
+          remainingWork: 122,
+          count: 8,
+          burndownStatus: 'Ahead Time',
+        },
+        sprintDetail: {
+          Sprint_current_day: 2,
+          sprint_number: 11,
+          Sprint_days: 28,
+        },
+        velocity: {
+          Avg: 115,
+          Committed: 140,
+          Completed: 18,
+        },
+        teamStatus: 1,
+      },
+      meetingLinks: [
+        {
+          dailyMeetingId: '43000bf7-ada7-495c-8019-8d7ab76d490e',
+          type: 'TEAMS',
+          title: 'Stand Up',
+          links:
+            'https://teams.microsoft.com/l/meetup-join/19%3ameeting_NjY3MzIyNmYtZTg1YS00MzBjLTk0NmUtMTk4MWE0OWJjNjhl%40thread.v2/0?context=%7b%22Tid%22%3a%2276a2ae5a-9f00-4f6b-95ed-5d33d77c4d61%22%2c%22Oid%22%3a%22d6dd7c98-546f-4dcb-9c39-39c8eeff8a24%22%7d',
+        },
+      ],
+      teamLinks: [
+        {
+          teamLinkId: '51055bf7-ada6-495c-8019-8d7ab76d488e',
+          title: 'Jira Cloud',
+          links: 'https://powerboard-capgemini.atlassian.net/jira/software/projects/DUM/boards/3',
+        },
+        {
+          teamLinkId: '51055bf8-ada5-495c-8019-8d7ab76d488e',
+          title: 'GitHub',
+          links: 'https://github.com/devonfw-forge/powerboard-api/blob/develop-0.0.1/',
+        },
+      ],
+      images: [
+        {
+          ImageId: 'aaad19f7-1b66-44aa-a443-4fcdd173f385',
+          ImagePath: 'bannerd8a32383-b767-44e7-b48c-d15fbecc9a49.jpg',
+        },
+        {
+          ImageId: '89cbb47b-5454-440d-a0e8-98b681ed6f83',
+          ImagePath: 'Capgeminie399d4d7-5119-4c2b-b238-4275d2f7c5da.jpg',
+        },
+        {
+          ImageId: 'fbf8ea11-62a2-433a-936f-9fddfb90b1c6',
+          ImagePath: 'chare72e95bb-b552-425a-a051-b7dfc69efa0b.jpg',
+        },
+        {
+          ImageId: 'dc6a6a55-23f9-4edf-90e5-a18c6b07a0be',
+          ImagePath: 'dataf74b26af-7a68-42c9-94b8-b4ebc378dce1.jpg',
+        },
+        {
+          ImageId: '8c4f8d5d-b3b7-4efb-868e-4336474094b3',
+          ImagePath: 'france-capgeminic4ba8e67-c56d-446d-814e-9ab149521959.jpg',
+        },
+      ],
+      videos: [
+        {
+          videoId: '79b90a96-bd52-4fab-9b8f-e119cf4e66ab',
+          videoPath: 'CapgeminiPurpose1c42fff2-6884-40bd-a8f0-489552af140f.mp4',
+        },
+        {
+          videoId: '0176b6eb-6336-4efc-9710-edfc4af25a31',
+          videoPath: 'CapgeminiValues499f846a-780c-4a9a-86c9-99d3055f7d1e.mp4',
+        },
+      ],
+    };
+
+    const team: any = {
       id: '46455bf7-ada7-495c-8019-8d7ab76d488e',
       version: 1,
-      createdAt: '2021-03-12T17:36:31.141Z',
-      updatedAt: '2021-03-12T17:36:31.141Z',
+      createdAt: '2021-07-08T05:12:17.648Z',
+      updatedAt: '2021-07-08T05:12:17.648Z',
       name: 'Diamler Devops',
-      teamCode: '102112',
+      teamCode: '10012345',
+      projectKey: 'P12343',
       logo: '',
-      projectKey: 'T12311',
-      userTeam: [],
       ad_center: {
-        id: '46655bf7-ada7-495c-8019-8d7ab62d488e',
+        id: '99055bf7-ada7-495c-8019-8d7ab62d488e',
         version: 1,
-        createdAt: '2021-03-12T17:36:31.141Z',
-        updatedAt: '2021-03-12T17:36:31.141Z',
-        name: 'ADC Bangalore',
-        businessUnit: {
-          id: '46655bf7-ada7-495c-8019-8d7ab62d488e',
-          version: 1,
-          createdAt: '2021-03-12T17:36:31.141Z',
-          updatedAt: '2021-03-12T17:36:31.141Z',
-          name: '',
-          parent_id: '',
-          root_parent_id: '',
+        createdAt: '2021-07-08T05:12:17.648Z',
+        updatedAt: '2021-07-08T05:12:17.648Z',
+        name: 'ADCenter Bangalore',
+      },
+    };
+    test('test 1 if user is admin or guest then they get empty priviledge list', async () => {
+      //inputs
+
+      const isAdminOrGuest: any = true;
+      const priviledgeList: any = [
+        'add_team_admin',
+        'view_meeting_links',
+        'view_team_links',
+        'team_configuration',
+        'register_team',
+        'update_team',
+        'delete_team',
+        'view_all_team',
+        'view_members_of_team',
+        'update_role',
+        'delete_team_members',
+        'add_team_member',
+        'add_guest_user',
+      ];
+
+      const expectedOutput: any = {
+        team_id: '46455bf7-ada7-495c-8019-8d7ab76d488e',
+        team_name: 'Diamler Devops',
+        center: 'ADCenter Bangalore',
+        team_code: '10012345',
+        logo: '',
+        dashboard: {
+          teamId: '46455bf7-ada7-495c-8019-8d7ab76d488e',
+          codeQuality: {
+            bugs: 3,
+            debt: 13,
+            codeCoverage: 85,
+            status: 'PASSED',
+          },
+          clientStatus: {
+            clientSatisfactionRating: 5,
+            sprintNumber: 10,
+          },
+          teamSpirit: {
+            teamSpiritRating: 7,
+          },
+          burndown: {
+            workUnit: 'story point',
+            remainingDays: 26,
+            remainingWork: 122,
+            count: 8,
+            burndownStatus: 'Ahead Time',
+          },
+          sprintDetail: {
+            Sprint_current_day: 2,
+            sprint_number: 11,
+            Sprint_days: 28,
+          },
+          velocity: {
+            Avg: 115,
+            Committed: 140,
+            Completed: 18,
+          },
+          teamStatus: 1,
         },
-      },
-    };
+        meetingLinks: [
+          {
+            dailyMeetingId: '43000bf7-ada7-495c-8019-8d7ab76d490e',
+            type: 'TEAMS',
+            title: 'Stand Up',
+            links:
+              'https://teams.microsoft.com/l/meetup-join/19%3ameeting_NjY3MzIyNmYtZTg1YS00MzBjLTk0NmUtMTk4MWE0OWJjNjhl%40thread.v2/0?context=%7b%22Tid%22%3a%2276a2ae5a-9f00-4f6b-95ed-5d33d77c4d61%22%2c%22Oid%22%3a%22d6dd7c98-546f-4dcb-9c39-39c8eeff8a24%22%7d',
+          },
+        ],
+        teamLinks: [
+          {
+            teamLinkId: '51055bf7-ada6-495c-8019-8d7ab76d488e',
+            title: 'Jira Cloud',
+            links: 'https://powerboard-capgemini.atlassian.net/jira/software/projects/DUM/boards/3',
+          },
+          {
+            teamLinkId: '51055bf8-ada5-495c-8019-8d7ab76d488e',
+            title: 'GitHub',
+            links: 'https://github.com/devonfw-forge/powerboard-api/blob/develop-0.0.1/',
+          },
+        ],
+        images: [
+          {
+            ImageId: 'aaad19f7-1b66-44aa-a443-4fcdd173f385',
+            ImagePath: 'bannerd8a32383-b767-44e7-b48c-d15fbecc9a49.jpg',
+          },
+          {
+            ImageId: '89cbb47b-5454-440d-a0e8-98b681ed6f83',
+            ImagePath: 'Capgeminie399d4d7-5119-4c2b-b238-4275d2f7c5da.jpg',
+          },
+          {
+            ImageId: 'fbf8ea11-62a2-433a-936f-9fddfb90b1c6',
+            ImagePath: 'chare72e95bb-b552-425a-a051-b7dfc69efa0b.jpg',
+          },
+          {
+            ImageId: 'dc6a6a55-23f9-4edf-90e5-a18c6b07a0be',
+            ImagePath: 'dataf74b26af-7a68-42c9-94b8-b4ebc378dce1.jpg',
+          },
+          {
+            ImageId: '8c4f8d5d-b3b7-4efb-868e-4336474094b3',
+            ImagePath: 'france-capgeminic4ba8e67-c56d-446d-814e-9ab149521959.jpg',
+          },
+        ],
+        videos: [
+          {
+            videoId: '79b90a96-bd52-4fab-9b8f-e119cf4e66ab',
+            videoPath: 'CapgeminiPurpose1c42fff2-6884-40bd-a8f0-489552af140f.mp4',
+          },
+          {
+            videoId: '0176b6eb-6336-4efc-9710-edfc4af25a31',
+            videoPath: 'CapgeminiValues499f846a-780c-4a9a-86c9-99d3055f7d1e.mp4',
+          },
+        ],
+        privileges: [],
+      };
 
-    const user: User = {
-      id: '10cf1dfd-43e9-4cc4-8257-a6ba5c70e33d',
-      version: 1,
-      createdAt: '2021-03-12T17:36:31.141Z',
-      updatedAt: '2021-03-12T17:36:31.141Z',
-      username: 'raj11',
-      password: 'password',
-      email: 'raj@mail.com',
-      userTeam: [],
-    };
-    const images: Images[] = [
-      {
-        id: '52055bf8-ada5-495c-8019-8d7ab76d488e',
-        version: 1,
-        createdAt: '2021-04-29T05:56:27.392Z',
-        updatedAt: '2021-04-29T05:56:27.392Z',
-        image: 'uploads\\profileimages\\jirab05d9639-10f5-4ec5-85bf-087731ce4f8b.png',
-        team: '46455bf7-ada7-495c-8019-8d7ab76d488e',
-      },
-      {
-        id: '52155bf8-ada5-495c-8019-8d7ab76d488e',
-        version: 1,
-        createdAt: '2021-04-29T05:56:27.392Z',
-        updatedAt: '2021-04-29T05:56:27.392Z',
-        image: 'uploads\\profileimages\\power46455bf7-ada7-495c-8019-8d7ab76d497e.png',
-        team: '46455bf7-ada7-495c-8019-8d7ab76d488e',
-      },
-      {
-        id: 'd123011a-7fd0-4237-b1b5-d3fc657d2467',
-        version: 1,
-        createdAt: '2021-04-29T10:27:12.907Z',
-        updatedAt: '2021-04-29T10:27:12.907Z',
-        image: 'uploads\\profileimages\\powerb60f5d38-7a1e-430e-9d88-0a620359f191.png',
-        team: '46455bf7-ada7-495c-8019-8d7ab76d488e',
-      },
-    ];
+      //test
+      jest.spyOn(teamService, 'getDashboardByTeamId').mockImplementation(() => dashboard);
+      jest.spyOn(teamService, 'getOtherComponentsDetailByTeamId').mockImplementation(() => powerBoardResponse);
+      const actualOutput = await teamService.getPowerboardResponseForTeam(team, priviledgeList, isAdminOrGuest);
 
-    const videos: Videos[] = [
-      {
-        id: '52255bf8-ada5-495c-8019-8d7ab76d488e',
-        version: 1,
-        createdAt: '2021-04-29T05:56:27.392Z',
-        updatedAt: '2021-04-29T05:56:27.392Z',
-        content: 'uploads\\videos\\coronab47da341-3258-4cf2-b19f-9f93de76241a.mp4',
-        team: '46455bf7-ada7-495c-8019-8d7ab76d488e',
-      },
-      {
-        id: '52355bf8-ada5-495c-8019-8d7ab76d488e',
-        version: 1,
-        createdAt: '2021-04-29T05:56:27.392Z',
-        updatedAt: '2021-04-29T05:56:27.392Z',
-        content: 'uploads\\videos\\aspirants95cf1dfd-43e9-4cc4-8257-a6ba5c70e3bd.mp4',
-        team: '46455bf7-ada7-495c-8019-8d7ab76d488e',
-      },
-    ];
+      //expect
+      expect(teamService.getDashboardByTeamId).toBeCalledTimes(1);
+      expect(teamService.getOtherComponentsDetailByTeamId).toBeCalledTimes(1);
+      expect(actualOutput).toBeDefined();
+      expect(actualOutput).toEqual(expectedOutput);
+    });
+    test('test 2 if user is not admin or guest then they get empty priviledge list', async () => {
+      //inputs
 
-    const teamLinks = [
-      {
-        id: '51055bf7-ada6-495c-8019-8d7ab76d488e',
-        version: 1,
-        createdAt: '2021-04-29T05:56:27.392Z',
-        updatedAt: '2021-04-29T05:56:27.392Z',
-        title: 'Jira Cloud',
-        link: 'https://powerboard-capgemini.atlassian.net/jira/software/projects/DUM/boards/3',
-      },
-      {
-        id: '51055bf8-ada5-495c-8019-8d7ab76d488e',
-        version: 1,
-        createdAt: '2021-04-29T05:56:27.392Z',
-        updatedAt: '2021-04-29T05:56:27.392Z',
-        title: 'GitHub',
-        link: 'https://github.com/devonfw-forge/powerboard-api/blob/develop-0.0.1/',
-      },
-    ];
+      const isAdminOrGuest: any = false;
+      const priviledgeList: any = [
+        'view_meeting_links',
+        'view_team_links',
+        'team_configuration',
+        'view_members_of_team',
+        'delete_team_members',
+        'add_team_member',
+      ];
 
-    const dailyMeetingLinks = [
-      {
-        id: '43000bf7-ada7-495c-8019-8d7ab76d490e',
-        version: 1,
-        createdAt: '2021-04-29T05:56:27.392Z',
-        updatedAt: '2021-04-29T05:56:27.392Z',
-        type: 'TEAMS',
-        dailyMeetingLink:
-          'https://teams.microsoft.com/l/meetup-join/19%3ameeting_NjY3MzIyNmYtZTg1YS00MzBjLTk0NmUtMTk4MWE0OWJjNjhl%40thread.v2/0?context=%7b%22Tid%22%3a%2276a2ae5a-9f00-4f6b-95ed-5d33d77c4d61%22%2c%22Oid%22%3a%22d6dd7c98-546f-4dcb-9c39-39c8eeff8a24%22%7d',
-      },
-      {
-        id: '8ea451ab-ba1a-4e6c-a978-f65bd2b38d90',
-        version: 1,
-        createdAt: '2021-04-29T09:33:13.309Z',
-        updatedAt: '2021-04-29T09:33:13.309Z',
-        type: 'TEAMS',
-        dailyMeetingLink: 'https://microsoft.com',
-      },
-      {
-        id: '74f1e7b8-6db4-4dd5-9fb9-627351a6f93c',
-        version: 1,
-        createdAt: '2021-05-03T05:44:27.025Z',
-        updatedAt: '2021-05-03T05:44:27.025Z',
-        type: 'TEAMS',
-        dailyMeetingLink: 'https://microsoft.com',
-      },
-      {
-        id: '58d23554-6f19-4f18-b369-99c8bbcdcf7b',
-        version: 1,
-        createdAt: '2021-05-03T05:46:35.907Z',
-        updatedAt: '2021-05-03T05:46:35.907Z',
-        type: 'TEAMS',
-        dailyMeetingLink: 'https://microsoft.com',
-      },
-    ];
+      const powerBoardResponse: any = {
+        team_id: '46455bf7-ada7-495c-8019-8d7ab76d488e',
+        team_name: 'Diamler Devops',
+        center: 'ADCenter Bangalore',
+        team_code: '10012345',
+        logo: '',
+        dashboard: {
+          teamId: '46455bf7-ada7-495c-8019-8d7ab76d488e',
+          codeQuality: {
+            bugs: 3,
+            debt: 13,
+            codeCoverage: 85,
+            status: 'PASSED',
+          },
+          clientStatus: {
+            clientSatisfactionRating: 5,
+            sprintNumber: 10,
+          },
+          teamSpirit: {
+            teamSpiritRating: 7,
+          },
+          burndown: {
+            workUnit: 'story point',
+            remainingDays: 26,
+            remainingWork: 122,
+            count: 8,
+            burndownStatus: 'Ahead Time',
+          },
+          sprintDetail: {
+            Sprint_current_day: 2,
+            sprint_number: 11,
+            Sprint_days: 28,
+          },
+          velocity: {
+            Avg: 115,
+            Committed: 140,
+            Completed: 18,
+          },
+          teamStatus: 1,
+        },
+        meetingLinks: [
+          {
+            dailyMeetingId: '43000bf7-ada7-495c-8019-8d7ab76d490e',
+            type: 'TEAMS',
+            title: 'Stand Up',
+            links:
+              'https://teams.microsoft.com/l/meetup-join/19%3ameeting_NjY3MzIyNmYtZTg1YS00MzBjLTk0NmUtMTk4MWE0OWJjNjhl%40thread.v2/0?context=%7b%22Tid%22%3a%2276a2ae5a-9f00-4f6b-95ed-5d33d77c4d61%22%2c%22Oid%22%3a%22d6dd7c98-546f-4dcb-9c39-39c8eeff8a24%22%7d',
+          },
+        ],
+        teamLinks: [
+          {
+            teamLinkId: '51055bf7-ada6-495c-8019-8d7ab76d488e',
+            title: 'Jira Cloud',
+            links: 'https://powerboard-capgemini.atlassian.net/jira/software/projects/DUM/boards/3',
+          },
+          {
+            teamLinkId: '51055bf8-ada5-495c-8019-8d7ab76d488e',
+            title: 'GitHub',
+            links: 'https://github.com/devonfw-forge/powerboard-api/blob/develop-0.0.1/',
+          },
+        ],
+        images: [
+          {
+            ImageId: 'aaad19f7-1b66-44aa-a443-4fcdd173f385',
+            ImagePath: 'bannerd8a32383-b767-44e7-b48c-d15fbecc9a49.jpg',
+          },
+          {
+            ImageId: '89cbb47b-5454-440d-a0e8-98b681ed6f83',
+            ImagePath: 'Capgeminie399d4d7-5119-4c2b-b238-4275d2f7c5da.jpg',
+          },
+          {
+            ImageId: 'fbf8ea11-62a2-433a-936f-9fddfb90b1c6',
+            ImagePath: 'chare72e95bb-b552-425a-a051-b7dfc69efa0b.jpg',
+          },
+          {
+            ImageId: 'dc6a6a55-23f9-4edf-90e5-a18c6b07a0be',
+            ImagePath: 'dataf74b26af-7a68-42c9-94b8-b4ebc378dce1.jpg',
+          },
+          {
+            ImageId: '8c4f8d5d-b3b7-4efb-868e-4336474094b3',
+            ImagePath: 'france-capgeminic4ba8e67-c56d-446d-814e-9ab149521959.jpg',
+          },
+        ],
+        videos: [
+          {
+            videoId: '79b90a96-bd52-4fab-9b8f-e119cf4e66ab',
+            videoPath: 'CapgeminiPurpose1c42fff2-6884-40bd-a8f0-489552af140f.mp4',
+          },
+          {
+            videoId: '0176b6eb-6336-4efc-9710-edfc4af25a31',
+            videoPath: 'CapgeminiValues499f846a-780c-4a9a-86c9-99d3055f7d1e.mp4',
+          },
+        ],
+      };
 
-    const visibility: Visibility = {
-      id: '52455bf8-ada5-495c-8019-8d7ab76d488e',
-      version: 1,
-      createdAt: '2021-04-29T05:56:27.392Z',
-      updatedAt: '2021-04-29T05:56:27.392Z',
-      dailyMeeting: true,
-      teamLink: true,
-      images: true,
-      videos: true,
-      team: '46455bf7-ada7-495c-8019-8d7ab76d488e',
-    };
+      const expectedOutput: any = {
+        team_id: '46455bf7-ada7-495c-8019-8d7ab76d488e',
+        team_name: 'Diamler Devops',
+        center: 'ADCenter Bangalore',
+        team_code: '10012345',
+        logo: '',
+        dashboard: {
+          teamId: '46455bf7-ada7-495c-8019-8d7ab76d488e',
+          codeQuality: {
+            bugs: 3,
+            debt: 13,
+            codeCoverage: 85,
+            status: 'PASSED',
+          },
+          clientStatus: {
+            clientSatisfactionRating: 5,
+            sprintNumber: 10,
+          },
+          teamSpirit: {
+            teamSpiritRating: 7,
+          },
+          burndown: {
+            workUnit: 'story point',
+            remainingDays: 26,
+            remainingWork: 122,
+            count: 8,
+            burndownStatus: 'Ahead Time',
+          },
+          sprintDetail: {
+            Sprint_current_day: 2,
+            sprint_number: 11,
+            Sprint_days: 28,
+          },
+          velocity: {
+            Avg: 115,
+            Committed: 140,
+            Completed: 18,
+          },
+          teamStatus: 1,
+        },
+        meetingLinks: [
+          {
+            dailyMeetingId: '43000bf7-ada7-495c-8019-8d7ab76d490e',
+            type: 'TEAMS',
+            title: 'Stand Up',
+            links:
+              'https://teams.microsoft.com/l/meetup-join/19%3ameeting_NjY3MzIyNmYtZTg1YS00MzBjLTk0NmUtMTk4MWE0OWJjNjhl%40thread.v2/0?context=%7b%22Tid%22%3a%2276a2ae5a-9f00-4f6b-95ed-5d33d77c4d61%22%2c%22Oid%22%3a%22d6dd7c98-546f-4dcb-9c39-39c8eeff8a24%22%7d',
+          },
+        ],
+        teamLinks: [
+          {
+            teamLinkId: '51055bf7-ada6-495c-8019-8d7ab76d488e',
+            title: 'Jira Cloud',
+            links: 'https://powerboard-capgemini.atlassian.net/jira/software/projects/DUM/boards/3',
+          },
+          {
+            teamLinkId: '51055bf8-ada5-495c-8019-8d7ab76d488e',
+            title: 'GitHub',
+            links: 'https://github.com/devonfw-forge/powerboard-api/blob/develop-0.0.1/',
+          },
+        ],
+        images: [
+          {
+            ImageId: 'aaad19f7-1b66-44aa-a443-4fcdd173f385',
+            ImagePath: 'bannerd8a32383-b767-44e7-b48c-d15fbecc9a49.jpg',
+          },
+          {
+            ImageId: '89cbb47b-5454-440d-a0e8-98b681ed6f83',
+            ImagePath: 'Capgeminie399d4d7-5119-4c2b-b238-4275d2f7c5da.jpg',
+          },
+          {
+            ImageId: 'fbf8ea11-62a2-433a-936f-9fddfb90b1c6',
+            ImagePath: 'chare72e95bb-b552-425a-a051-b7dfc69efa0b.jpg',
+          },
+          {
+            ImageId: 'dc6a6a55-23f9-4edf-90e5-a18c6b07a0be',
+            ImagePath: 'dataf74b26af-7a68-42c9-94b8-b4ebc378dce1.jpg',
+          },
+          {
+            ImageId: '8c4f8d5d-b3b7-4efb-868e-4336474094b3',
+            ImagePath: 'france-capgeminic4ba8e67-c56d-446d-814e-9ab149521959.jpg',
+          },
+        ],
+        videos: [
+          {
+            videoId: '79b90a96-bd52-4fab-9b8f-e119cf4e66ab',
+            videoPath: 'CapgeminiPurpose1c42fff2-6884-40bd-a8f0-489552af140f.mp4',
+          },
+          {
+            videoId: '0176b6eb-6336-4efc-9710-edfc4af25a31',
+            videoPath: 'CapgeminiValues499f846a-780c-4a9a-86c9-99d3055f7d1e.mp4',
+          },
+        ],
+        privileges: [
+          'view_meeting_links',
+          'view_team_links',
+          'team_configuration',
+          'view_members_of_team',
+          'delete_team_members',
+          'add_team_member',
+        ],
+      };
 
-    const expectedElectronBoardLoginResponse = {
-      teamId: '46455bf7-ada7-495c-8019-8d7ab76d488e',
-      center: 'ADCenter Bangalore',
-      teamLogo: 'uploads\\logo\\logo31ca9983-ae97-4bb0-9f22-4867d3cc16a0.png',
-      dailyMeetingResponse: dailyMeetingLinks,
-      teamLinkResponse: teamLinks,
-      imageResponse: images,
-      videoResponse: videos,
-      visibleResponse: visibility,
-    };
+      //test
+      jest.spyOn(teamService, 'getDashboardByTeamId').mockImplementation(() => dashboard);
+      jest.spyOn(teamService, 'getOtherComponentsDetailByTeamId').mockImplementation(() => powerBoardResponse);
+      const actualOutput = await teamService.getPowerboardResponseForTeam(team, priviledgeList, isAdminOrGuest);
 
-    console.log(expectedElectronBoardLoginResponse);
-    const createQueryBuilder1: any = {
-      where: () => createQueryBuilder1,
-      getMany: jest.fn().mockResolvedValue(dailyMeetingLinks),
-    };
-    const createQueryBuilder2: any = {
-      where: () => createQueryBuilder2,
-      getMany: jest.fn().mockResolvedValue(teamLinks),
-    };
-
-    jest.spyOn(dailyMeetingLinkRepo, 'createQueryBuilder').mockImplementation(() => createQueryBuilder1);
-    jest.spyOn(userRepo, 'findOne').mockImplementation(() => user);
-    jest.spyOn(teamRepo, 'findOne').mockImplementation(() => team);
-    jest.spyOn(teamLinksRepo, 'createQueryBuilder').mockImplementation(() => createQueryBuilder2);
-    jest.spyOn(imageRepo, 'find').mockImplementation(() => images);
-    jest.spyOn(videoRepo, 'find').mockImplementation(() => videos);
-    jest.spyOn(visibilityRepo, 'findOne').mockImplementation(() => visibility);
-
-    // const actualLoginResponseForElectronApp = await teamService.getElectronBoardByUserId(user.id);
-    // await teamService.getOtherComponentsDetailByTeamId(user.id);
-    expect(userRepo.findOne).toHaveBeenCalledTimes(1);
-    // expect(actualLoginResponseForElectronApp).toEqual(expectedElectronBoardLoginResponse);
+      //expect
+      expect(teamService.getDashboardByTeamId).toBeCalledTimes(1);
+      expect(teamService.getOtherComponentsDetailByTeamId).toBeCalledTimes(1);
+      expect(actualOutput).toBeDefined();
+      expect(actualOutput).toEqual(expectedOutput);
+    });
   });
+
+  describe('getOtherComponentsDetailByTeamId() get all the other components except dashboard', () => {
+    const team_id: string = '46455bf7-ada7-495c-8019-8d7ab76d488e';
+
+    const powerBoardResponse: any = {
+      team_id: '46455bf7-ada7-495c-8019-8d7ab76d488e',
+      team_name: 'Diamler Devops',
+      center: 'ADCenter Bangalore',
+      team_code: '10012345',
+      logo: '',
+      dashboard: {
+        teamId: '46455bf7-ada7-495c-8019-8d7ab76d488e',
+        codeQuality: { bugs: 3, debt: 13, codeCoverage: 85, status: 'PASSED' },
+        clientStatus: { clientSatisfactionRating: 5, sprintNumber: 10 },
+        teamSpirit: { teamSpiritRating: 7 },
+        burndown: {
+          workUnit: 'story point',
+          remainingDays: 25,
+          remainingWork: 122,
+          count: 3,
+          burndownStatus: 'Ahead Time',
+        },
+        sprintDetail: { Sprint_current_day: 3, sprint_number: 11, Sprint_days: 28 },
+        velocity: { Avg: 115, Committed: 140, Completed: 18 },
+        teamStatus: 1,
+      },
+    };
+
+    const images: any = [
+      {
+        ImageId: 'aaad19f7-1b66-44aa-a443-4fcdd173f385',
+        ImagePath: 'bannerd8a32383-b767-44e7-b48c-d15fbecc9a49.jpg',
+      },
+      {
+        ImageId: '89cbb47b-5454-440d-a0e8-98b681ed6f83',
+        ImagePath: 'Capgeminie399d4d7-5119-4c2b-b238-4275d2f7c5da.jpg',
+      },
+      {
+        ImageId: 'fbf8ea11-62a2-433a-936f-9fddfb90b1c6',
+        ImagePath: 'chare72e95bb-b552-425a-a051-b7dfc69efa0b.jpg',
+      },
+      {
+        ImageId: 'dc6a6a55-23f9-4edf-90e5-a18c6b07a0be',
+        ImagePath: 'dataf74b26af-7a68-42c9-94b8-b4ebc378dce1.jpg',
+      },
+      {
+        ImageId: '8c4f8d5d-b3b7-4efb-868e-4336474094b3',
+        ImagePath: 'france-capgeminic4ba8e67-c56d-446d-814e-9ab149521959.jpg',
+      },
+    ];
+
+    const videos: any = [
+      {
+        videoId: '79b90a96-bd52-4fab-9b8f-e119cf4e66ab',
+        videoPath: 'CapgeminiPurpose1c42fff2-6884-40bd-a8f0-489552af140f.mp4',
+      },
+      {
+        videoId: '0176b6eb-6336-4efc-9710-edfc4af25a31',
+        videoPath: 'CapgeminiValues499f846a-780c-4a9a-86c9-99d3055f7d1e.mp4',
+      },
+    ];
+
+    test('test 1 when user have all the priledges', async () => {
+      //inputs
+      const priviledgesList: any = ['view_meeting_links', 'view_team_links'];
+
+      const dailyMeeting: any = [
+        {
+          dailyMeetingId: '43000bf7-ada7-495c-8019-8d7ab76d490e',
+          type: 'TEAMS',
+          title: 'Stand Up',
+          links:
+            'https://teams.microsoft.com/l/meetup-join/19%3ameeting_NjY3MzIyNmYtZTg1YS00MzBjLTk0NmUtMTk4MWE0OWJjNjhl%40thread.v2/0?context=%7b%22Tid%22%3a%2276a2ae5a-9f00-4f6b-95ed-5d33d77c4d61%22%2c%22Oid%22%3a%22d6dd7c98-546f-4dcb-9c39-39c8eeff8a24%22%7d',
+        },
+      ];
+
+      const teamLink: any = [
+        {
+          teamLinkId: '51055bf7-ada6-495c-8019-8d7ab76d488e',
+          title: 'Jira Cloud',
+          links: 'https://powerboard-capgemini.atlassian.net/jira/software/projects/DUM/boards/3',
+        },
+        {
+          teamLinkId: '51055bf8-ada5-495c-8019-8d7ab76d488e',
+          title: 'GitHub',
+          links: 'https://github.com/devonfw-forge/powerboard-api/blob/develop-0.0.1/',
+        },
+      ];
+
+      const expectedOutput: any = {
+        team_id: '46455bf7-ada7-495c-8019-8d7ab76d488e',
+        team_name: 'Diamler Devops',
+        center: 'ADCenter Bangalore',
+        team_code: '10012345',
+        logo: '',
+        dashboard: {
+          teamId: '46455bf7-ada7-495c-8019-8d7ab76d488e',
+          codeQuality: {
+            bugs: 3,
+            debt: 13,
+            codeCoverage: 85,
+            status: 'PASSED',
+          },
+          clientStatus: {
+            clientSatisfactionRating: 5,
+            sprintNumber: 10,
+          },
+          teamSpirit: {
+            teamSpiritRating: 7,
+          },
+          burndown: {
+            workUnit: 'story point',
+            remainingDays: 25,
+            remainingWork: 122,
+            count: 3,
+            burndownStatus: 'Ahead Time',
+          },
+          sprintDetail: {
+            Sprint_current_day: 3,
+            sprint_number: 11,
+            Sprint_days: 28,
+          },
+          velocity: {
+            Avg: 115,
+            Committed: 140,
+            Completed: 18,
+          },
+          teamStatus: 1,
+        },
+        meetingLinks: [
+          {
+            dailyMeetingId: '43000bf7-ada7-495c-8019-8d7ab76d490e',
+            type: 'TEAMS',
+            title: 'Stand Up',
+            links:
+              'https://teams.microsoft.com/l/meetup-join/19%3ameeting_NjY3MzIyNmYtZTg1YS00MzBjLTk0NmUtMTk4MWE0OWJjNjhl%40thread.v2/0?context=%7b%22Tid%22%3a%2276a2ae5a-9f00-4f6b-95ed-5d33d77c4d61%22%2c%22Oid%22%3a%22d6dd7c98-546f-4dcb-9c39-39c8eeff8a24%22%7d',
+          },
+        ],
+        teamLinks: [
+          {
+            teamLinkId: '51055bf7-ada6-495c-8019-8d7ab76d488e',
+            title: 'Jira Cloud',
+            links: 'https://powerboard-capgemini.atlassian.net/jira/software/projects/DUM/boards/3',
+          },
+          {
+            teamLinkId: '51055bf8-ada5-495c-8019-8d7ab76d488e',
+            title: 'GitHub',
+            links: 'https://github.com/devonfw-forge/powerboard-api/blob/develop-0.0.1/',
+          },
+        ],
+        images: [
+          {
+            ImageId: 'aaad19f7-1b66-44aa-a443-4fcdd173f385',
+            ImagePath: 'bannerd8a32383-b767-44e7-b48c-d15fbecc9a49.jpg',
+          },
+          {
+            ImageId: '89cbb47b-5454-440d-a0e8-98b681ed6f83',
+            ImagePath: 'Capgeminie399d4d7-5119-4c2b-b238-4275d2f7c5da.jpg',
+          },
+          {
+            ImageId: 'fbf8ea11-62a2-433a-936f-9fddfb90b1c6',
+            ImagePath: 'chare72e95bb-b552-425a-a051-b7dfc69efa0b.jpg',
+          },
+          {
+            ImageId: 'dc6a6a55-23f9-4edf-90e5-a18c6b07a0be',
+            ImagePath: 'dataf74b26af-7a68-42c9-94b8-b4ebc378dce1.jpg',
+          },
+          {
+            ImageId: '8c4f8d5d-b3b7-4efb-868e-4336474094b3',
+            ImagePath: 'france-capgeminic4ba8e67-c56d-446d-814e-9ab149521959.jpg',
+          },
+        ],
+        videos: [
+          {
+            videoId: '79b90a96-bd52-4fab-9b8f-e119cf4e66ab',
+            videoPath: 'CapgeminiPurpose1c42fff2-6884-40bd-a8f0-489552af140f.mp4',
+          },
+          {
+            videoId: '0176b6eb-6336-4efc-9710-edfc4af25a31',
+            videoPath: 'CapgeminiValues499f846a-780c-4a9a-86c9-99d3055f7d1e.mp4',
+          },
+        ],
+      };
+
+      //test
+      jest.spyOn(dailyMeetingLinkService, 'getDailyLinks').mockImplementation(() => dailyMeeting);
+      jest.spyOn(teamLinkService, 'getTeamLinks').mockImplementation(() => teamLink);
+      jest.spyOn(imageService, 'getImagesForTeam').mockImplementation(() => images);
+      jest.spyOn(videoService, 'getVideosForTeam').mockImplementation(() => videos);
+      const actualOutput = await teamService.getOtherComponentsDetailByTeamId(
+        team_id,
+        priviledgesList,
+        powerBoardResponse,
+      );
+
+      //expect
+      expect(dailyMeetingLinkService.getDailyLinks).toBeCalledTimes(1);
+      expect(teamLinkService.getTeamLinks).toBeCalledTimes(1);
+      expect(imageService.getImagesForTeam).toBeCalledTimes(1);
+      expect(videoService.getVideosForTeam).toBeCalledTimes(1);
+      expect(actualOutput).toBeDefined();
+      expect(actualOutput).toEqual(expectedOutput);
+    });
+    test('test 2 when user do not have priledges for viewing team & meeting links', async () => {
+      //inputs
+      const priviledgesList: any = [];
+
+      const expectedOutput: any = {
+        team_id: '46455bf7-ada7-495c-8019-8d7ab76d488e',
+        team_name: 'Diamler Devops',
+        center: 'ADCenter Bangalore',
+        team_code: '10012345',
+        logo: '',
+        dashboard: {
+          teamId: '46455bf7-ada7-495c-8019-8d7ab76d488e',
+          codeQuality: {
+            bugs: 3,
+            debt: 13,
+            codeCoverage: 85,
+            status: 'PASSED',
+          },
+          clientStatus: {
+            clientSatisfactionRating: 5,
+            sprintNumber: 10,
+          },
+          teamSpirit: {
+            teamSpiritRating: 7,
+          },
+          burndown: {
+            workUnit: 'story point',
+            remainingDays: 25,
+            remainingWork: 122,
+            count: 3,
+            burndownStatus: 'Ahead Time',
+          },
+          sprintDetail: {
+            Sprint_current_day: 3,
+            sprint_number: 11,
+            Sprint_days: 28,
+          },
+          velocity: {
+            Avg: 115,
+            Committed: 140,
+            Completed: 18,
+          },
+          teamStatus: 1,
+        },
+        meetingLinks: [],
+        teamLinks: [],
+        images: [
+          {
+            ImageId: 'aaad19f7-1b66-44aa-a443-4fcdd173f385',
+            ImagePath: 'bannerd8a32383-b767-44e7-b48c-d15fbecc9a49.jpg',
+          },
+          {
+            ImageId: '89cbb47b-5454-440d-a0e8-98b681ed6f83',
+            ImagePath: 'Capgeminie399d4d7-5119-4c2b-b238-4275d2f7c5da.jpg',
+          },
+          {
+            ImageId: 'fbf8ea11-62a2-433a-936f-9fddfb90b1c6',
+            ImagePath: 'chare72e95bb-b552-425a-a051-b7dfc69efa0b.jpg',
+          },
+          {
+            ImageId: 'dc6a6a55-23f9-4edf-90e5-a18c6b07a0be',
+            ImagePath: 'dataf74b26af-7a68-42c9-94b8-b4ebc378dce1.jpg',
+          },
+          {
+            ImageId: '8c4f8d5d-b3b7-4efb-868e-4336474094b3',
+            ImagePath: 'france-capgeminic4ba8e67-c56d-446d-814e-9ab149521959.jpg',
+          },
+        ],
+        videos: [
+          {
+            videoId: '79b90a96-bd52-4fab-9b8f-e119cf4e66ab',
+            videoPath: 'CapgeminiPurpose1c42fff2-6884-40bd-a8f0-489552af140f.mp4',
+          },
+          {
+            videoId: '0176b6eb-6336-4efc-9710-edfc4af25a31',
+            videoPath: 'CapgeminiValues499f846a-780c-4a9a-86c9-99d3055f7d1e.mp4',
+          },
+        ],
+      };
+
+      //test
+      jest.spyOn(imageService, 'getImagesForTeam').mockImplementation(() => images);
+      jest.spyOn(videoService, 'getVideosForTeam').mockImplementation(() => videos);
+      const actualOutput = await teamService.getOtherComponentsDetailByTeamId(
+        team_id,
+        priviledgesList,
+        powerBoardResponse,
+      );
+
+      //expect
+      expect(imageService.getImagesForTeam).toBeCalledTimes(1);
+      expect(videoService.getVideosForTeam).toBeCalledTimes(1);
+      expect(actualOutput).toBeDefined();
+      expect(actualOutput).toEqual(expectedOutput);
+    });
+
+    test('test 3 when user have priledges to view team links', async () => {
+      //inputs
+      const priviledgesList: any = ['view_team_links'];
+
+      const teamLink: any = [
+        {
+          teamLinkId: '51055bf7-ada6-495c-8019-8d7ab76d488e',
+          title: 'Jira Cloud',
+          links: 'https://powerboard-capgemini.atlassian.net/jira/software/projects/DUM/boards/3',
+        },
+        {
+          teamLinkId: '51055bf8-ada5-495c-8019-8d7ab76d488e',
+          title: 'GitHub',
+          links: 'https://github.com/devonfw-forge/powerboard-api/blob/develop-0.0.1/',
+        },
+      ];
+
+      const expectedOutput: any = {
+        team_id: '46455bf7-ada7-495c-8019-8d7ab76d488e',
+        team_name: 'Diamler Devops',
+        center: 'ADCenter Bangalore',
+        team_code: '10012345',
+        logo: '',
+        dashboard: {
+          teamId: '46455bf7-ada7-495c-8019-8d7ab76d488e',
+          codeQuality: {
+            bugs: 3,
+            debt: 13,
+            codeCoverage: 85,
+            status: 'PASSED',
+          },
+          clientStatus: {
+            clientSatisfactionRating: 5,
+            sprintNumber: 10,
+          },
+          teamSpirit: {
+            teamSpiritRating: 7,
+          },
+          burndown: {
+            workUnit: 'story point',
+            remainingDays: 25,
+            remainingWork: 122,
+            count: 3,
+            burndownStatus: 'Ahead Time',
+          },
+          sprintDetail: {
+            Sprint_current_day: 3,
+            sprint_number: 11,
+            Sprint_days: 28,
+          },
+          velocity: {
+            Avg: 115,
+            Committed: 140,
+            Completed: 18,
+          },
+          teamStatus: 1,
+        },
+        meetingLinks: [],
+        teamLinks: [
+          {
+            teamLinkId: '51055bf7-ada6-495c-8019-8d7ab76d488e',
+            title: 'Jira Cloud',
+            links: 'https://powerboard-capgemini.atlassian.net/jira/software/projects/DUM/boards/3',
+          },
+          {
+            teamLinkId: '51055bf8-ada5-495c-8019-8d7ab76d488e',
+            title: 'GitHub',
+            links: 'https://github.com/devonfw-forge/powerboard-api/blob/develop-0.0.1/',
+          },
+        ],
+        images: [
+          {
+            ImageId: 'aaad19f7-1b66-44aa-a443-4fcdd173f385',
+            ImagePath: 'bannerd8a32383-b767-44e7-b48c-d15fbecc9a49.jpg',
+          },
+          {
+            ImageId: '89cbb47b-5454-440d-a0e8-98b681ed6f83',
+            ImagePath: 'Capgeminie399d4d7-5119-4c2b-b238-4275d2f7c5da.jpg',
+          },
+          {
+            ImageId: 'fbf8ea11-62a2-433a-936f-9fddfb90b1c6',
+            ImagePath: 'chare72e95bb-b552-425a-a051-b7dfc69efa0b.jpg',
+          },
+          {
+            ImageId: 'dc6a6a55-23f9-4edf-90e5-a18c6b07a0be',
+            ImagePath: 'dataf74b26af-7a68-42c9-94b8-b4ebc378dce1.jpg',
+          },
+          {
+            ImageId: '8c4f8d5d-b3b7-4efb-868e-4336474094b3',
+            ImagePath: 'france-capgeminic4ba8e67-c56d-446d-814e-9ab149521959.jpg',
+          },
+        ],
+        videos: [
+          {
+            videoId: '79b90a96-bd52-4fab-9b8f-e119cf4e66ab',
+            videoPath: 'CapgeminiPurpose1c42fff2-6884-40bd-a8f0-489552af140f.mp4',
+          },
+          {
+            videoId: '0176b6eb-6336-4efc-9710-edfc4af25a31',
+            videoPath: 'CapgeminiValues499f846a-780c-4a9a-86c9-99d3055f7d1e.mp4',
+          },
+        ],
+      };
+
+      //test
+      jest.spyOn(teamLinkService, 'getTeamLinks').mockImplementation(() => teamLink);
+      jest.spyOn(imageService, 'getImagesForTeam').mockImplementation(() => images);
+      jest.spyOn(videoService, 'getVideosForTeam').mockImplementation(() => videos);
+      const actualOutput = await teamService.getOtherComponentsDetailByTeamId(
+        team_id,
+        priviledgesList,
+        powerBoardResponse,
+      );
+
+      //expect
+      expect(teamLinkService.getTeamLinks).toBeCalledTimes(1);
+      expect(imageService.getImagesForTeam).toBeCalledTimes(1);
+      expect(videoService.getVideosForTeam).toBeCalledTimes(1);
+      expect(actualOutput).toBeDefined();
+      expect(actualOutput).toEqual(expectedOutput);
+    });
+
+    test('test 4 when user have priledges only for viewing meeting links', async () => {
+      //inputs
+      const priviledgesList: any = ['view_meeting_links'];
+
+      const dailyMeeting: any = [
+        {
+          dailyMeetingId: '43000bf7-ada7-495c-8019-8d7ab76d490e',
+          type: 'TEAMS',
+          title: 'Stand Up',
+          links:
+            'https://teams.microsoft.com/l/meetup-join/19%3ameeting_NjY3MzIyNmYtZTg1YS00MzBjLTk0NmUtMTk4MWE0OWJjNjhl%40thread.v2/0?context=%7b%22Tid%22%3a%2276a2ae5a-9f00-4f6b-95ed-5d33d77c4d61%22%2c%22Oid%22%3a%22d6dd7c98-546f-4dcb-9c39-39c8eeff8a24%22%7d',
+        },
+      ];
+
+      const expectedOutput: any = {
+        team_id: '46455bf7-ada7-495c-8019-8d7ab76d488e',
+        team_name: 'Diamler Devops',
+        center: 'ADCenter Bangalore',
+        team_code: '10012345',
+        logo: '',
+        dashboard: {
+          teamId: '46455bf7-ada7-495c-8019-8d7ab76d488e',
+          codeQuality: {
+            bugs: 3,
+            debt: 13,
+            codeCoverage: 85,
+            status: 'PASSED',
+          },
+          clientStatus: {
+            clientSatisfactionRating: 5,
+            sprintNumber: 10,
+          },
+          teamSpirit: {
+            teamSpiritRating: 7,
+          },
+          burndown: {
+            workUnit: 'story point',
+            remainingDays: 25,
+            remainingWork: 122,
+            count: 3,
+            burndownStatus: 'Ahead Time',
+          },
+          sprintDetail: {
+            Sprint_current_day: 3,
+            sprint_number: 11,
+            Sprint_days: 28,
+          },
+          velocity: {
+            Avg: 115,
+            Committed: 140,
+            Completed: 18,
+          },
+          teamStatus: 1,
+        },
+        meetingLinks: [
+          {
+            dailyMeetingId: '43000bf7-ada7-495c-8019-8d7ab76d490e',
+            type: 'TEAMS',
+            title: 'Stand Up',
+            links:
+              'https://teams.microsoft.com/l/meetup-join/19%3ameeting_NjY3MzIyNmYtZTg1YS00MzBjLTk0NmUtMTk4MWE0OWJjNjhl%40thread.v2/0?context=%7b%22Tid%22%3a%2276a2ae5a-9f00-4f6b-95ed-5d33d77c4d61%22%2c%22Oid%22%3a%22d6dd7c98-546f-4dcb-9c39-39c8eeff8a24%22%7d',
+          },
+        ],
+        teamLinks: [],
+        images: [
+          {
+            ImageId: 'aaad19f7-1b66-44aa-a443-4fcdd173f385',
+            ImagePath: 'bannerd8a32383-b767-44e7-b48c-d15fbecc9a49.jpg',
+          },
+          {
+            ImageId: '89cbb47b-5454-440d-a0e8-98b681ed6f83',
+            ImagePath: 'Capgeminie399d4d7-5119-4c2b-b238-4275d2f7c5da.jpg',
+          },
+          {
+            ImageId: 'fbf8ea11-62a2-433a-936f-9fddfb90b1c6',
+            ImagePath: 'chare72e95bb-b552-425a-a051-b7dfc69efa0b.jpg',
+          },
+          {
+            ImageId: 'dc6a6a55-23f9-4edf-90e5-a18c6b07a0be',
+            ImagePath: 'dataf74b26af-7a68-42c9-94b8-b4ebc378dce1.jpg',
+          },
+          {
+            ImageId: '8c4f8d5d-b3b7-4efb-868e-4336474094b3',
+            ImagePath: 'france-capgeminic4ba8e67-c56d-446d-814e-9ab149521959.jpg',
+          },
+        ],
+        videos: [
+          {
+            videoId: '79b90a96-bd52-4fab-9b8f-e119cf4e66ab',
+            videoPath: 'CapgeminiPurpose1c42fff2-6884-40bd-a8f0-489552af140f.mp4',
+          },
+          {
+            videoId: '0176b6eb-6336-4efc-9710-edfc4af25a31',
+            videoPath: 'CapgeminiValues499f846a-780c-4a9a-86c9-99d3055f7d1e.mp4',
+          },
+        ],
+      };
+
+      //test
+      jest.spyOn(dailyMeetingLinkService, 'getDailyLinks').mockImplementation(() => dailyMeeting);
+      jest.spyOn(imageService, 'getImagesForTeam').mockImplementation(() => images);
+      jest.spyOn(videoService, 'getVideosForTeam').mockImplementation(() => videos);
+      const actualOutput = await teamService.getOtherComponentsDetailByTeamId(
+        team_id,
+        priviledgesList,
+        powerBoardResponse,
+      );
+
+      //expect
+      expect(dailyMeetingLinkService.getDailyLinks).toBeCalledTimes(1);
+      expect(imageService.getImagesForTeam).toBeCalledTimes(1);
+      expect(videoService.getVideosForTeam).toBeCalledTimes(1);
+      expect(actualOutput).toBeDefined();
+      expect(actualOutput).toEqual(expectedOutput);
+    });
+  });
+
+  describe('getAllTeams() will return all the teams available in DB', () => {
+    test('test 1 if no teams available in DB', async () => {
+      //inputs
+      const teamList: any = [];
+
+      //test
+      jest.spyOn(teamRepo, 'find').mockImplementation(() => teamList);
+
+      try {
+        await teamService.getAllTeams();
+      } catch (e) {
+        expect(e.message).toMatch('Team Not Found');
+      }
+    });
+
+    test('test 2 if teams available in DB', async () => {
+      //inputs
+      const teamList: any = [
+        {
+          id: '46455bf7-ada7-495c-8019-8d7ab76d491e',
+          version: 1,
+          createdAt: '2021-07-08T05:12:17.648Z',
+          updatedAt: '2021-07-08T05:12:17.648Z',
+          name: 'BMW',
+          teamCode: '10033347',
+          projectKey: 'P43567',
+          logo: '',
+          ad_center: {
+            id: '98755bf7-ada7-495c-8019-8d7ab62d488e',
+            version: 1,
+            createdAt: '2021-07-08T05:12:17.648Z',
+            updatedAt: '2021-07-08T05:12:17.648Z',
+            name: 'ADCenter Mumbai',
+          },
+        },
+        {
+          id: 'fe4f8120-8a2c-47ad-bad7-86e412e323c1',
+          version: 1,
+          createdAt: '2021-07-08T05:12:17.648Z',
+          updatedAt: '2021-07-08T05:12:17.648Z',
+          name: 'Maruti',
+          teamCode: '9900918',
+          projectKey: 'P112461',
+          logo: '',
+          ad_center: {
+            id: '98955bf7-ada7-495c-8019-8d7ab62d488e',
+            version: 1,
+            createdAt: '2021-07-08T05:12:17.648Z',
+            updatedAt: '2021-07-08T05:12:17.648Z',
+            name: 'ADCenter Murcia',
+          },
+        },
+        {
+          id: '46455bf7-ada7-495c-8019-8d7ab76d490e',
+          version: 1,
+          createdAt: '2021-07-08T05:12:17.648Z',
+          updatedAt: '2021-07-08T05:12:17.648Z',
+          name: 'K&N',
+          teamCode: '10012347',
+          projectKey: 'P87695',
+          logo: '',
+          ad_center: {
+            id: '99055bf7-ada7-495c-8019-8d7ab62d488e',
+            version: 1,
+            createdAt: '2021-07-08T05:12:17.648Z',
+            updatedAt: '2021-07-08T05:12:17.648Z',
+            name: 'ADCenter Bangalore',
+          },
+        },
+        {
+          id: '46455bf7-ada7-495c-8019-8d7ab76d489e',
+          version: 1,
+          createdAt: '2021-07-08T05:12:17.648Z',
+          updatedAt: '2021-07-08T05:12:17.648Z',
+          name: 'Devon Offshore',
+          teamCode: '10012346',
+          projectKey: 'P1212',
+          logo: '',
+          ad_center: {
+            id: '99055bf7-ada7-495c-8019-8d7ab62d488e',
+            version: 1,
+            createdAt: '2021-07-08T05:12:17.648Z',
+            updatedAt: '2021-07-08T05:12:17.648Z',
+            name: 'ADCenter Bangalore',
+          },
+        },
+        {
+          id: '46455bf7-ada7-495c-8019-8d7ab76d488e',
+          version: 1,
+          createdAt: '2021-07-08T05:12:17.648Z',
+          updatedAt: '2021-07-08T05:12:17.648Z',
+          name: 'Diamler Devops',
+          teamCode: '10012345',
+          projectKey: 'P12343',
+          logo: null,
+          ad_center: {
+            id: '99055bf7-ada7-495c-8019-8d7ab62d488e',
+            version: 1,
+            createdAt: '2021-07-08T05:12:17.648Z',
+            updatedAt: '2021-07-08T05:12:17.648Z',
+            name: 'ADCenter Bangalore',
+          },
+        },
+      ];
+
+      const expectedOutput: any = [
+        {
+          teamId: '46455bf7-ada7-495c-8019-8d7ab76d491e',
+          teamName: 'BMW',
+          teamCode: '10033347',
+          projectKey: 'P43567',
+          adCenter: 'ADCenter Mumbai',
+        },
+        {
+          teamId: 'fe4f8120-8a2c-47ad-bad7-86e412e323c1',
+          teamName: 'Maruti',
+          teamCode: '9900918',
+          projectKey: 'P112461',
+          adCenter: 'ADCenter Murcia',
+        },
+        {
+          teamId: '46455bf7-ada7-495c-8019-8d7ab76d490e',
+          teamName: 'K&N',
+          teamCode: '10012347',
+          projectKey: 'P87695',
+          adCenter: 'ADCenter Bangalore',
+        },
+        {
+          teamId: '46455bf7-ada7-495c-8019-8d7ab76d489e',
+          teamName: 'Devon Offshore',
+          teamCode: '10012346',
+          projectKey: 'P1212',
+          adCenter: 'ADCenter Bangalore',
+        },
+        {
+          teamId: '46455bf7-ada7-495c-8019-8d7ab76d488e',
+          teamName: 'Diamler Devops',
+          teamCode: '10012345',
+          projectKey: 'P12343',
+          adCenter: 'ADCenter Bangalore',
+        },
+      ];
+
+      //test
+      jest.spyOn(teamRepo, 'find').mockImplementation(() => teamList);
+
+      const actualOutput = await teamService.getAllTeams();
+      expect(teamRepo.find).toBeCalledTimes(1);
+      expect(actualOutput).toBeDefined();
+      expect(actualOutput).toEqual(expectedOutput);
+    });
+  });
+
+  //   describe('addTeam() method will add team in powerboard as well as in team spirit app', () => {
+  //     test('test 1',async () => {
+  //        //inputs
+  //       const addTeam:any={
+  //         teamName:"test_demo",
+  //         teamCode:"9900111",
+  //     projectKey:"P112499",
+  //     ad_center:{
+  //     "id":"98955bf7-ada7-495c-8019-8d7ab62d488e"
+  //     },
+  //       member_number: 2,
+  //       frequency: 15,
+  //       start_date: "2021-06-03T00:00:00Z"
+  //     };
+
+  //     const team=undefined;
+
+  //     const expectedOutput:any={
+  //       "name": "test_demo",
+  //       "teamCode": "9900111",
+  //       "projectKey": "P112499",
+  //       "ad_center": {
+  //           "id": "98955bf7-ada7-495c-8019-8d7ab62d488e"
+  //       },
+  //       "logo": null,
+  //       "id": "27fefe8f-e89d-4f2f-a58a-9b9185a29a95",
+  //       "version": 1,
+  //       "createdAt": "2021-07-08T12:44:00.140Z",
+  //       "updatedAt": "2021-07-08T12:44:00.140Z"
+  //   };
+
+  //   const token: any={
+  //     token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJFbWFpbCI6ImFkbWluVGVhbVNwaXJpdEBjYXBnZW1pbmkuY29tIiwiUGFzc3dvcmQiOiJUZWFtU3Bpcml0QWRtaW4hIiwiZXhwIjoxNjI2MDA3NDQwfQ.bScKraBERoT4tr9jkb3pHNVXzjv2I4Ki4ob3j2sGiQ4'
+  //   };
+
+  //   const teamSpiritOutput:any={
+  //     Name: 'test_demo',
+  //     Num_mumbers: 2,
+  //     StartDate: '2021-06-03T00:00:00Z',
+  //     Frequency: 15,
+  //     Surveys: null,
+  //     Users: null
+  //   }
+
+  //        //test
+  //        const result = extractInfo(Info);
+
+  //        //expect
+  //        expect(result).toEqual('hello jest');
+  //     });
+  //  });
 });
-//     const team: Team = {
-//         id: 1,
-//         version: 1,
-//         createdAt: '2021-03-12T17:36:31.141Z',
-//         updatedAt: '2021-03-12T17:36:31.141Z',
-//         name: 'Diamler Devops',
-//         business_unit: {
-//             id: "4",
-//             version: 1,
-//             createdAt: '2021-03-12T17:36:31.141Z',
-//             updatedAt: '2021-03-12T17:36:31.141Z',
-//             name: 'ADC Bangalore',
-//             parent_id: 3,
-//             root_parent_id: 1,
-//         },
-//     }
-
-//     const user: User = {
-//         id: 10,
-//         version: 1,
-//         createdAt: '2021-03-12T17:36:31.141Z',
-//         updatedAt: '2021-03-12T17:36:31.141Z',
-//         username: 'John11',
-//         password: 'password',
-//         role: 0,
-//         name: 'John',
-//         teamId: team
-//     }
-
-//     const businessUnits: BusinessUnit[] = [
-//         {
-//             id: 4,
-//             version: 1,
-//             createdAt: '2021-03-12T17:36:31.141Z',
-//             updatedAt: '2021-03-12T17:36:31.141Z',
-//             name: 'ADC Bangalore',
-//             parent_id: 3,
-//             root_parent_id: 1,
-//         },
-//         {
-//             id: 3,
-//             version: 1,
-//             createdAt: '2021-03-12T17:36:31.141Z',
-//             updatedAt: '2021-03-12T17:36:31.141Z',
-//             name: 'Europe CSD AD',
-//             parent_id: 2,
-//             root_parent_id: 1,
-//         },
-//         {
-//             id: 2,
-//             version: 1,
-//             createdAt: '2021-03-12T17:36:31.141Z',
-//             updatedAt: '2021-03-12T17:36:31.141Z',
-//             name: 'Europe BU',
-//             parent_id: 1,
-//             root_parent_id: 1,
-//         },
-//         {
-//             id: 1,
-//             version: 1,
-//             createdAt: '2021-03-12T17:36:31.141Z',
-//             updatedAt: '2021-03-12T17:36:31.141Z',
-//             name: 'Capgemini India',
-//             parent_id: 1,
-//             root_parent_id: 1,
-//         },
-//     ]
-
-//     const codeQualityResponse: CodeQualityResponse = {
-//         bugs: 3,
-//         debt: 4,
-//         codeCoverage: 90,
-//         status: "PASSED"
-//     }
-
-//     const clientStatusResponse: ClientStatusResponse = {
-//         clientSatisfactionRating: 5,
-//         sprintNumber: 10,
-//         teamName: 'Diamler Devops'
-//     }
-
-//     const teamSpiritResponse: TeamSpiritResponse = {
-//         teamSpiritRating: 8,
-//         sprintNumber: 10
-//     }
-
-//     const burndownResponse: BurndownResponse = {
-//         workUnit: 2,
-//         remainingDays: 23,
-//         remainingWork: 128,
-//         count: 13,
-//         burndownStatus: "Behind Time"
-//     }
-
-//     const sprintDetailResponse: SprintDetailResponse = {
-//         Sprint_current_day: 5,
-//         sprint_number: 11,
-//         Sprint_days: 28
-//     }
-
-//     const velocityComparisonResponse: VelocityComparisonResponse = {
-//         Avg: 115,
-//         Committed: 140,
-//         Completed: 12
-//     }
-
-//     const dashBoardResponse: DashBoardResponse = {
-//         teamId: 1,
-//         teamStatus: 1,
-//         codeQualityResponse: codeQualityResponse,
-//         clientStatusResponse: clientStatusResponse,
-//         teamSpiritResponse: teamSpiritResponse,
-//         burndownResponse: burndownResponse,
-//         sprintDetailResponse: sprintDetailResponse,
-//         velocityResponse: velocityComparisonResponse
-//     }
-
-// const codeQuality: CodeQualitySnapshot = {
-//     id: 12,
-//     version: 1,
-//     createdAt: '2021-03-22T08:39:31.870Z',
-//     updatedAt: '2021-03-22T08:39:31.870Z',
-//     bugs: 3,
-//     debt: 4,
-//     code_coverage: 90,
-//     status: 'PASSED',
-//     snapshot_time: '2021-02-25T09:00:22.000Z',
-//     team: {
-//         id: 1,
-//         version: 1,
-//         createdAt: '2021-03-22T08:39:31.870Z',
-//         updatedAt: '2021-03-22T08:39:31.870Z',
-//         name: 'Diamler Devops',
-//         business_unit: {
-//             id: 4,
-//             version: 1,
-//             createdAt: '2021-03-12T17:36:31.141Z',
-//             updatedAt: '2021-03-12T17:36:31.141Z',
-//             name: 'ADC Bangalore',
-//             parent_id: 3,
-//             root_parent_id: 1,
-//         },
-//     },
-// };
-
-// const createQueryBuilder1: any = {
-//     where: () => createQueryBuilder1,
-//     getMany: jest.fn().mockResolvedValue(businessUnits),
-// };
-
-// const createQueryBuilder2: any = {
-//     limit: () => createQueryBuilder2,
-//     groupBy: () => createQueryBuilder2,
-//     where: () => createQueryBuilder2,
-//     orderBy: () => createQueryBuilder2,
-//     getOne: jest.fn().mockResolvedValue(codeQuality),
-// };
-
-//     jest.spyOn(userRepo, 'findOne').mockResolvedValue(() => user);
-//     jest.spyOn(teamRepo, 'findOne').mockResolvedValue(() => team);
-//     jest.spyOn(businessUnitRepo, 'createQueryBuilder').mockImplementation(() => createQueryBuilder1)
-
-//     const actualDashBoardResponse = await teamService.getDashboardByTeamId(team.id);
-//     expect(actualDashBoardResponse).toEqual(dashBoardResponse);
-//     expect(teamRepo.findOne).toHaveBeenCalledTimes(1);
-
-// });
