@@ -22,19 +22,19 @@ export class InsertData1624602173256 implements MigrationInterface {
     );
 
     await queryRunner.query(
-      `INSERT INTO "team" ("id","team_code", "project_key", "name", "ad_center_id") VALUES ('46455bf7-ada7-495c-8019-8d7ab76d488e' ,'10012345','P12343','Diamler Devops','99055bf7-ada7-495c-8019-8d7ab62d488e');`,
+      `INSERT INTO "team" ("id","team_code", "project_key", "name", "ad_center_id") VALUES ('46455bf7-ada7-495c-8019-8d7ab76d488e' ,'10012345','P12343','Team A','99055bf7-ada7-495c-8019-8d7ab62d488e');`,
     );
     await queryRunner.query(
-      `INSERT INTO "team" ("id","team_code","project_key", "name", "ad_center_id") VALUES ('46455bf7-ada7-495c-8019-8d7ab76d489e' ,'10012346','P1212' ,'Devon Offshore','99055bf7-ada7-495c-8019-8d7ab62d488e');`,
+      `INSERT INTO "team" ("id","team_code","project_key", "name", "ad_center_id") VALUES ('46455bf7-ada7-495c-8019-8d7ab76d489e' ,'10012346','P1212' ,'Team B','99055bf7-ada7-495c-8019-8d7ab62d488e');`,
     );
     await queryRunner.query(
-      `INSERT INTO "team" ("id", "team_code","project_key","name", "ad_center_id" ) VALUES ('46455bf7-ada7-495c-8019-8d7ab76d490e' ,'10012347','P87695', 'K&N','99055bf7-ada7-495c-8019-8d7ab62d488e');`,
+      `INSERT INTO "team" ("id", "team_code","project_key","name", "ad_center_id" ) VALUES ('46455bf7-ada7-495c-8019-8d7ab76d490e' ,'10012347','P87695', 'Team C','99055bf7-ada7-495c-8019-8d7ab62d488e');`,
     );
     await queryRunner.query(
-      `INSERT INTO "team" ("id", "team_code","project_key","name", "ad_center_id" ) VALUES ('46455bf7-ada7-495c-8019-8d7ab76d491e' ,'10033347','P43567', 'BMW','98755bf7-ada7-495c-8019-8d7ab62d488e');`,
+      `INSERT INTO "team" ("id", "team_code","project_key","name", "ad_center_id" ) VALUES ('46455bf7-ada7-495c-8019-8d7ab76d491e' ,'10033347','P43567', 'Team D','98755bf7-ada7-495c-8019-8d7ab62d488e');`,
     );
     await queryRunner.query(
-      `INSERT INTO "team" ("id", "team_code","project_key","name", "ad_center_id" ) VALUES ('fe4f8120-8a2c-47ad-bad7-86e412e323c1' ,'9900918','P112461', 'Maruti','98955bf7-ada7-495c-8019-8d7ab62d488e');`,
+      `INSERT INTO "team" ("id", "team_code","project_key","name", "ad_center_id" ) VALUES ('fe4f8120-8a2c-47ad-bad7-86e412e323c1' ,'9900918','P112461', 'Team E','98955bf7-ada7-495c-8019-8d7ab62d488e');`,
     );
 
     await queryRunner.query(
@@ -155,11 +155,11 @@ export class InsertData1624602173256 implements MigrationInterface {
       `INSERT INTO "team_spirit" ("id","team_spirit_rating", "sprint_id") VALUES ('20113bf8-ada5-495c-8019-8d7ab76d488e', 7, '20455bf8-ada5-495c-8019-8d7ab76d488e');`,
     );
     await queryRunner.query(
-      `INSERT INTO "team_spirit_median" ("id", "survey_median","start_date","end_date","survey_code","team_name") VALUES ('70013bf8-ada5-495c-8019-8d7ab76d488e', 3,'2021-05-15 14:15:36','2021-05-25 14:15:30' ,'AZR32' ,'Diamler Devops');`,
+      `INSERT INTO "team_spirit_median" ("id", "survey_median","start_date","end_date","survey_code","team_name") VALUES ('70013bf8-ada5-495c-8019-8d7ab76d488e', 3,'2021-05-15 14:15:36','2021-05-25 14:15:30' ,'AZR32' ,'Team A');`,
     );
 
     await queryRunner.query(
-      `INSERT INTO "team_spirit_median" ("id", "survey_median","start_date","end_date","survey_code","team_name") VALUES ('70023bf8-ada5-495c-8019-8d7ab76d488e', 7,'2021-06-22 13:20:34','2021-07-02 13:25:40' ,'AZ4r52' ,'Diamler Devops');`,
+      `INSERT INTO "team_spirit_median" ("id", "survey_median","start_date","end_date","survey_code","team_name") VALUES ('70023bf8-ada5-495c-8019-8d7ab76d488e', 7,'2021-06-22 13:20:34','2021-07-02 13:25:40' ,'AZ4r52' ,'Team A');`,
     );
 
     await queryRunner.query(
@@ -235,11 +235,11 @@ export class InsertData1624602173256 implements MigrationInterface {
     );
 
     await queryRunner.query(
-      `INSERT INTO "user"("id", "username", "password","email" ) Values('10cf1dfd-43e9-4cc4-8257-a6ba5c70e33d', 'raj11' ,'$2b$12$.hA7MmRGIzsr7v.eYFRtuOUTNw5WEqkGPcE92EX6opaiVMbr77fme','raj@capgemini.com');`,
+      `INSERT INTO "user"("id", "username", "password","email" ) Values('10cf1dfd-43e9-4cc4-8257-a6ba5c70e33d', 'raj11' ,'$2b$12$.hA7MmRGIzsr7v.eYFRtuOUTNw5WEqkGPcE92EX6opaiVMbr77fme','raj@mail.com');`,
     );
 
     await queryRunner.query(
-      `INSERT INTO "user"("id", "username", "password", "email") Values('11cf1dfd-43e9-4cc4-8257-a6ba5c70e33d', 'siva11' ,'$2b$12$.hA7MmRGIzsr7v.eYFRtuOUTNw5WEqkGPcE92EX6opaiVMbr77fme','siva@capgemini.com');`,
+      `INSERT INTO "user"("id", "username", "password", "email") Values('11cf1dfd-43e9-4cc4-8257-a6ba5c70e33d', 'siva11' ,'$2b$12$.hA7MmRGIzsr7v.eYFRtuOUTNw5WEqkGPcE92EX6opaiVMbr77fme','siva@mail.com');`,
     );
 
     await queryRunner.query(

@@ -36,7 +36,7 @@ describe('CodeQualitySnapshotCrudService', () => {
     //   version: 1,
     //   createdAt: '2021-06-25T08:25:00.982Z',
     //   updatedAt: '2021-06-25T08:25:00.982Z',
-    //   name: 'K&N',
+    //   name: 'Team C',
     //   teamCode: '10012347',
     //   projectKey: 'P87695',
     //   logo: null,

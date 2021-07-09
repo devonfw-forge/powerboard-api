@@ -105,7 +105,7 @@ describe('UserService', () => {
       fullName: 'john doe',
       email: 'john123@mail.com',
       role: '555f1dfd-43e9-4cc4-8257-a6ba5c70e34d',
-      team: { id: 'fe4f8120-8a2c-47ad-bad7-86e412e323c1', name: 'Maruti' },
+      team: { id: 'fe4f8120-8a2c-47ad-bad7-86e412e323c1', name: 'Team E' },
     } as UserDTO;
 
     const userRole = {
@@ -167,7 +167,7 @@ describe('UserService', () => {
       role: '555f1dfd-43e9-4cc4-8257-a6ba5c70e34d',
       team: {
         id: 'fe4f8120-8a2c-47ad-bad7-86e412e323c1',
-        name: 'Maruti',
+        name: 'Team E',
       },
     } as UserDTO;
 

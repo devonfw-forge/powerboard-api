@@ -38,7 +38,7 @@ describe('TeamSpiritCrudService', () => {
 
   describe('getTeamSpiritFromSurvey', () => {
     it('getTeamSpiritFromSurvey() method should return teamSpiritResponse', async () => {
-      const teamName = 'Diamler Devops';
+      const teamName = 'Team A';
 
       const teamSpiritMedian = {
         id: '70023bf8-ada5-495c-8019-8d7ab76d488e',

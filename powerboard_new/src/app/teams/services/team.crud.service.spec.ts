@@ -261,7 +261,7 @@ describe('TeamCrudService', () => {
         version: 4,
         createdAt: '2021-06-25T06:25:06.419Z',
         updatedAt: '2021-07-07T11:16:47.830Z',
-        name: 'Maruti',
+        name: 'Team E',
         teamCode: '93009188',
         projectKey: 'P41247',
         logo: '',
@@ -327,7 +327,7 @@ describe('TeamCrudService', () => {
         version: 1,
         createdAt: '2021-07-07T12:22:21.770Z',
         updatedAt: '2021-07-07T12:22:21.770Z',
-        name: 'Diamler Devops',
+        name: 'Team A',
         teamCode: '10012345',
         projectKey: 'P12343',
         logo: '',
@@ -399,7 +399,7 @@ describe('TeamCrudService', () => {
         version: 1,
         createdAt: '2021-07-07T12:22:21.770Z',
         updatedAt: '2021-07-07T12:22:21.770Z',
-        name: 'Diamler Devops',
+        name: 'Team A',
         teamCode: '10012345',
         projectKey: 'P12343',
         logo: '',
@@ -517,7 +517,7 @@ describe('TeamCrudService', () => {
         version: 1,
         createdAt: '2021-07-08T05:12:17.648Z',
         updatedAt: '2021-07-08T05:12:17.648Z',
-        name: 'Diamler Devops',
+        name: 'Team A',
         teamCode: '10012345',
         projectKey: 'P12343',
         logo: '',
@@ -547,7 +547,7 @@ describe('TeamCrudService', () => {
       ];
       const expectedOutput: any = {
         team_id: '46455bf7-ada7-495c-8019-8d7ab76d488e',
-        team_name: 'Diamler Devops',
+        team_name: 'Team A',
         center: 'ADCenter Bangalore',
         team_code: '10012345',
         logo: '',
@@ -675,7 +675,7 @@ describe('TeamCrudService', () => {
 
     const powerBoardResponse: any = {
       team_id: '46455bf7-ada7-495c-8019-8d7ab76d488e',
-      team_name: 'Diamler Devops',
+      team_name: 'Team A',
       center: 'ADCenter Bangalore',
       team_code: '10012345',
       logo: '',
@@ -773,7 +773,7 @@ describe('TeamCrudService', () => {
       version: 1,
       createdAt: '2021-07-08T05:12:17.648Z',
       updatedAt: '2021-07-08T05:12:17.648Z',
-      name: 'Diamler Devops',
+      name: 'Team A',
       teamCode: '10012345',
       projectKey: 'P12343',
       logo: '',
@@ -807,7 +807,7 @@ describe('TeamCrudService', () => {
 
       const expectedOutput: any = {
         team_id: '46455bf7-ada7-495c-8019-8d7ab76d488e',
-        team_name: 'Diamler Devops',
+        team_name: 'Team A',
         center: 'ADCenter Bangalore',
         team_code: '10012345',
         logo: '',
@@ -927,7 +927,7 @@ describe('TeamCrudService', () => {
 
       const powerBoardResponse: any = {
         team_id: '46455bf7-ada7-495c-8019-8d7ab76d488e',
-        team_name: 'Diamler Devops',
+        team_name: 'Team A',
         center: 'ADCenter Bangalore',
         team_code: '10012345',
         logo: '',
@@ -1022,7 +1022,7 @@ describe('TeamCrudService', () => {
 
       const expectedOutput: any = {
         team_id: '46455bf7-ada7-495c-8019-8d7ab76d488e',
-        team_name: 'Diamler Devops',
+        team_name: 'Team A',
         center: 'ADCenter Bangalore',
         team_code: '10012345',
         logo: '',
@@ -1141,7 +1141,7 @@ describe('TeamCrudService', () => {
 
     const powerBoardResponse: any = {
       team_id: '46455bf7-ada7-495c-8019-8d7ab76d488e',
-      team_name: 'Diamler Devops',
+      team_name: 'Team A',
       center: 'ADCenter Bangalore',
       team_code: '10012345',
       logo: '',
@@ -1226,7 +1226,7 @@ describe('TeamCrudService', () => {
 
       const expectedOutput: any = {
         team_id: '46455bf7-ada7-495c-8019-8d7ab76d488e',
-        team_name: 'Diamler Devops',
+        team_name: 'Team A',
         center: 'ADCenter Bangalore',
         team_code: '10012345',
         logo: '',
@@ -1344,7 +1344,7 @@ describe('TeamCrudService', () => {
 
       const expectedOutput: any = {
         team_id: '46455bf7-ada7-495c-8019-8d7ab76d488e',
-        team_name: 'Diamler Devops',
+        team_name: 'Team A',
         center: 'ADCenter Bangalore',
         team_code: '10012345',
         logo: '',
@@ -1453,7 +1453,7 @@ describe('TeamCrudService', () => {
 
       const expectedOutput: any = {
         team_id: '46455bf7-ada7-495c-8019-8d7ab76d488e',
-        team_name: 'Diamler Devops',
+        team_name: 'Team A',
         center: 'ADCenter Bangalore',
         team_code: '10012345',
         logo: '',
@@ -1572,7 +1572,7 @@ describe('TeamCrudService', () => {
 
       const expectedOutput: any = {
         team_id: '46455bf7-ada7-495c-8019-8d7ab76d488e',
-        team_name: 'Diamler Devops',
+        team_name: 'Team A',
         center: 'ADCenter Bangalore',
         team_code: '10012345',
         logo: '',
@@ -1696,7 +1696,7 @@ describe('TeamCrudService', () => {
           version: 1,
           createdAt: '2021-07-08T05:12:17.648Z',
           updatedAt: '2021-07-08T05:12:17.648Z',
-          name: 'BMW',
+          name: 'Team D',
           teamCode: '10033347',
           projectKey: 'P43567',
           logo: '',
@@ -1713,7 +1713,7 @@ describe('TeamCrudService', () => {
           version: 1,
           createdAt: '2021-07-08T05:12:17.648Z',
           updatedAt: '2021-07-08T05:12:17.648Z',
-          name: 'Maruti',
+          name: 'Team E',
           teamCode: '9900918',
           projectKey: 'P112461',
           logo: '',
@@ -1730,7 +1730,7 @@ describe('TeamCrudService', () => {
           version: 1,
           createdAt: '2021-07-08T05:12:17.648Z',
           updatedAt: '2021-07-08T05:12:17.648Z',
-          name: 'K&N',
+          name: 'Team C',
           teamCode: '10012347',
           projectKey: 'P87695',
           logo: '',
@@ -1747,7 +1747,7 @@ describe('TeamCrudService', () => {
           version: 1,
           createdAt: '2021-07-08T05:12:17.648Z',
           updatedAt: '2021-07-08T05:12:17.648Z',
-          name: 'Devon Offshore',
+          name: 'Team B',
           teamCode: '10012346',
           projectKey: 'P1212',
           logo: '',
@@ -1764,7 +1764,7 @@ describe('TeamCrudService', () => {
           version: 1,
           createdAt: '2021-07-08T05:12:17.648Z',
           updatedAt: '2021-07-08T05:12:17.648Z',
-          name: 'Diamler Devops',
+          name: 'Team A',
           teamCode: '10012345',
           projectKey: 'P12343',
           logo: null,
@@ -1781,35 +1781,35 @@ describe('TeamCrudService', () => {
       const expectedOutput: any = [
         {
           teamId: '46455bf7-ada7-495c-8019-8d7ab76d491e',
-          teamName: 'BMW',
+          teamName: 'Team D',
           teamCode: '10033347',
           projectKey: 'P43567',
           adCenter: 'ADCenter Mumbai',
         },
         {
           teamId: 'fe4f8120-8a2c-47ad-bad7-86e412e323c1',
-          teamName: 'Maruti',
+          teamName: 'Team E',
           teamCode: '9900918',
           projectKey: 'P112461',
           adCenter: 'ADCenter Murcia',
         },
         {
           teamId: '46455bf7-ada7-495c-8019-8d7ab76d490e',
-          teamName: 'K&N',
+          teamName: 'Team C',
           teamCode: '10012347',
           projectKey: 'P87695',
           adCenter: 'ADCenter Bangalore',
         },
         {
           teamId: '46455bf7-ada7-495c-8019-8d7ab76d489e',
-          teamName: 'Devon Offshore',
+          teamName: 'Team B',
           teamCode: '10012346',
           projectKey: 'P1212',
           adCenter: 'ADCenter Bangalore',
         },
         {
           teamId: '46455bf7-ada7-495c-8019-8d7ab76d488e',
-          teamName: 'Diamler Devops',
+          teamName: 'Team A',
           teamCode: '10012345',
           projectKey: 'P12343',
           adCenter: 'ADCenter Bangalore',
@@ -1893,7 +1893,7 @@ describe('TeamCrudService', () => {
         version: 1,
         createdAt: '2021-07-08T05:12:17.648Z',
         updatedAt: '2021-07-08T05:12:17.648Z',
-        name: 'Maruti',
+        name: 'Team E',
         teamCode: '9900918',
         projectKey: 'P112461',
         logo: null,

@@ -47,7 +47,7 @@ describe('ClientStatusCrudService', () => {
       version: 1,
       createdAt: '2021-03-12T17:36:31.141Z',
       updatedAt: '2021-03-12T17:36:31.141Z',
-      name: 'Diamler Devops',
+      name: 'Team A',
       teamCode: '102112',
       logo: '',
       projectKey: 'T12311',
