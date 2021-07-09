@@ -21,7 +21,7 @@ export class AuthService {
     private readonly userService: UserService,
     private readonly teamService: TeamCrudService,
     private readonly centerService: ADCenterCrudService,
-    private jwtService: JwtService,
+    private readonly jwtService: JwtService,
   ) {}
   dash: DashBoardResponse = {} as DashBoardResponse;
   /**
@@ -56,14 +56,13 @@ export class AuthService {
    */
 
   async login(user: LoginDTO): Promise<any> {
-    let isPassword:boolean= false;
+    let isPassword: boolean = false;
     const payload = await this.validateUser(user.username!, user.password!);
     if (payload) {
       const accessToken = await this.signIn(user.username, user.password);
-      const userInfo = await this.userService.userInfoDetail(payload.id)
-      if(userInfo)
-      {
-         isPassword=true
+      const userInfo = await this.userService.userInfoDetail(payload.id);
+      if (userInfo) {
+        isPassword = true;
       }
       const userTeam = await this.userService.findUserTeamsByUserId(payload.id);
       if (userTeam[0].team == null) {
@@ -79,7 +78,7 @@ export class AuthService {
   /**
    * systemAdminGuestUserLogin method will return LoginResponse for system admin and guest user login
    */
-  async systemAdminGuestUserLogin(userTeam: UserTeam, accessToken: string, isPassword:boolean) {
+  async systemAdminGuestUserLogin(userTeam: UserTeam, accessToken: string, isPassword: boolean) {
     let loginResponse: LoginResponse = {} as LoginResponse;
     loginResponse.userId = userTeam.user.id;
     loginResponse.isPasswordChanged = isPassword;
@@ -94,7 +93,7 @@ export class AuthService {
   /**
    * teamMemberTeamAdminLogin method will return LoginResponse for team member and team admin login
    */
-  async teamMemberTeamAdminLogin(userTeam: UserTeam[], accessToken: string, payload: User, isPassword:boolean) {
+  async teamMemberTeamAdminLogin(userTeam: UserTeam[], accessToken: string, payload: User, isPassword: boolean) {
     let teamsDTOArray = [],
       i;
     if (userTeam.length >= 1) {
@@ -116,7 +115,7 @@ export class AuthService {
   /**
    * loginDetailsForTeamMemberAdmin method will return LoginResponse for team member and team admin login
    */
-  async loginDetailsForTeamMemberAdmin(teamId: string, teamsDTOArray: MyProject[], payload: User, isPassword:boolean) {
+  async loginDetailsForTeamMemberAdmin(teamId: string, teamsDTOArray: MyProject[], payload: User, isPassword: boolean) {
     let loginResponse: LoginResponse = {} as LoginResponse;
     loginResponse.userId = payload.id;
     loginResponse.isPasswordChanged = isPassword;
