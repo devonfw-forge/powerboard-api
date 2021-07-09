@@ -45,7 +45,7 @@ import { Images } from '../../multimedia/images/model/entities/image.entity';
 import { ImagesCrudService } from '../../multimedia/images/services/images.crud.service';
 import { Videos } from '../../multimedia/videos/model/entities/videos.entity';
 import { VideosCrudService } from '../../multimedia/videos/services/videos.crud.service';
-import { AddTeam } from '../../shared/interfaces/addTeam.interface';
+
 import { TeamLinks } from '../../team-links/model/entities/team-links.entity';
 import { TeamLinksCrudService } from '../../team-links/services/team-links.crud.service';
 
@@ -1826,55 +1826,107 @@ describe('TeamCrudService', () => {
     });
   });
 
-  //   describe('addTeam() method will add team in powerboard as well as in team spirit app', () => {
-  //     test('test 1',async () => {
-  //        //inputs
-  //       const addTeam:any={
-  //         teamName:"test_demo",
-  //         teamCode:"9900111",
-  //     projectKey:"P112499",
-  //     ad_center:{
-  //     "id":"98955bf7-ada7-495c-8019-8d7ab62d488e"
-  //     },
-  //       member_number: 2,
-  //       frequency: 15,
-  //       start_date: "2021-06-03T00:00:00Z"
-  //     };
+  describe('addTeam() method will add team in powerboard as well as in team spirit app', () => {
+    test('test 1 when team is not registered previously', async () => {
+      //inputs
+      const addTeam: any = {
+        teamName: 'test_demo',
+        teamCode: '9900111',
+        projectKey: 'P112499',
+        ad_center: {
+          id: '98955bf7-ada7-495c-8019-8d7ab62d488e',
+        },
+        member_number: 2,
+        frequency: 15,
+        start_date: '2021-06-03T00:00:00Z',
+      };
 
-  //     const team=undefined;
+      const team = undefined;
 
-  //     const expectedOutput:any={
-  //       "name": "test_demo",
-  //       "teamCode": "9900111",
-  //       "projectKey": "P112499",
-  //       "ad_center": {
-  //           "id": "98955bf7-ada7-495c-8019-8d7ab62d488e"
-  //       },
-  //       "logo": null,
-  //       "id": "27fefe8f-e89d-4f2f-a58a-9b9185a29a95",
-  //       "version": 1,
-  //       "createdAt": "2021-07-08T12:44:00.140Z",
-  //       "updatedAt": "2021-07-08T12:44:00.140Z"
-  //   };
+      const expectedOutput: any = {
+        name: 'test_demo',
+        teamCode: '9900111',
+        projectKey: 'P112499',
+        ad_center: {
+          id: '98955bf7-ada7-495c-8019-8d7ab62d488e',
+        },
+        logo: null,
+        id: '27fefe8f-e89d-4f2f-a58a-9b9185a29a95',
+        version: 1,
+        createdAt: '2021-07-08T12:44:00.140Z',
+        updatedAt: '2021-07-08T12:44:00.140Z',
+      };
 
-  //   const token: any={
-  //     token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJFbWFpbCI6ImFkbWluVGVhbVNwaXJpdEBjYXBnZW1pbmkuY29tIiwiUGFzc3dvcmQiOiJUZWFtU3Bpcml0QWRtaW4hIiwiZXhwIjoxNjI2MDA3NDQwfQ.bScKraBERoT4tr9jkb3pHNVXzjv2I4Ki4ob3j2sGiQ4'
-  //   };
+      const token: any = {
+        token:
+          'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJFbWFpbCI6ImFkbWluVGVhbVNwaXJpdEBjYXBnZW1pbmkuY29tIiwiUGFzc3dvcmQiOiJUZWFtU3Bpcml0QWRtaW4hIiwiZXhwIjoxNjI2MDA3NDQwfQ.bScKraBERoT4tr9jkb3pHNVXzjv2I4Ki4ob3j2sGiQ4',
+      };
 
-  //   const teamSpiritOutput:any={
-  //     Name: 'test_demo',
-  //     Num_mumbers: 2,
-  //     StartDate: '2021-06-03T00:00:00Z',
-  //     Frequency: 15,
-  //     Surveys: null,
-  //     Users: null
-  //   }
+      const teamSpiritOutput: any = {
+        Name: 'test_demo',
+        Num_mumbers: 2,
+        StartDate: '2021-06-03T00:00:00Z',
+        Frequency: 15,
+        Surveys: null,
+        Users: null,
+      };
 
-  //        //test
-  //        const result = extractInfo(Info);
+      //test
+      jest.spyOn(teamRepo, 'findOne').mockImplementation(() => team);
+      jest.spyOn(teamRepo, 'save').mockImplementation(() => expectedOutput);
+      jest.spyOn(teamSpiritService, 'loginToTeamSpirit').mockImplementation(() => token);
+      jest.spyOn(teamSpiritService, 'addTeamToTeamSpirit').mockImplementation(() => teamSpiritOutput);
+      const actualOutput = await teamService.addTeam(addTeam);
 
-  //        //expect
-  //        expect(result).toEqual('hello jest');
-  //     });
-  //  });
+      //expect
+      expect(teamRepo.findOne).toBeCalledTimes(1);
+      expect(teamRepo.save).toBeCalledTimes(1);
+      expect(teamSpiritService.loginToTeamSpirit).toBeCalledTimes(1);
+      expect(teamSpiritService.addTeamToTeamSpirit).toBeCalledTimes(1);
+      expect(actualOutput).toBeDefined();
+      expect(actualOutput).toEqual(expectedOutput);
+    });
+    test('test 2 when team is already registered with powerboard', async () => {
+      //inputs
+      const team: any = {
+        id: 'fe4f8120-8a2c-47ad-bad7-86e412e323c1',
+        version: 1,
+        createdAt: '2021-07-08T05:12:17.648Z',
+        updatedAt: '2021-07-08T05:12:17.648Z',
+        name: 'Maruti',
+        teamCode: '9900918',
+        projectKey: 'P112461',
+        logo: null,
+        ad_center: {
+          id: '98955bf7-ada7-495c-8019-8d7ab62d488e',
+          version: 1,
+          createdAt: '2021-07-08T05:12:17.648Z',
+          updatedAt: '2021-07-08T05:12:17.648Z',
+          name: 'ADCenter Murcia',
+        },
+      };
+
+      const addTeam: any = {
+        teamName: 'test_demo',
+        teamCode: '9900111',
+        projectKey: 'P112499',
+        ad_center: {
+          id: '98955bf7-ada7-495c-8019-8d7ab62d488e',
+        },
+        member_number: 2,
+        frequency: 15,
+        start_date: '2021-06-03T00:00:00Z',
+      };
+
+      //test
+      jest.spyOn(teamRepo, 'findOne').mockImplementation(() => team);
+
+      //expect
+      try {
+        await teamService.addTeam(addTeam);
+      } catch (e) {
+        expect(e.message).toMatch('team already registered');
+      }
+    });
+  });
 });
