@@ -1,6 +1,5 @@
 import { HttpService } from '@nestjs/common';
 import { HttpModule } from '@nestjs/common/http/http.module';
-//import { HttpModule } from '@nestjs/common/http/http.module';
 import { TestingModule, Test } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import {
@@ -18,10 +17,6 @@ import { ChangePasswordDTO } from '../../auth/model/ChangePasswordDTO';
 import { AddGuestDTO } from '../model/dto/AddGuestDTO';
 import { UpdateUserRoleDTO } from '../model/dto/UpdateUserRoleDTO';
 import { UserDTO } from '../model/dto/UserDTO';
-
-//import { UserDTO } from '../model/dto/UserDTO';
-//import { TeamSpiritModule } from '../../../dashboard/team-spirit-integration/team-spirit.module';
-
 import { User } from '../model/entities/user.entity';
 import { UserInfo } from '../model/entities/user_info.entity';
 import { UserRole } from '../model/entities/user_role.entity';
@@ -150,7 +145,6 @@ describe('UserService', () => {
       } catch (e) {
         expect(e.message).toMatch('User in team already exists');
       }
-      //expect(await userService.addUserToOtherTeam(actualUser, userDTO)).toThrow(new ConflictException('User in team already exists'));
     });
 
     it('addUserToOtherTeam() should successfully add user to the team if it is not present in the team', async () => {
@@ -310,20 +304,11 @@ describe('UserService', () => {
 
   describe('updateUserRole()', () => {
     const updateUserRoleDTO = {} as UpdateUserRoleDTO;
-    //   userId: '',
-    //   teamId: '',
-    //   roleId: ''
-    // }
+
     it('updateUserRole should successfully update the user role', async () => {
       const userRole = new UserRole();
       //const thisUser = new User();
       const userTeam = new UserTeam();
-      // const existingteam = new Team();
-      // const userTeam = {
-      //   user: thisUser,
-      //   team: existingteam,
-      //   id: userTeamID
-      // };
 
       jest.spyOn(userTeamRepo, 'findOne').mockImplementation(() => userTeam);
 
@@ -343,8 +328,6 @@ describe('UserService', () => {
   });
 
   describe('getTeamPrivileges()', () => {
-    // const userId = '647f8ce6-b5c4-4935-b5ae-816053477065';
-    // const userName='Don';
     describe('getPrivilegesList()', () => {
       it(' getPrivilegesList() method should return all the privileges of that particular user', async () => {
         const user = new User();

@@ -152,7 +152,7 @@ export class UserService extends TypeOrmCrudService<User> {
   async deleteUserFromTeamById(id: string): Promise<DeleteResult> {
     const userTeam = (await this.userTeamRepository.findOne({ where: { id: id } })) as UserTeam;
     if (!userTeam) {
-      throw new NotFoundException('user not found for that tam');
+      throw new NotFoundException('user not found for that team');
     } else {
       return await this.userTeamRepository.delete(id);
     }
