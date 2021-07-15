@@ -64,6 +64,7 @@ export class ImagesCrudController {
   constructor(public imageService: ImagesCrudService) {}
 
   @Post('uploadImage/:teamId')
+  //@UseGuards(AuthGuard('jwt'))
   @UseInterceptors(FileInterceptor('file', storage))
   async uploadImage(
     @UploadedFile() file: Express.Multer.File,
@@ -81,12 +82,14 @@ export class ImagesCrudController {
   //   return res.sendFile(join(process.cwd(), 'uploads/profileimages/' + imagename));
   // }
   @Get('getAllImages/:teamId')
+  //@UseGuards(AuthGuard('jwt'))
   async getAllImages(@Param('teamId') teamId: string, @Response() res: eResponse): Promise<void> {
     const result = await this.imageService.getImagesForTeam(teamId);
     res.status(200).json(result);
   }
 
   @Delete('delete/:id')
+  //@UseGuards(AuthGuard('jwt'))
   async deleteImageById(@Param('id') imageId: string, @Response() res: eResponse): Promise<void> {
     const result = await this.imageService.deleteImageById(imageId);
     console.log(result);

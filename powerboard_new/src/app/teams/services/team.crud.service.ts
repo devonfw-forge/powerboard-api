@@ -1,10 +1,9 @@
-import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import { ConflictException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { TypeOrmCrudService } from '@nestjsx/crud-typeorm';
 import { ClientStatusResponse } from '../../dashboard/client-status/model/dto/ClientStatusResponse';
 import { ClientStatusCrudService } from '../../dashboard/client-status/services/client-status.crud.service';
 import { CodeQualityResponse } from '../../dashboard/code-quality-snapshot/model/dto/CodeQualityResponse';
-import { CodeQualitySnapshotCrudService } from '../../dashboard/code-quality-snapshot/services/code-quality-snapshot.crud.service';
 import { SprintDetailResponse } from '../../dashboard/sprint/model/dto/SprintDetailResponse';
 //import { TeamSpiritResponse } from '../../dashboard/team-spirit-integration/model/dto/TeamSpiritResponse';
 //import { TeamSpiritCrudService } from '../../dashboard/team-spirit-integration/services/team-spirit.crud.service';
@@ -37,13 +36,14 @@ import { TeamSpiritCrudService } from '../../dashboard/team-spirit-integration/s
 import { UpdateTeam } from '../model/dto/updateTeam.interface';
 import { TeamSpiritUserDTO } from '../../dashboard/team-spirit-integration/model/dto/TeamSpiritUserDTO';
 import { TeamDTO } from '../../dashboard/team-spirit-integration/model/dto/TeamDTO';
+import { ICodeQualityService } from '../../dashboard/code-quality-snapshot/services/code-quality-interface';
 
 @Injectable()
 export class TeamCrudService extends TypeOrmCrudService<Team> {
   constructor(
     @InjectRepository(Team) private readonly teamRepository: Repository<Team>,
     @InjectRepository(ADCenter) readonly centerRepository: Repository<ADCenter>,
-    private readonly codequalityService: CodeQualitySnapshotCrudService,
+    @Inject('ICodeQualityService') private readonly codequalityService: ICodeQualityService,
     private readonly clientStatusService: ClientStatusCrudService,
     private readonly teamSpiritService: TeamSpiritCrudService,
     private readonly sprintService: SprintCrudService,
@@ -117,6 +117,8 @@ export class TeamCrudService extends TypeOrmCrudService<Team> {
     }
 
     const codeQuality: CodeQualityResponse | undefined = await this.codequalityService.getCodeQualitySnapshot(teamId);
+    console.log('.>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>');
+    console.log(codeQuality);
     this.dash.codeQuality = codeQuality;
 
     const clientStatus: ClientStatusResponse | undefined = await this.clientStatusService.getClientFeedback(teamId);

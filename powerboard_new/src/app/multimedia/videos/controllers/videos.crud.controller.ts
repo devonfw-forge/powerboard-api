@@ -44,6 +44,7 @@ export class VideosCrudController {
   constructor(public videoService: VideosCrudService) {}
 
   @Post('uploadVideo/:teamId')
+  //@UseGuards(AuthGuard('jwt'))
   @UseInterceptors(FileInterceptor('file', storage))
   async uploadVideo(
     @UploadedFile() file: Express.Multer.File,
@@ -56,12 +57,14 @@ export class VideosCrudController {
   }
 
   @Get('getAllVideos/:teamId')
+  //@UseGuards(AuthGuard('jwt'))
   async getAllVideos(@Param('teamId') teamId: string, @Response() res: eResponse): Promise<void> {
     const result = await this.videoService.getVideosForTeam(teamId);
     res.status(200).json(result);
   }
 
   @Delete('delete/:id')
+  //@UseGuards(AuthGuard('jwt'))
   async deleteVideoById(@Param('id') videoId: string, @Response() res: eResponse): Promise<void> {
     const result = await this.videoService.deleteVideoById(videoId);
     console.log(result);

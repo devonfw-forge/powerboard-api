@@ -16,6 +16,7 @@ export class ADCenterCrudController {
 
   //View All Centers
   @Get('viewAllCenters')
+  //@UseGuards(AuthGuard('jwt'))
   async getAllCenters(@Response() res: eResponse): Promise<void> {
     const result = await this.service.getAllCenters();
     res.status(200).json(result);

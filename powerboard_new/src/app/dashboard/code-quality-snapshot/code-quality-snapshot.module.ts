@@ -6,8 +6,14 @@ import { CodeQualitySnapshotCrudController } from './controllers/code-quality-sn
 
 @Module({
   imports: [TypeOrmModule.forFeature([CodeQualitySnapshot])],
-  providers: [CodeQualitySnapshotCrudService],
+  //providers: [CodeQualitySnapshotCrudService],
+  providers: [
+    {
+      provide: 'ICodeQualityService',
+      useClass: CodeQualitySnapshotCrudService,
+    },
+  ],
   controllers: [CodeQualitySnapshotCrudController],
-  exports: [CodeQualitySnapshotCrudService],
+  exports: ['ICodeQualityService'],
 })
 export class CodeQualitySnapshotModule {}

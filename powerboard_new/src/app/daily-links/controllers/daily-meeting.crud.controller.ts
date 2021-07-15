@@ -18,12 +18,14 @@ export class DailyMeetingCrudController {
   constructor(public dailyMeetingService: DailyMeetingCrudService) {}
 
   @Get('teamId/:id')
+  //@UseGuards(AuthGuard('jwt'))
   async getDailyMeeting(@Param('id') teamId: string, @Response() res: eResponse): Promise<void> {
     const result = await this.dailyMeetingService.getDailyLinks(teamId);
     res.status(200).json(result);
   }
 
   @Delete('delete/:id')
+  //@UseGuards(AuthGuard('jwt'))
   async deleteDailyMeetingById(@Param('id') dailyMeetingId: string, @Response() res: eResponse): Promise<void> {
     const result = await this.dailyMeetingService.deleteDailyMeetingById(dailyMeetingId);
     console.log(result);

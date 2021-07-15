@@ -15,6 +15,7 @@ export class AuthController {
 
   //Login the user
   @Post('login')
+  //@UseGuards(AuthGuard('jwt'))
   async login(@Body() login: LoginDTO): Promise<any> {
     console.log(login);
     return await this.authService.login(login);
@@ -22,6 +23,7 @@ export class AuthController {
 
   //Add the user
   @Post('register')
+  //@UseGuards(AuthGuard('jwt'))
   async register(@Body() user: UserDTO, @Response() res: eResponse): Promise<void> {
     const registered = await this.authService.register(user);
     if (registered) {
@@ -30,12 +32,14 @@ export class AuthController {
   }
 
   @Put('change-password')
+  //@UseGuards(AuthGuard('jwt'))
   async changePassword(@Body() changePassword: ChangePasswordDTO): Promise<any> {
     return await this.authService.changePassword(changePassword);
   }
 
   //Add the user
   @Post('add-guest')
+  //@UseGuards(AuthGuard('jwt'))
   async addGuestUser(@Body() guest: AddGuestDTO, @Response() res: eResponse): Promise<void> {
     const result = await this.authService.addGuest(guest);
 

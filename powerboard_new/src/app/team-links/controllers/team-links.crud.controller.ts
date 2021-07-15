@@ -18,12 +18,14 @@ export class TeamLinksCrudController {
   constructor(public teamLinksService: TeamLinksCrudService) {}
 
   @Get('teamId/:id')
+  //@UseGuards(AuthGuard('jwt'))
   async getTeamLinks(@Param('id') teamId: string, @Response() res: eResponse): Promise<void> {
     const result = await this.teamLinksService.getTeamLinks(teamId);
     res.status(200).json(result);
   }
 
   @Delete('delete/:id')
+  //@UseGuards(AuthGuard('jwt'))
   async deleteTeamLinkById(@Param('id') teamLinkId: string, @Response() res: eResponse): Promise<void> {
     const result = await this.teamLinksService.deleteTeamLinkById(teamLinkId);
     console.log(result);

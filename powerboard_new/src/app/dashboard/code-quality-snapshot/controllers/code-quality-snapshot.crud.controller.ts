@@ -1,9 +1,8 @@
-import { Controller } from '@nestjs/common';
+import { Controller, Inject } from '@nestjs/common';
 import { Crud } from '@nestjsx/crud';
 import { CrudType } from '@devon4node/common/serializer';
 import { CodeQualitySnapshot } from '../model/entities/code-quality-snapshot.entity';
-import { CodeQualitySnapshotCrudService } from '../services/code-quality-snapshot.crud.service';
-
+import { ICodeQualityService } from '../services/code-quality-interface';
 
 @Crud({
   model: {
@@ -13,5 +12,7 @@ import { CodeQualitySnapshotCrudService } from '../services/code-quality-snapsho
 @CrudType(CodeQualitySnapshot)
 @Controller('code-quality-snapshot/codes')
 export class CodeQualitySnapshotCrudController {
-  constructor(public service: CodeQualitySnapshotCrudService) {}
+  constructor(@Inject('ICodeQualityService') public service: ICodeQualityService) {
+    // console.log(this.service);
+  }
 }

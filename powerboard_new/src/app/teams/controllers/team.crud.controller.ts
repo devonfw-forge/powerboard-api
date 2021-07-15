@@ -9,7 +9,6 @@ import path = require('path');
 import { v4 as uuidv4 } from 'uuid';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { UserTeamDTO } from '../model/dto/UserTeamDTO';
-
 import { Response as eResponse } from 'express';
 const fs_1 = require('fs');
 // const globalPath = `C:/powerboard/multimedia`;
@@ -45,6 +44,7 @@ export class TeamCrudController {
   constructor(public teamService: TeamCrudService) {}
 
   @Post('powerboard/team')
+  //@UseGuards(AuthGuard('jwt'))
   async getPowerboardByTeamId(@Body() userTeam: UserTeamDTO, @Response() res: eResponse): Promise<void> {
     const result = await this.teamService.getPowerboardByTeamId(userTeam);
     res.status(200).json(result);
@@ -58,12 +58,14 @@ export class TeamCrudController {
   }
 
   @Get('center/:id')
+  //@UseGuards(AuthGuard('jwt'))
   async getTeamsByCenterId(@Param('id') centerId: string, @Response() res: eResponse): Promise<void> {
     const result = await this.teamService.getTeamsByCenterId(centerId);
     res.status(200).json(result);
   }
 
   @Post('uploadLogo/:teamId')
+  //@UseGuards(AuthGuard('jwt'))
   @UseInterceptors(FileInterceptor('file', logoStorage))
   async uploadLogo(
     @UploadedFile() file: Express.Multer.File,

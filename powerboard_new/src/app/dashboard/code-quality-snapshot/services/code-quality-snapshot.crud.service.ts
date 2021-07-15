@@ -4,9 +4,12 @@ import { TypeOrmCrudService } from '@nestjsx/crud-typeorm';
 import { Repository } from 'typeorm';
 import { CodeQualityResponse } from '../model/dto/CodeQualityResponse';
 import { CodeQualitySnapshot } from '../model/entities/code-quality-snapshot.entity';
+import { ICodeQualityService } from './code-quality-interface';
 
 @Injectable()
-export class CodeQualitySnapshotCrudService extends TypeOrmCrudService<CodeQualitySnapshot> {
+export class CodeQualitySnapshotCrudService
+  extends TypeOrmCrudService<CodeQualitySnapshot>
+  implements ICodeQualityService {
   constructor(
     @InjectRepository(CodeQualitySnapshot) private readonly codeQualityRepository: Repository<CodeQualitySnapshot>,
   ) {
@@ -25,14 +28,6 @@ export class CodeQualitySnapshotCrudService extends TypeOrmCrudService<CodeQuali
       .orderBy('code_quality_snapshot.snapshot_time', 'DESC')
       .limit(1)
       .getOne()) as CodeQualitySnapshot;
-
-    // const result = (await this.codeQualityRepository.find({
-    //   where: { team: team_Id },
-    //   order: { snapshot_time: 'DESC' },
-    //   take: 1,
-    // })) as CodeQualitySnapshot[];
-
-    //console.log(result);
     if (result == null) {
       return undefined;
     } else {
