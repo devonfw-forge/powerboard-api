@@ -205,19 +205,19 @@ export class TeamSpiritCrudService extends TypeOrmCrudService<TeamSpiritMedian> 
       });
   }
 
-  async getAllSurveyResult(): Promise<any> {
-    const allSurveyResult = await this.http
-      .get(this.newTeamSpiritEndpointURL + 'survies', {
-        headers: { Authorization: 'Bearer ' + this.config.headers.Authorization.token },
-      })
-      .toPromise()
-      .then(resp => {
-        return resp.data;
-      });
+  // async getAllSurveyResult(): Promise<any> {
+  //   const allSurveyResult = await this.http
+  //     .get(this.newTeamSpiritEndpointURL + 'survies', {
+  //       headers: { Authorization: 'Bearer ' + this.config.headers.Authorization.token },
+  //     })
+  //     .toPromise()
+  //     .then(resp => {
+  //       return resp.data;
+  //     });
 
-    //console.log(allSurveyResult);
-    return allSurveyResult;
-  }
+  //   //console.log(allSurveyResult);
+  //   return allSurveyResult;
+  // }
 
   async getAllTeams(): Promise<any> {
     const allTeams = await this.http
