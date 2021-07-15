@@ -3,7 +3,7 @@
   "host": "localhost",
   "port": 5432,
   "username": "postgres",
-  "password": "raj",
+  "password": "Pro@1234",
   "database": "Powerboard_dev3",
   "synchronize": false,
   "migrationsRun": true,
