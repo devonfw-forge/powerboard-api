@@ -26,10 +26,10 @@ export class TeamSpiritCrudController {
     return logincontroller;
   }
 
-  @Post('/register')
-  async registerUser(@Body() userDTO: TeamSpiritUserDTO) {
-    return await this.teamSpiritService.registerUser(userDTO);
-  }
+  // @Post('/register')
+  // async registerUser(@Body() userDTO: TeamSpiritUserDTO) {
+  //   return await this.teamSpiritService.registerUser(userDTO);
+  // }
 
   @Put('/addUserToTeam/:teamName')
   async addUserToTeam(@Param('teamName') teamName: string, @Body() userDTO: TeamSpiritUserDTO): Promise<any> {

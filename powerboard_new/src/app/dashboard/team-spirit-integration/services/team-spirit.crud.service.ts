@@ -193,17 +193,18 @@ export class TeamSpiritCrudService extends TypeOrmCrudService<TeamSpiritMedian> 
     }
   }
 
-  async registerUser(userDTO: TeamSpiritUserDTO) {
-    return await this.http
-      .post(this.newTeamSpiritEndpointURL + 'register', userDTO, {
-        headers: { Authorization: 'Bearer ' + this.config.headers.Authorization.token },
-      })
-      .toPromise()
-      .then(resp => {
-        return resp.data;
-      });
-  }
+  // async registerUser(userDTO: TeamSpiritUserDTO) {
+  //   return await this.http
+  //     .post(this.newTeamSpiritEndpointURL + 'register', userDTO, {
+  //       headers: { Authorization: 'Bearer ' + this.config.headers.Authorization.token },
+  //     })
+  //     .toPromise()
+  //     .then(resp => {
+  //       return resp.data;
+  //     });
+  // }
 
+  //Method for fetching survey result
   async getAllSurveyResult(): Promise<any> {
     const allSurveyResult = await this.http
       .get(this.newTeamSpiritEndpointURL + 'survies', {
