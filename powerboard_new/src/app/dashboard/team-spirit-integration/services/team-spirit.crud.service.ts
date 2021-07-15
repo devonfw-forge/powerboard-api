@@ -231,15 +231,15 @@ export class TeamSpiritCrudService extends TypeOrmCrudService<TeamSpiritMedian> 
   //   return allTeams;
   // }
 
-  async getAllUsers(): Promise<any> {
-    const allUsers = await this.http
-      .get(this.newTeamSpiritEndpointURL + 'users', {
-        headers: { Authorization: 'Bearer ' + this.config.headers.Authorization.token },
-      })
-      .toPromise()
-      .then(resp => {
-        return resp.data;
-      });
-    return allUsers;
-  }
+  // async getAllUsers(): Promise<any> {
+  //   const allUsers = await this.http
+  //     .get(this.newTeamSpiritEndpointURL + 'users', {
+  //       headers: { Authorization: 'Bearer ' + this.config.headers.Authorization.token },
+  //     })
+  //     .toPromise()
+  //     .then(resp => {
+  //       return resp.data;
+  //     });
+  //   return allUsers;
+  // }
 }

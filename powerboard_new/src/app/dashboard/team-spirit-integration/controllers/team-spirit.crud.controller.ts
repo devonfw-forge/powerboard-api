@@ -79,8 +79,8 @@ export class TeamSpiritCrudController {
   //   return await this.teamSpiritService.getAllTeams();
   // }
 
-  @Get('/getAllUsers')
-  async getAllUsers(): Promise<any> {
-    return await this.teamSpiritService.getAllUsers();
-  }
+  // @Get('/getAllUsers')
+  // async getAllUsers(): Promise<any> {
+  //   return await this.teamSpiritService.getAllUsers();
+  // }
 }
