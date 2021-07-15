@@ -74,10 +74,10 @@ export class TeamSpiritCrudController {
   //   return await this.teamSpiritService.getAllSurveyResult();
   // }
 
-  @Get('/getAllTeams')
-  async getAllTeams(): Promise<any> {
-    return await this.teamSpiritService.getAllTeams();
-  }
+  // @Get('/getAllTeams')
+  // async getAllTeams(): Promise<any> {
+  //   return await this.teamSpiritService.getAllTeams();
+  // }
 
   @Get('/getAllUsers')
   async getAllUsers(): Promise<any> {

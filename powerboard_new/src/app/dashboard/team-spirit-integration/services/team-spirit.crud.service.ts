@@ -219,17 +219,17 @@ export class TeamSpiritCrudService extends TypeOrmCrudService<TeamSpiritMedian> 
   //   return allSurveyResult;
   // }
 
-  async getAllTeams(): Promise<any> {
-    const allTeams = await this.http
-      .get(this.newTeamSpiritEndpointURL + 'teams', {
-        headers: { Authorization: 'Bearer ' + this.config.headers.Authorization.token },
-      })
-      .toPromise()
-      .then(resp => {
-        return resp.data;
-      });
-    return allTeams;
-  }
+  // async getAllTeams(): Promise<any> {
+  //   const allTeams = await this.http
+  //     .get(this.newTeamSpiritEndpointURL + 'teams', {
+  //       headers: { Authorization: 'Bearer ' + this.config.headers.Authorization.token },
+  //     })
+  //     .toPromise()
+  //     .then(resp => {
+  //       return resp.data;
+  //     });
+  //   return allTeams;
+  // }
 
   async getAllUsers(): Promise<any> {
     const allUsers = await this.http
