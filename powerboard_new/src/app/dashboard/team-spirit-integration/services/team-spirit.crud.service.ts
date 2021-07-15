@@ -162,6 +162,7 @@ export class TeamSpiritCrudService extends TypeOrmCrudService<TeamSpiritMedian> 
   //     });
   // }
 
+  // add user to team
   async addUserToTeam(userDTO: TeamSpiritUserDTO, teamName: string): Promise<any> {
     userDTO.RoleID = 2;
     userDTO.Role = {
